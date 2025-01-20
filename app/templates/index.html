@@ -1,12 +1,15 @@
-<%inherit file="sign-in.html"/>
+<%!
+	import sys
+	import os
+	sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__name__), '..',)))
+	import init
 
-<%block name="body">
-    <div class="card">
-        <div class="card-header">
-            <h3 class="card-title">Welcome to My Web App</h3>
-        </div>
-        <div class="card-body">
-            <p>This is a simple webpage using Mako and the Tabler UI framework.</p>
-        </div>
-    </div>
-</%block>
+	# Check if the database is initialised, if not display the installation page
+	init_status = init.is_database_initialised()
+%>
+
+% if not init_status:
+	redirect('/install')
+% endif
+
+<%inherit file="sign-in.html" />
