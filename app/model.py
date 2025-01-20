@@ -1,15 +1,22 @@
 import psycopg2
 from flask import jsonify
+import json
+import db_util 
 
+#
+# Get all users from the database
+#
 def get_users():
+	credentials = db_util.read_credentials()
+
 	try:
 		# Connect to your postgres DB
 		connection = psycopg2.connect(
 			dbname="requestmanager",
-			user="postgres",
-			password="postgres1234!",
+			user=credentials['username'],
+			password=credentials['password'],
 			host="localhost",
-			port="5432"
+			port=5432
 		)
 
 		cursor = connection.cursor()

@@ -156,6 +156,7 @@
 				}
 			}
 
+			// validate the new password input
 			dbPasswordInput.addEventListener("input", function () {
 				const value = dbPasswordInput.value;
 				const isValid = value.length >= 10 &&
@@ -177,8 +178,9 @@
 				}
 			});
 
+			// validate the nnew username input
 			const usernameInput = document.getElementById("new_db_username");
-
+	
 			usernameInput.addEventListener("input", function () {
 				const value = usernameInput.value.trim();
 				if (value) {
@@ -196,6 +198,7 @@
 			});
 
 
+			// if the step 1 complete button is clicked, send a request to the server to create the database with user
 			nextButtons[0].addEventListener("click", function (event) {
 				event.preventDefault();
 				if (!nextButtons[0].classList.contains("disabled")) {

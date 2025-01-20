@@ -16,12 +16,17 @@ template_lookup = TemplateLookup(directories=['templates'])
 # UI ROUTES #
 #############
 
+#
+# Return the index page
+#
 @app.route("/")
 def index():
 	template = template_lookup.get_template("index.html")
 	return template.render(title="Request")
 
+#
 # Return install html page
+#
 @app.route("/install")
 def install():
 	if (init.is_database_initialised()):
@@ -30,7 +35,9 @@ def install():
 	template = template_lookup.get_template("install.html")
 	return template.render(title="Request")
 
+#
 # Default 404 page
+#
 @app.route("/404")
 def error_404():
 	template = template_lookup.get_template("404.html")
@@ -40,6 +47,9 @@ def error_404():
 # Users API #
 #############
 
+#
+# Return all users
+#
 @app.route('/api/users', methods=['GET'])
 def get_users():
 	users = model.get_users()
@@ -62,7 +72,59 @@ def database_api():
 @app.route('/api/database/checkinstall', methods=['GET'])
 def database_check_install():
 	installed = init.is_database_initialised()
-	return jsonify(installed)
+
+	if installed:
+		return jsonify({'installed': True}), 200
+	
+	return jsonify({'installed': False}), 500
+
+#
+# Conduct a details health check
+#
+@app.route('/api/database/health', methods=['GET'])
+def database_health():
+	# Check if the database is initialised
+	initialised = init.is_database_initialised()
+
+	# If the database is not initialised, return an error
+	if not initialised:
+		return jsonify({'error': 'Database not initialised'}), 500
+
+	# Check if the tables exist
+	users_exists = init.check_table_exists('requestmanager', 'requestmanager', 'password', 'users')
+	permissions_exists = init.check_table_exists('requestmanager', 'requestmanager', 'password', 'permissions')
+	requests_exists = init.check_table_exists('requestmanager', 'requestmanager', 'password', 'requests')
+
+	# If the tables don't exist, return an error
+	if not users_exists or not permissions_exists or not requests_exists:
+		return jsonify({'error': 'Tables do not exist'}), 500
+
+	# If everything is fine, return a success message
+	return jsonify({'success': 'Database is healthy'}), 200
+
+#
+# Create a new user in the database
+# 
+@app.route('/api/database/create_user', methods=['POST'])
+def create_user():
+	if not init.is_database_initialised():
+		return jsonify({'error': 'Database not initialised'}), 400
+
+	if request.is_json:
+		data = request.get_json()
+		username = data.get('username')
+		password = data.get('password')
+
+		if not username or not password:
+			return jsonify({'error': 'Username and password are required'}), 400
+
+		try:
+			model.create_user(username, password)
+			return jsonify({'success': 'User created successfully'}), 201
+		except Exception as e:
+			return jsonify({'error': str(e)}), 500
+	else:
+		return jsonify({'error': 'Invalid request format'}), 400
 
 #
 # Create the database and tables
