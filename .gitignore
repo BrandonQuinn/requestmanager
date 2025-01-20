@@ -172,3 +172,5 @@ cython_debug/
 
 app/dist
 app/static
+
+db_credentials.json
