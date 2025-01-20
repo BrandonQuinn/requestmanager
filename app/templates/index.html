@@ -1,0 +1,15 @@
+<%!
+	import sys
+	import os
+	sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__name__), '..',)))
+	import init
+
+	# Check if the database is initialised, if not display the installation page
+	init_status = init.is_database_initialised()
+%>
+
+% if not init_status:
+	redirect('/install')
+% endif
+
+<%inherit file="sign-in.html" />
