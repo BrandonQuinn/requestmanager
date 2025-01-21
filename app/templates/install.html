@@ -98,7 +98,7 @@
 					the application to reset it.
 					It can be changed by logging in with the account: <b>breakglass</b>
 				</p>
-				<input type="password" class="form-control is-invalid" id="floating-password" value="Password"
+				<input type="password" class="form-control is-invalid" id="floating-password break-glass-pw" value="Password"
 					autocomplete="off">
 				<small class="form-hint">
 					Must be at least 30 characters long. Contain numbers, symbols, upper and lowercase.
@@ -232,6 +232,32 @@
 							alert("An error occurred while initializing the database.");
 						});
 
+				}
+			});
+
+			const breakGlassPassword = document.getElementById("break-glass-pw");
+
+			breakglassPasswordIsValid = false;
+
+			// validate the new password input
+			breakGlassPassword.addEventListener("input", function () {
+				const value = breakGlassPassword.value;
+				const isValid = value.length >= 30 &&
+					/[A-Z]/.test(value) &&
+					/[a-z]/.test(value) &&
+					/[0-9]/.test(value) &&
+					/[^A-Za-z0-9]/.test(value);
+
+				if (isValid) {
+					breakGlassPassword.classList.remove("is-invalid");
+					breakGlassPassword.classList.add("is-valid");
+					breakglassPasswordIsValid = true;
+					enableNextButton();
+				} else {
+					nextButtons[0].classList.add("disabled");
+					breakGlassPassword.classList.add("is-invalid");
+					breakGlassPassword.classList.remove("is-valid");
+					breakglassPasswordIsValid = false;
 				}
 			});
 		});

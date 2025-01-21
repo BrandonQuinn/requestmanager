@@ -1,4 +1,4 @@
-from flask import Flask, render_template_string, jsonify, request
+from flask import Flask, render_template, redirect, url_for, jsonify, request
 from mako.template import Template
 from mako.lookup import TemplateLookup
 import model
@@ -21,19 +21,24 @@ template_lookup = TemplateLookup(directories=['templates'])
 #
 @app.route("/")
 def index():
+	# redirect to install page if the database is not initialised
+	if not init.is_database_initialised():
+		return redirect(url_for('install'), code=302)
+
 	template = template_lookup.get_template("index.html")
-	return template.render(title="Request")
+	return template.render(title="Request Manager")
 
 #
 # Return install html page
 #
 @app.route("/install")
 def install():
-	if (init.is_database_initialised()):
-		return request.redirect("/404")
+	# redirect to home page if the database is already initialised
+	if init.is_database_initialised():
+		return redirect(url_for('index'), code=302)
 
 	template = template_lookup.get_template("install.html")
-	return template.render(title="Request")
+	return template.render(title="Install")
 
 #
 # Default 404 page
