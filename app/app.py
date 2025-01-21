@@ -1,7 +1,7 @@
 from flask import Flask, render_template, redirect, url_for, jsonify, request
 from mako.template import Template
 from mako.lookup import TemplateLookup
-import model
+import database
 import os, sys
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__name__), '..',)))
@@ -57,8 +57,23 @@ def error_404():
 #
 @app.route('/api/users', methods=['GET'])
 def get_users():
-	users = model.get_users()
+	users = database.get_all_users()
 	return jsonify(users)
+
+######################
+# Authentication API #
+######################
+
+@app.route('/api/login', methods=['POST'])
+def login():
+	username = request.form.get('username')
+	password = request.form.get('password')
+	
+	# Dummy authentication logic
+	if username == 'admin' and password == 'password':
+		return jsonify({'message': 'Login successful', 'status': 'success'})
+	else:
+		return jsonify({'message': 'Invalid credentials', 'status': 'failure'})
 
 ################
 # Database API #
@@ -124,7 +139,7 @@ def create_user():
 			return jsonify({'error': 'Username and password are required'}), 400
 
 		try:
-			model.create_user(username, password)
+			database.create_user(username, password)
 			return jsonify({'success': 'User created successfully'}), 201
 		except Exception as e:
 			return jsonify({'error': str(e)}), 500
@@ -156,33 +171,6 @@ def init_database():
 
 	initialised = init.is_database_initialised()
 	return '{"success": "True"}'
-
-'''@app.route('/api/database/checkauth', methods=['POST'])
-def login():
-	username = request.form.get('username')
-	password = request.form.get('password')
-	
-	# Dummy authentication logic
-	if username == 'admin' and password == 'password':
-		return jsonify({'message': 'Login successful', 'status': 'success'})
-	else:
-		return jsonify({'message': 'Invalid credentials', 'status': 'failure'})'''
-
-######################
-# Authentication API #
-######################
-'''
-@app.route('/api/login', methods=['POST'])
-def login():
-	username = request.form.get('username')
-	password = request.form.get('password')
-	
-	# Dummy authentication logic
-	if username == 'admin' and password == 'password':
-		return jsonify({'message': 'Login successful', 'status': 'success'})
-	else:
-		return jsonify({'message': 'Invalid credentials', 'status': 'failure'})
-'''
 
 if __name__ == "__main__":
 	app.run(debug=True)

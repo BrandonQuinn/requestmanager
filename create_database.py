@@ -84,6 +84,35 @@ def create_requests_table(conn, cur):
 	conn.commit()
 
 #
+# Create a new table of tokens associated with users
+#
+def create_user_tokens_table(conn, cur):
+	cur.execute('''
+		CREATE TABLE IF NOT EXISTS tokens (
+			id SERIAL PRIMARY KEY,
+			token VARCHAR(256) UNIQUE NOT NULL,
+			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+			deadline TIMESTAMP,
+			created_by SERIAL NOT NULL
+		)
+	''')
+	conn.commit()
+
+#
+# Create a table of global tokens that can be used by anyone who has the token. i.e. you don't need to authenticate
+#
+def create_global_tokens_table(conn, cur):
+	cur.execute('''
+		CREATE TABLE IF NOT EXISTS global_tokens (
+			id SERIAL PRIMARY KEY,
+			token VARCHAR(256) UNIQUE NOT NULL,
+			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+			deadline TIMESTAMP NOT NULL
+		)
+	''')
+	conn.commit()
+
+#
 # Create the database and tables
 #
 def create_database_and_tables(new_db_username, new_db_password):
@@ -108,6 +137,8 @@ def create_database_and_tables(new_db_username, new_db_password):
 	create_users_table(conn, cur)
 	create_permissions_table(conn, cur)
 	create_requests_table(conn, cur)
+	create_user_tokens_table(conn, cur)
+	create_global_tokens_table(conn, cur)
 
 	# Create default values
 	create_default_values(conn, cur)
