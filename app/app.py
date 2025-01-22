@@ -3,6 +3,7 @@ from mako.template import Template
 from mako.lookup import TemplateLookup
 import database
 import os, sys
+import health_checks
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__name__), '..',)))
 import init
@@ -87,6 +88,31 @@ def database_api():
 	return jsonify("database api")
 
 #
+# Set the breakglass account
+#
+@app.route('/api/database/breakglass', methods=['POST'])
+def set_breakglass():
+	if not init.is_database_initialised():
+		return jsonify({'error': 'Database not initialised'}), 400
+	
+	# Do not offer the ability to set it ever again if it has EVER been set in the past. If the entry is lost in the database, too bad. 
+	# Manual intervention required via database user or reinstall.
+	if database.check_breakglass_account_is_set():
+		return jsonify({'error': 'Breakglass account already set'}), 400
+
+	if request.is_json:
+		data = request.get_json()
+		password = data.get('breakglass-password')
+
+		try:
+			database.create_breakglass_account(password)
+			return jsonify({'success': 'Breakglass account set successfully'}), 200
+		except Exception as e:
+			return jsonify({'error': str(e)}), 500
+	else:
+		return jsonify({'error': 'Invalid request format'}), 400
+
+#
 # Return true if the database is set up, false if not. 
 #
 @app.route('/api/database/checkinstall', methods=['GET'])
@@ -111,12 +137,13 @@ def database_health():
 		return jsonify({'error': 'Database not initialised'}), 500
 
 	# Check if the tables exist
-	users_exists = init.check_table_exists('requestmanager', 'requestmanager', 'password', 'users')
-	permissions_exists = init.check_table_exists('requestmanager', 'requestmanager', 'password', 'permissions')
-	requests_exists = init.check_table_exists('requestmanager', 'requestmanager', 'password', 'requests')
+	users_exists = health_checks.check_table_exists('users')
+	permissions_exists = health_checks.check_table_exists('permissions')
+	requests_exists = health_checks.check_table_exists('requests')
+	tokens_exists = health_checks.check_table_exists('tokens')
 
 	# If the tables don't exist, return an error
-	if not users_exists or not permissions_exists or not requests_exists:
+	if not users_exists or not permissions_exists or not requests_exists or not tokens_exists:
 		return jsonify({'error': 'Tables do not exist'}), 500
 
 	# If everything is fine, return a success message

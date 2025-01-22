@@ -112,6 +112,17 @@ def create_global_tokens_table(conn, cur):
 	''')
 	conn.commit()
 
+def create_settings_table(conn, cur):
+	cur.execute('''
+		CREATE TABLE IF NOT EXISTS settings (
+			id SERIAL PRIMARY KEY,
+			setting_name VARCHAR(50) UNIQUE NOT NULL,
+			value INTEGER NOT NULL,
+			description TEXT
+		)
+	''')
+	conn.commit()
+
 #
 # Create the database and tables
 #
@@ -139,6 +150,7 @@ def create_database_and_tables(new_db_username, new_db_password):
 	create_requests_table(conn, cur)
 	create_user_tokens_table(conn, cur)
 	create_global_tokens_table(conn, cur)
+	create_settings_table(conn, cur)
 
 	# Create default values
 	create_default_values(conn, cur)
@@ -146,8 +158,6 @@ def create_database_and_tables(new_db_username, new_db_password):
 	# Close communication with the database
 	cur.close()
 	conn.close()
-
-
 
 #
 # Create all the default values for the tables.
@@ -171,15 +181,17 @@ def create_default_values(conn, cur):
 		VALUES (%s, %s, %s)
 	''', (0, 'breakglass', 'Breakglass perm with complete unrestricted access.'))
 
-	# generate argon2 hash for breakglass password
-	hasher = PasswordHasher(time_cost=3, memory_cost=51200, parallelism=2)
-	hash = hasher.hash(breakglass_password)
-
-	# Insert breakglass user
+	# Create a settings to tell if the breakglass account is enabled
 	cur.execute('''
-		INSERT INTO users (username, email, password, permissions)
+		INSERT INTO settings (id, setting_name, value, description)
 		VALUES (%s, %s, %s, %s)
-	''', ('breakglass', 'breakglass@example.com', hash, '{0}'))
+	''', (0, 'breakglass_enabled', 1, '1 If the breakglass account is enabled. Enabled by default on a fresh install.'))
+
+	# Create a settings to tell if the breakglass account has been set
+	cur.execute('''
+		INSERT INTO settings (id, setting_name, value, description)
+		VALUES (%s, %s, %s, %s)
+	''', (0, 'breakglass_set', 0, '1 If the breakglass account has been set ever. The breakglass account can only ever be created once. Helps prevent it being recreated via the api if somehow removed.'))
 
 	# Commit the changes
 	conn.commit()
@@ -187,7 +199,6 @@ def create_default_values(conn, cur):
 	# Close communication with the database
 	cur.close()
 	conn.close()
-
 #
 # Create the user that will have permissions on the requestmanager database.
 #
