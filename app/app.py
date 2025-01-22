@@ -141,10 +141,11 @@ def database_health():
 	permissions_exists = health_checks.check_table_exists('permissions')
 	requests_exists = health_checks.check_table_exists('requests')
 	tokens_exists = health_checks.check_table_exists('tokens')
+	settings_exists = health_checks.check_table_exists('settings')
 
 	# If the tables don't exist, return an error
-	if not users_exists or not permissions_exists or not requests_exists or not tokens_exists:
-		return jsonify({'error': 'Tables do not exist'}), 500
+	if not users_exists or not permissions_exists or not requests_exists or not tokens_exists or not settings_exists:
+		return jsonify({'error': 'One or more tables do not exist'}), 500
 
 	# If everything is fine, return a success message
 	return jsonify({'success': 'Database is healthy'}), 200
@@ -188,16 +189,14 @@ def init_database():
 		new_db_username = data.get('new_db_username')
 		new_db_password = data.get('new_db_password')
 
-	print("USERNAME USERNAME USERNAME " + new_db_username)
-
 	# if it's already initialised, return true and don't create anything
 	if not initialised:
 		init.init_database(new_db_username, new_db_password)
 	elif initialised:
-		return 'NULL'
-
+		return jsonify({'error': 'Database already initialised'}), 500
+	
 	initialised = init.is_database_initialised()
-	return '{"success": "True"}'
+	return jsonify({'success': 'Database created successfully'}), 201
 
 if __name__ == "__main__":
 	app.run(debug=True)
