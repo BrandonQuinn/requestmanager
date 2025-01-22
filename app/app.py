@@ -95,8 +95,12 @@ def set_breakglass():
 	if not init.is_database_initialised():
 		return jsonify({'error': 'Database not initialised'}), 400
 	
-	# Do not offer the ability to set it ever again if it has EVER been set in the past. If the entry is lost in the database, too bad. 
-	# Manual intervention required via database user or reinstall.
+	# ############################################################## WARNING ###########################################################################
+	# Stops the ability to set it ever again if it has EVER been set in the past. If the entry is lost in the database, too bad. 
+	# Manual intervention required via database user or reinstall. 
+	# Helps prevent the unlikey but possible scenario where the breakglass account can be reset via the API which is a major security vulnerability.
+	# !!! The entire security of the application depends on this check. !!!
+	####################################################################################################################################################
 	if database.check_breakglass_account_is_set():
 		return jsonify({'error': 'Breakglass account already set'}), 400
 
