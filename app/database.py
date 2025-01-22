@@ -139,6 +139,19 @@ def create_breakglass_account(password):
 		"""
 		cursor.execute(insert_query, ('breakglass', 'breakglass@breakglass.com', password, 0, 'breakglass', 0))
 
+		connection.commit()
+
+		# Update the settings table to set breakglass_set to 1
+		update_query = """
+		UPDATE settings
+		SET value = 1
+		WHERE setting_name = 'breakglass_set'
+		"""
+		cursor.execute(update_query)
+
+		# Commit the transaction
+		connection.commit()
+
 	finally:
 		if connection:
 			cursor.close()
