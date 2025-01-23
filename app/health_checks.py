@@ -46,7 +46,7 @@ def check_table_exists(table_name):
 		)
 
 		cursor = connection.cursor()
-
+ 
 		# Check if the table exists
 		cursor.execute(f"SELECT 1 FROM information_schema.tables WHERE table_name='{table_name}'")
 		exists = cursor.fetchone() is not None

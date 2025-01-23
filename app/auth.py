@@ -1,3 +1,4 @@
+from argon2 import PasswordHasher
 from flask import request
 
 def authenticate_user(username, password):
@@ -12,3 +13,11 @@ def authenticate_user(username, password):
 		return True
 
 	return False
+
+#
+# Hash a password with argon2
+#
+def hash(pw):
+	ph = PasswordHasher()
+	hashed_password = ph.hash(pw, time_cost=3, memory_cost=102400, parallelism=4)
+	return hashed_password

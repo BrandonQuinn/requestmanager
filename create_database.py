@@ -114,7 +114,7 @@ def create_global_tokens_table(conn, cur):
 
 def create_settings_table(conn, cur):
 	cur.execute('''
-		CREATE TABLE IF NOT EXISTS settings (
+		CREATE TABLE IF NOT EXISTS app_settings (
 			id SERIAL PRIMARY KEY,
 			setting_name VARCHAR(50) UNIQUE NOT NULL,
 			value INTEGER NOT NULL,
@@ -129,9 +129,6 @@ def create_settings_table(conn, cur):
 def create_database_and_tables(new_db_username, new_db_password):
 	# Create the requestmanager database
 	create_database()
-
-	# Create a new user with permissions on the requestmanager database
-	create_db_user(new_db_username, new_db_password)
 
 	# Connect to the requestmanager database to create the tables and values
 	conn = psycopg2.connect(
@@ -151,6 +148,9 @@ def create_database_and_tables(new_db_username, new_db_password):
 	create_user_tokens_table(conn, cur)
 	create_global_tokens_table(conn, cur)
 	create_settings_table(conn, cur)
+
+	# Create a new user with permissions on the requestmanager database
+	create_db_user(new_db_username, new_db_password)
 
 	# Create default values
 	create_default_values(conn, cur)
@@ -183,15 +183,15 @@ def create_default_values(conn, cur):
 
 	# Create a settings to tell if the breakglass account is enabled
 	cur.execute('''
-		INSERT INTO settings (id, setting_name, value, description)
+		INSERT INTO app_settings (id, setting_name, value, description)
 		VALUES (%s, %s, %s, %s)
 	''', (0, 'breakglass_enabled', 1, '1 If the breakglass account is enabled. Enabled by default on a fresh install.'))
 
 	# Create a settings to tell if the breakglass account has been set
 	cur.execute('''
-		INSERT INTO settings (id, setting_name, value, description)
+		INSERT INTO app_settings (id, setting_name, value, description)
 		VALUES (%s, %s, %s, %s)
-	''', (0, 'breakglass_set', 0, '1 If the breakglass account has been set ever. The breakglass account can only ever be created once. Helps prevent it being recreated via the api if somehow removed.'))
+	''', (1, 'breakglass_set', 0, '1 If the breakglass account has been set ever. The breakglass account can only ever be created once. Helps prevent it being recreated via the api if somehow removed.'))
 
 	# Commit the changes
 	conn.commit()
@@ -215,15 +215,13 @@ def create_db_user(new_username, new_password):
 	cur = conn.cursor()
 
 	# Create a new user
-	new_user = new_username
-	new_password = new_password
-	cur.execute(sql.SQL("CREATE USER {} WITH PASSWORD %s").format(sql.Identifier(new_user)), [new_password])
+	cur.execute(sql.SQL("CREATE USER {} WITH PASSWORD %s").format(sql.Identifier(new_username)), [new_password])
 
-	# Grant read and write permissions on the requestmanager database
-	cur.execute(sql.SQL("GRANT CONNECT ON DATABASE requestmanager TO {}").format(sql.Identifier(new_user)))
-	cur.execute(sql.SQL("GRANT USAGE ON SCHEMA public TO {}").format(sql.Identifier(new_user)))
-	cur.execute(sql.SQL("GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO {}").format(sql.Identifier(new_user)))
-	cur.execute(sql.SQL("ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO {}").format(sql.Identifier(new_user)))
+	# Grant all privileges on all tables in the requestmanager database to the new user
+	cur.execute(sql.SQL("GRANT ALL PRIVILEGES ON DATABASE requestmanager TO {}").format(sql.Identifier(new_username)))
+	cur.execute(sql.SQL("GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO {}").format(sql.Identifier(new_username)))
+	cur.execute(sql.SQL("GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO {}").format(sql.Identifier(new_username)))
+	cur.execute(sql.SQL("GRANT ALL PRIVILEGES ON ALL FUNCTIONS IN SCHEMA public TO {}").format(sql.Identifier(new_username)))
 
 	# Close communication with the database
 	cur.close()

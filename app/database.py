@@ -1,12 +1,13 @@
 import psycopg2
 from flask import jsonify
 import json
+import auth
 import db_util 
 
 #
-# Get all users from the database
+# Connect to the database
 #
-def get_all_users():
+def connect():
 	credentials = db_util.read_credentials()
 
 	try:
@@ -18,6 +19,27 @@ def get_all_users():
 			host="localhost",
 			port=5432
 		)
+
+		return connection
+
+	except Exception as error:
+		print(f"Error connecting to the database: {error}")
+		return None
+
+#
+# Close the connection to the database
+#
+def disconnect(connection):
+	if connection:
+		connection.close()
+
+#
+# Get all users from the database
+#
+def get_all_users():
+	try:
+		# Connect to your postgres DB
+		connection = connect()
 
 		cursor = connection.cursor()
 
@@ -34,25 +56,16 @@ def get_all_users():
 	finally:
 		if connection:
 			cursor.close()
-			connection.close()
-
+			disconnect(connection)
 #
 # Add a new user to the database
 #
 def add_user(username, email, password, permissions, team, level):
-	credentials = db_util.read_credentials()
-
 	# TODO: check format of the inputs will be valid for the database
 
 	try:
 		# Connect to your postgres DB
-		connection = psycopg2.connect(
-			dbname="requestmanager",
-			user=credentials['username'],
-			password=credentials['password'],
-			host="localhost",
-			port=5432
-		)
+		connection = connect()
 
 		cursor = connection.cursor()
 
@@ -74,7 +87,7 @@ def add_user(username, email, password, permissions, team, level):
 	finally:
 		if connection:
 			cursor.close()
-			connection.close()
+			disconnect(connection)
 
 #
 # Check if the breakglass account has been set in the settings table. To help prevent re-creation via the API.
@@ -83,22 +96,13 @@ def add_user(username, email, password, permissions, team, level):
 # The policy will be; no modifications to the breakglass account once it has been set without logging in with it.
 #
 def check_breakglass_account_is_set():
-	credentials = db_util.read_credentials()
-
 	try:
 		# Connect to your postgres DB
-		connection = psycopg2.connect(
-			dbname="requestmanager",
-			user=credentials['username'],
-			password=credentials['password'],
-			host="localhost",
-			port=5432
-		)
-
+		connection = connect()
 		cursor = connection.cursor()
 
 		# Execute a query
-		cursor.execute("SELECT * FROM settings WHERE setting_name='breakglass_set'")
+		cursor.execute("SELECT * FROM app_settings WHERE setting_name='breakglass_set'")
 
 		# Check if the value column is 1
 		breakglass_account = cursor.fetchone()
@@ -109,26 +113,19 @@ def check_breakglass_account_is_set():
 		
 	except Exception as error:
 		print(f"Error fetching breakglass account: {error}")
+		return False
 	finally:
 		if connection:
 			cursor.close()
-			connection.close()
+			disconnect(connection)
 
 #
 # Create the breakglass account in the database
 #
 def create_breakglass_account(password):
-	credentials = db_util.read_credentials()
-
 	try:
 		# Connect to your postgres DB
-		connection = psycopg2.connect(
-			dbname="requestmanager",
-			user=credentials['username'],
-			password=credentials['password'],
-			host="localhost",
-			port=5432
-		)
+		connection = connect()
 
 		cursor = connection.cursor()
 
@@ -137,13 +134,16 @@ def create_breakglass_account(password):
 		INSERT INTO users (username, email, password, permissions, team, level)
 		VALUES (%s, %s, %s, %s, %s, %s)
 		"""
-		cursor.execute(insert_query, ('breakglass', 'breakglass@breakglass.com', password, 0, 'breakglass', 0))
+
+		# Hash the password
+		hash = auth.hash(password)
+		cursor.execute(insert_query, ('breakglass', 'breakglass@breakglass.com', hash, 0, 'breakglass', 0))
 
 		connection.commit()
 
 		# Update the settings table to set breakglass_set to 1
 		update_query = """
-		UPDATE settings
+		UPDATE app_settings
 		SET value = 1
 		WHERE setting_name = 'breakglass_set'
 		"""
@@ -155,4 +155,4 @@ def create_breakglass_account(password):
 	finally:
 		if connection:
 			cursor.close()
-			connection.close()
+			disconnect(connection)

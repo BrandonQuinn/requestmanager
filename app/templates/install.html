@@ -47,7 +47,8 @@
 							<path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"></path>
 						</svg>
 					</span>
-					<input type="text" value="" class="form-control is-invalid" id="new_db_username" placeholder="Username">
+					<input type="text" value="" class="form-control is-invalid" id="new_db_username"
+						placeholder="Username">
 				</div>
 				<input type="password" class="form-control is-invalid" id="new_db_password" value="Password"
 					autocomplete="off">
@@ -67,7 +68,7 @@
 			</ul>
 		</div>
 
-		<div class="box card step2 active">
+		<div class="box card step2">
 			<div class="card-header">
 				<h3 class="card-title">Install Step 2: Creating Database...</h3>
 			</div>
@@ -98,8 +99,8 @@
 					the application to reset it.
 					It can be changed by logging in with the account: <b>breakglass</b>
 				</p>
-				<input type="password" class="form-control is-invalid" id="floating-password break-glass-pw" value="Password"
-					autocomplete="off">
+				<input type="password" class="form-control is-invalid" id="breakglass-password"
+					value="Password" autocomplete="off">
 				<small class="form-hint">
 					Must be at least 30 characters long. Contain numbers, symbols, upper and lowercase.
 				</small>
@@ -180,7 +181,7 @@
 
 			// validate the nnew username input
 			const usernameInput = document.getElementById("new_db_username");
-	
+
 			usernameInput.addEventListener("input", function () {
 				const value = usernameInput.value.trim();
 				if (value) {
@@ -235,7 +236,7 @@
 				}
 			});
 
-			const breakGlassPassword = document.getElementById("break-glass-pw");
+			const breakGlassPassword = document.getElementById("breakglass-password");
 
 			breakglassPasswordIsValid = false;
 
@@ -252,12 +253,48 @@
 					breakGlassPassword.classList.remove("is-invalid");
 					breakGlassPassword.classList.add("is-valid");
 					breakglassPasswordIsValid = true;
-					enableNextButton();
+					nextButtons[2].classList.remove("disabled");
 				} else {
-					nextButtons[0].classList.add("disabled");
+					nextButtons[2].classList.add("disabled");
 					breakGlassPassword.classList.add("is-invalid");
 					breakGlassPassword.classList.remove("is-valid");
 					breakglassPasswordIsValid = false;
+				}
+			});
+
+			// if the step 3 complete button is clicked, send a request to the server to create the breakglass account
+			nextButtons[2].addEventListener("click", function (event) {
+				event.preventDefault();
+				if (!nextButtons[2].classList.contains("disabled") && breakglassPasswordIsValid) {
+					steps[2].style.display = "none";
+					steps[3].style.display = "block";
+
+					fetch('/api/database/breakglass', {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json'
+						},
+						body: JSON.stringify({
+							'breakglass-password': breakGlassPassword.value
+						})
+					})
+						.then(response => response.json())
+						.then(data => {
+
+							console.log(data);
+
+							if (data.success) {
+								steps[2].style.display = "none";
+								steps[3].style.display = "block";
+							} else {
+								alert("Error initializing breakglass account: " + data.message);
+							}
+						})
+						.catch(error => {
+							console.error('Error:', error);
+							alert("An error occurred while initializing the breakglass account.");
+						});
+
 				}
 			});
 		});

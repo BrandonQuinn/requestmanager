@@ -69,7 +69,7 @@ def delete_database(db_name, user, password, host='localhost', port='5432'):
 # Deletes the user created for the database
 #
 def delete_user():
-	with open('db_credentials.json') as f:
+	with open('app/db_credentials.json') as f:
 		credentials = json.load(f)
 		user_to_delete = credentials['username']
 
@@ -101,7 +101,7 @@ def delete_user():
 # 
 def delete_db_credentials_file():
 	try:
-		os.remove('db_credentials.json')
+		os.remove('app/db_credentials.json')
 		print("db_credentials.json file deleted successfully.")
 	except OSError as e:
 		print(f"Error: {e.strerror}")
