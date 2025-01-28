@@ -17,7 +17,7 @@ def connect():
 			user=credentials['username'],
 			password=credentials['password'],
 			host="localhost",
-			port=5432
+			port="5432"
 		)
 
 		return connection
@@ -137,7 +137,7 @@ def create_breakglass_account(password):
 
 		# Hash the password
 		hash = auth.hash(password)
-		cursor.execute(insert_query, ('breakglass', 'breakglass@breakglass.com', hash, 0, 'breakglass', 0))
+		cursor.execute(insert_query, ('breakglass', 'breakglass@breakglass.com', hash, '{0}', '{0}', 0))
 
 		connection.commit()
 
@@ -151,6 +151,10 @@ def create_breakglass_account(password):
 
 		# Commit the transaction
 		connection.commit()
+
+	except Exception as error:
+		print(f"Error creating breakglass account: {error}")
+		raise error
 
 	finally:
 		if connection:

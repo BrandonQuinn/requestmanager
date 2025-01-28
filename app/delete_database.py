@@ -110,7 +110,7 @@ def delete_db_credentials_file():
 # Deletes everything. Be careful with this one.
 #
 def delete_database_and_tables():
-	delete_tables('requestmanager', username, password)
+	delete_tables('requestmanager', username, password) 
 	delete_database('requestmanager', username, password)
 	delete_user()
 	delete_db_credentials_file()

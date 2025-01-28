@@ -18,6 +18,6 @@ def authenticate_user(username, password):
 # Hash a password with argon2
 #
 def hash(pw):
-	ph = PasswordHasher()
-	hashed_password = ph.hash(pw, time_cost=3, memory_cost=102400, parallelism=4)
+	ph = PasswordHasher(time_cost=3, memory_cost=102400, parallelism=4)
+	hashed_password = ph.hash(pw)
 	return hashed_password

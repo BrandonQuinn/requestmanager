@@ -4,8 +4,6 @@ from mako.lookup import TemplateLookup
 import database
 import os, sys
 import health_checks
-
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__name__), '..',)))
 import init
 
 app = Flask(__name__)

@@ -2,14 +2,14 @@ import psycopg2
 from psycopg2 import sql
 from argon2 import PasswordHasher
 import json
+import db_util
 
 user = "postgres"
 password = "postgres1234!"
 host = "localhost"
 port = "5432"
-breakglass_password = "breakglass1234!"
 
-## NOTE: If you add a table here, you need to add it in the checks in init.py
+## NOTE: If you add a table here, you need to add it in the checks in init.py and the health checks api
 
 #
 # Create a new database called requestmanager
@@ -141,6 +141,26 @@ def create_database_and_tables(new_db_username, new_db_password):
 
 	cur = conn.cursor()
 
+	# Create a new user with permissions on the requestmanager database and start using it
+	create_db_user(new_db_username, new_db_password, conn, cur)
+
+	# close the connection via postgres user
+	cur.close()
+	conn.close()
+
+	# open a new connection with the new user
+	creds = db_util.read_credentials()
+
+	conn = psycopg2.connect(
+		dbname="requestmanager",
+		user=creds['username'],
+		password=creds['password'],
+		host=host,
+		port=port
+	)
+
+	cur = conn.cursor()
+
 	# Create the tables
 	create_users_table(conn, cur)
 	create_permissions_table(conn, cur)
@@ -148,9 +168,6 @@ def create_database_and_tables(new_db_username, new_db_password):
 	create_user_tokens_table(conn, cur)
 	create_global_tokens_table(conn, cur)
 	create_settings_table(conn, cur)
-
-	# Create a new user with permissions on the requestmanager database
-	create_db_user(new_db_username, new_db_password)
 
 	# Create default values
 	create_default_values(conn, cur)
@@ -202,26 +219,15 @@ def create_default_values(conn, cur):
 #
 # Create the user that will have permissions on the requestmanager database.
 #
-def create_db_user(new_username, new_password):
-	conn = psycopg2.connect(
-		dbname=user,
-		user=user,
-		password=password,
-		host=host,
-		port=port
-	)
-
+def create_db_user(new_username, new_password, conn, cur):
 	conn.autocommit = True
 	cur = conn.cursor()
 
 	# Create a new user
 	cur.execute(sql.SQL("CREATE USER {} WITH PASSWORD %s").format(sql.Identifier(new_username)), [new_password])
-
-	# Grant all privileges on all tables in the requestmanager database to the new user
 	cur.execute(sql.SQL("GRANT ALL PRIVILEGES ON DATABASE requestmanager TO {}").format(sql.Identifier(new_username)))
-	cur.execute(sql.SQL("GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO {}").format(sql.Identifier(new_username)))
-	cur.execute(sql.SQL("GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO {}").format(sql.Identifier(new_username)))
-	cur.execute(sql.SQL("GRANT ALL PRIVILEGES ON ALL FUNCTIONS IN SCHEMA public TO {}").format(sql.Identifier(new_username)))
+	cur.execute(sql.SQL("GRANT ALL PRIVILEGES ON SCHEMA public TO {}").format(sql.Identifier(new_username)))
+	cur.execute(sql.SQL("ALTER DATABASE requestmanager OWNER TO {}").format(sql.Identifier(new_username)))
 
 	# Close communication with the database
 	cur.close()
