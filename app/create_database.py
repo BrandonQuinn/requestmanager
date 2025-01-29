@@ -3,9 +3,8 @@ from psycopg2 import sql
 from argon2 import PasswordHasher
 import json
 import db_util
+import os
 
-user = "postgres"
-password = "postgres1234!"
 host = "localhost"
 port = "5432"
 
@@ -15,10 +14,12 @@ port = "5432"
 # Create a new database called requestmanager
 #
 def create_database():
+	creds = db_util.read_credentials('temp_root_creds.json')
+
 	conn = psycopg2.connect(
-		dbname=user,
-		user=user,
-		password=password,
+		dbname="postgres",
+		user=creds['username'],
+		password=creds['password'],
 		host=host,
 		port=port
 	)
@@ -29,6 +30,14 @@ def create_database():
 	
 	cur.close()
 	conn.close()
+
+#
+# Set the temporary username and password
+#
+def set_temp_db_user(db_username, db_password):
+
+	# Save the credentials to a file
+	save_credentials_to_file(db_username, db_password, 'temp_root_creds.json')
 
 #
 # Create a new table of users
@@ -112,6 +121,9 @@ def create_global_tokens_table(conn, cur):
 	''')
 	conn.commit()
 
+#
+# Create the global settings tables for the application
+#
 def create_settings_table(conn, cur):
 	cur.execute('''
 		CREATE TABLE IF NOT EXISTS app_settings (
@@ -129,12 +141,14 @@ def create_settings_table(conn, cur):
 def create_database_and_tables(new_db_username, new_db_password):
 	# Create the requestmanager database
 	create_database()
+	
+	creds = db_util.read_credentials('temp_root_creds.json')
 
 	# Connect to the requestmanager database to create the tables and values
 	conn = psycopg2.connect(
 		dbname="requestmanager",
-		user=user,
-		password=password,
+		user=creds['username'],
+		password=creds['password'],
 		host=host,
 		port=port
 	)
@@ -147,6 +161,9 @@ def create_database_and_tables(new_db_username, new_db_password):
 	# close the connection via postgres user
 	cur.close()
 	conn.close()
+
+	# delete the tmp creds file
+	os.remove('temp_root_creds.json')
 
 	# open a new connection with the new user
 	creds = db_util.read_credentials()
@@ -181,17 +198,6 @@ def create_database_and_tables(new_db_username, new_db_password):
 # Such as a breakglass account with a strong password
 #
 def create_default_values(conn, cur):
-	# Connect to the requestmanager database
-	conn = psycopg2.connect(
-		dbname="requestmanager",
-		user=user,
-		password=password,
-		host=host,
-		port=port
-	)
-
-	cur = conn.cursor()
- 
 	# Insert default permissions
 	cur.execute('''
 		INSERT INTO permissions (id, permission_name, description)
@@ -213,9 +219,6 @@ def create_default_values(conn, cur):
 	# Commit the changes
 	conn.commit()
 
-	# Close communication with the database
-	cur.close()
-	conn.close()
 #
 # Create the user that will have permissions on the requestmanager database.
 #

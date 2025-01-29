@@ -4,6 +4,10 @@ import json
 import auth
 import db_util 
 
+# Used for creating the database and new user then cleared from memory
+temp_db_username = None
+temp_db_password = None
+
 #
 # Connect to the database
 #
@@ -40,7 +44,6 @@ def get_all_users():
 	try:
 		# Connect to your postgres DB
 		connection = connect()
-
 		cursor = connection.cursor()
 
 		# Execute a query
@@ -126,7 +129,6 @@ def create_breakglass_account(password):
 	try:
 		# Connect to your postgres DB
 		connection = connect()
-
 		cursor = connection.cursor()
 
 		# Execute a query to insert a new user
@@ -135,10 +137,9 @@ def create_breakglass_account(password):
 		VALUES (%s, %s, %s, %s, %s, %s)
 		"""
 
-		# Hash the password
+		# Hash the password and create the entry in the database
 		hash = auth.hash(password)
 		cursor.execute(insert_query, ('breakglass', 'breakglass@breakglass.com', hash, '{0}', '{0}', 0))
-
 		connection.commit()
 
 		# Update the settings table to set breakglass_set to 1
@@ -152,10 +153,11 @@ def create_breakglass_account(password):
 		# Commit the transaction
 		connection.commit()
 
+	# print the error first before sending it to the calling function, which will likely be an api call to send the
+	# error back to the user interface
 	except Exception as error:
 		print(f"Error creating breakglass account: {error}")
 		raise error
-
 	finally:
 		if connection:
 			cursor.close()

@@ -30,9 +30,47 @@
 
 <body>
 	<div class="centered-box">
+
 		<div class="box card step1">
 			<div class="card-header">
-				<h3 class="card-title">Install Step 1: Create Database User</h3>
+				<h3 class="card-title">Install Step 1: Enter Database User</h3>
+			</div>
+			<div class="card-body">
+				<p class="mb-3">Enter the postgres root username and password. Will only be used once then deleted.</p>
+				<div class="input-icon mb-3">
+					<span class="input-icon-addon">
+						<!-- Download SVG icon from http://tabler.io/icons/icon/user -->
+						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+							stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+							class="icon">
+							<path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+							<path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0"></path>
+							<path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"></path>
+						</svg>
+					</span>
+					<input type="text" value="" class="form-control" id="db_username"
+						placeholder="Username">
+				</div>
+				<input type="password" class="form-control" id="db_password" value="Password"
+					autocomplete="off">
+				<div class="mb-3"></div>
+				<a href="#" class="btn btn-primary w-100 step1-btn">
+					Continue
+				</a>
+			</div>
+			<ul class="steps steps-green steps-counter my-4">
+				<li class="step-item active">Root User</li>
+				<li class="step-item ">New User</li>
+				<li class="step-item">Create Database</li>
+				<li class="step-item">Set Breakglass</li>
+				<li class="step-item">Complete</li>
+			</ul>
+		</div>
+
+
+		<div class="box card step2">
+			<div class="card-header">
+				<h3 class="card-title">Install Step 2: Create Database User</h3>
 			</div>
 			<div class="card-body">
 				<p class="mb-3">Create a new database user with password.</p>
@@ -56,42 +94,44 @@
 					Must be at least 10 characters long. Contain numbers, symbols, upper and lowercase.
 				</small>
 				<div class="mb-3"></div>
-				<a href="#" class="btn btn-primary disabled w-100 step1-btn">
+				<a href="#" class="btn btn-primary disabled w-100 step2-btn">
 					Create Database
 				</a>
 			</div>
 			<ul class="steps steps-green steps-counter my-4">
-				<li class="step-item active">Create Database User</li>
+				<li class="step-item">Root User</li>
+				<li class="step-item active">New User</li>
 				<li class="step-item">Create Database</li>
 				<li class="step-item">Set Breakglass</li>
-				<li class="step-item">Complete Install</li>
+				<li class="step-item">Complete</li>
 			</ul>
 		</div>
 
-		<div class="box card step2">
+		<div class="box card step3">
 			<div class="card-header">
-				<h3 class="card-title">Install Step 2: Creating Database...</h3>
+				<h3 class="card-title">Install Step 3: Creating Database...</h3>
 			</div>
 			<div class="card-body">
 				<div class="progress">
 					<div class="progress-bar progress-bar-indeterminate bg-green"></div>
 				</div>
 				<div class="mb-3"></div>
-				<a href="#" class="btn btn-primary disabled w-100 step2-btn">
+				<a href="#" class="btn btn-primary disabled w-100 step3-btn">
 					Next Step
 				</a>
 			</div>
 			<ul class="steps steps-green steps-counter my-4">
-				<li class="step-item">Create Database User</li>
+				<li class="step-item">Root User</li>
+				<li class="step-item">New User</li>
 				<li class="step-item active">Create Database</li>
 				<li class="step-item">Set Breakglass</li>
-				<li class="step-item">Complete Install</li>
+				<li class="step-item">Complete</li>
 			</ul>
 		</div>
 
-		<div class="box card step3">
+		<div class="box card step4">
 			<div class="card-header">
-				<h3 class="card-title">Install Step 3: Set Breakglass Password</h3>
+				<h3 class="card-title">Install Step 4: Set Breakglass Password</h3>
 			</div>
 			<div class="card-body">
 				<p class="mb-3">Set the breakglass account password.
@@ -105,33 +145,35 @@
 					Must be at least 30 characters long. Contain numbers, symbols, upper and lowercase.
 				</small>
 				<div class="mb-3"></div>
-				<a href="#" class="btn btn-primary disabled w-100 step3-btn">
+				<a href="#" class="btn btn-primary disabled w-100 step4-btn">
 					Next Step
 				</a>
 			</div>
 			<ul class="steps steps-green steps-counter my-4">
-				<li class="step-item">Create Database User</li>
+				<li class="step-item">Root User</li>
+				<li class="step-item">New User</li>
 				<li class="step-item">Create Database</li>
 				<li class="step-item active">Set Breakglass</li>
-				<li class="step-item">Complete Install</li>
+				<li class="step-item">Complete</li>
 			</ul>
 		</div>
 
-		<div class="box card step4">
+		<div class="box card step5">
 			<div class="card-header">
-				<h3 class="card-title">Install Step 4: Complete Installation</h3>
+				<h3 class="card-title">Install Step 5: Complete Installation</h3>
 			</div>
 			<div class="card-body">
 				<p class="mb-3">Your installation is complete.</p>
-				<a href="#" class="btn btn-primary w-100 step4-btn">
+				<a href="#" class="btn btn-primary w-100 step5-btn">
 					Done
 				</a>
 			</div>
 			<ul class="steps steps-green steps-counter my-4">
-				<li class="step-item">Create Database User</li>
+				<li class="step-item">Root User</li>
+				<li class="step-item">New User</li>
 				<li class="step-item">Create Database</li>
 				<li class="step-item">Set Breakglass</li>
-				<li class="step-item active">Complete Install</li>
+				<li class="step-item active">Complete</li>
 			</ul>
 		</div>
 	</div>
@@ -146,6 +188,39 @@
 			steps.forEach(step => step.style.display = "none");
 			steps[0].style.display = "block"; // Show the first step by default
 
+
+			const step1Button = document.querySelector(".step1-btn");
+
+			step1Button.addEventListener("click", function (event) {
+				event.preventDefault();
+				const dbUsername = document.getElementById("db_username").value;
+				const dbPassword = document.getElementById("db_password").value;
+
+				fetch('/api/database/temp_db_user', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					body: JSON.stringify({
+						'db_username': dbUsername,
+						'db_password': dbPassword
+					})
+				})
+					.then(response => response.json())
+					.then(data => {
+						if (data.success) {
+							steps[0].style.display = "none";
+							steps[1].style.display = "block";
+						} else {
+							alert("Error: " + data.message);
+						}
+					})
+					.catch(error => {
+						console.error('Error:', error);
+						alert("An error occurred.");
+					});
+			});
+
 			const nextButtons = document.querySelectorAll(".btn-primary");
 			const dbPasswordInput = document.getElementById("new_db_password");
 
@@ -153,7 +228,7 @@
 			// to go to the next step
 			function enableNextButton() {
 				if (usernameIsValid && passwordIsValid) {
-					nextButtons[0].classList.remove("disabled");
+					nextButtons[1].classList.remove("disabled");
 				}
 			}
 
@@ -172,7 +247,7 @@
 					passwordIsValid = true;
 					enableNextButton();
 				} else {
-					nextButtons[0].classList.add("disabled");
+					nextButtons[1].classList.add("disabled");
 					dbPasswordInput.classList.add("is-invalid");
 					dbPasswordInput.classList.remove("is-valid");
 					passwordIsValid = false;
@@ -200,11 +275,11 @@
 
 
 			// if the step 1 complete button is clicked, send a request to the server to create the database with user
-			nextButtons[0].addEventListener("click", function (event) {
+			nextButtons[1].addEventListener("click", function (event) {
 				event.preventDefault();
-				if (!nextButtons[0].classList.contains("disabled")) {
-					steps[0].style.display = "none";
-					steps[1].style.display = "block";
+				if (!nextButtons[1].classList.contains("disabled")) {
+					steps[1].style.display = "none";
+					steps[2].style.display = "block";
 
 					fetch('/api/database/initialise', {
 						method: 'POST',
@@ -222,8 +297,8 @@
 							console.log(data);
 
 							if (data.success) {
-								steps[1].style.display = "none";
-								steps[2].style.display = "block";
+								steps[2].style.display = "none";
+								steps[3].style.display = "block";
 							} else {
 								alert("Error initializing database: " + data.message);
 							}
@@ -253,9 +328,9 @@
 					breakGlassPassword.classList.remove("is-invalid");
 					breakGlassPassword.classList.add("is-valid");
 					breakglassPasswordIsValid = true;
-					nextButtons[2].classList.remove("disabled");
+					nextButtons[3].classList.remove("disabled");
 				} else {
-					nextButtons[2].classList.add("disabled");
+					nextButtons[3].classList.add("disabled");
 					breakGlassPassword.classList.add("is-invalid");
 					breakGlassPassword.classList.remove("is-valid");
 					breakglassPasswordIsValid = false;
@@ -263,11 +338,11 @@
 			});
 
 			// if the step 3 complete button is clicked, send a request to the server to create the breakglass account
-			nextButtons[2].addEventListener("click", function (event) {
+			nextButtons[3].addEventListener("click", function (event) {
 				event.preventDefault();
-				if (!nextButtons[2].classList.contains("disabled") && breakglassPasswordIsValid) {
-					steps[2].style.display = "none";
-					steps[3].style.display = "block";
+				if (!nextButtons[3].classList.contains("disabled") && breakglassPasswordIsValid) {
+					steps[3].style.display = "none";
+					steps[4].style.display = "block";
 
 					fetch('/api/database/breakglass', {
 						method: 'POST',
@@ -284,8 +359,8 @@
 							console.log(data);
 
 							if (data.success) {
-								steps[2].style.display = "none";
-								steps[3].style.display = "block";
+								steps[3].style.display = "none";
+								steps[4].style.display = "block";
 							} else {
 								alert("Error initializing breakglass account: " + data.message);
 							}

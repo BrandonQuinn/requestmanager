@@ -5,10 +5,11 @@ import database
 import os, sys
 import health_checks
 import init
+import create_database
 
 app = Flask(__name__)
 
-# Configure Mako template lookup
+# Configure Mako template  lookup
 template_lookup = TemplateLookup(directories=['templates'])
 
 # ###########
@@ -84,6 +85,30 @@ def login():
 @app.route('/api/database/', methods=['GET'])
 def database_api():
 	return jsonify("database api")
+
+#
+# Used to send the root postgres username and password initially for database creation
+#
+@app.route('/api/database/temp_db_user', methods=['POST'])
+def temp_db_user():
+	if request.is_json:
+		data = request.get_json()
+		db_username = data.get('db_username')
+		db_password = data.get('db_password')
+
+		if not db_username or not db_password:
+			return jsonify({'error': 'Username and password are required'}), 400
+
+		# TODO: test the credentials, if it fails, return error code
+
+		# set the password
+		try:
+			create_database.set_temp_db_user(db_username, db_password)
+			return jsonify({'success': 'Temporary database user set successfully'}), 200
+		except Exception as e:
+			return jsonify({'error': str(e)}), 500
+	else:
+		return jsonify({'error': 'Invalid request format'}), 400
 
 #
 # Set the breakglass account
