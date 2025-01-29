@@ -64,16 +64,20 @@ def get_users():
 # Authentication API #
 ######################
 
-@app.route('/api/login', methods=['POST'])
+@app.route('/api/authenticate', methods=['POST'])
 def login():
-	username = request.form.get('username')
-	password = request.form.get('password')
+	if request.is_json:
+		data = request.get_json()
+		username = data.get('username')
+		password = data.get('password')
 	
-	# Dummy authentication logic
-	if username == 'admin' and password == 'password':
-		return jsonify({'message': 'Login successful', 'status': 'success'})
-	else:
-		return jsonify({'message': 'Invalid credentials', 'status': 'failure'})
+		# Dummy authentication logic
+		if username == 'admin' and password == 'password':
+			return jsonify({'message': 'Login successful', 'status': 'success'})
+		else:
+			return jsonify({'message': 'Invalid credentials', 'status': 'failure'})
+		
+	return jsonify({'message': 'Invalid request', 'status': 'failure'})
 
 ################
 # Database API #

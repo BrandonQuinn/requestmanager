@@ -1,0 +1,13 @@
+## Security Summary/Design Guideline
+
+### Nothing can occur without a token (except for during the install process
+
+This simplified the security of the app down to the internal permissions and the token generation and validation process. Limiting the attack surface.
+
+### The highest level of security (and an equal level) must be applied to the breakglass account and database user and root user
+
+The root user is used briefly and deleted for the app to never remember it.
+
+All 3 accounts provide the same level access (to access all information). And their security profile must be the same.
+
+e.g. you can not change the breakglass account password without logging in with it first, or manually updating the table entry with the database user. No other user can.
