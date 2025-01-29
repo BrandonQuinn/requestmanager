@@ -2,7 +2,7 @@
 
 ### Nothing can occur without a token (except for during the install process)
 
-This simplified the security of the app down to the internal permissions and the token generation and validation process. Limiting the attack surface to the tokens. An attacker must obtain a valid token to do anything.
+This simplifies the security of the app down to the internal permissions and the token generation and validation process. Limiting the attack surface to the tokens. An attacker must obtain a valid token to do anything. This puts the dependency more then on token checking/validation, how long they last and the login process. More on the login process below.
 
 ### The highest level of security (and an equal level) must be applied to the breakglass account, app database user and root database user
 
