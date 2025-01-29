@@ -6,11 +6,13 @@ This simplifies the security of the app down to the internal permissions and the
 
 ### The highest level of security (and an equal level) must be applied to the breakglass account, app database user and root database user
 
-The root user is used briefly and deleted for the app to never remember it.
+The root user is used briefly and deleted for the app to never remember it. The install process must never be run from an external computer over a network, if so the password will be transmitted in plaintext.
 
 All 3 accounts provide the same level access (to access all information). And their security profile must be the same.
 
-e.g. you can not change the breakglass account password without logging in with it first, or manually updating the table entry with the database user. No other user can.
+e.g. you can not change the breakglass account password without logging in with it first, or manually updating the table entry with the database user. No other user can, all other users will inheriently have a lower level of permissions and should never be able to modify a higher level. 
+
+The system will be be read down, write down. A Clark-Wilson model is going to be followed throughout.
 
 ### Difficult logon process
 
