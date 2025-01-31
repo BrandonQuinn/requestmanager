@@ -48,6 +48,14 @@ def error_404():
 	template = template_lookup.get_template("404.html")
 	return template.render(title="404")
 
+#
+# Return the dashboard, which is the homepage for the application
+#
+@app.route("/dashboard")
+def dashboard():
+	template = template_lookup.get_template("dashboard.html")
+	return template.render(title="Dashboard")
+
 #############
 # Users API #
 #############
