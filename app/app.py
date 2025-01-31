@@ -43,8 +43,8 @@ def install():
 #
 # Default 404 page
 #
-@app.route("/404")
-def error_404():
+@app.errorhandler(404)
+def error_404(error):
 	template = template_lookup.get_template("404.html")
 	return template.render(title="404")
 
