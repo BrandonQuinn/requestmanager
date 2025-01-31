@@ -23,8 +23,8 @@ The logon process must be computationally difficult but fast enough (and eventua
 They must be long, breakglass must be at least 30 characters.
 
 
-## Encryption
+### Encryption
 
-### Aggressive suggestion of use of valid certs
+#### Aggressive suggestion of use of valid certs
 
 The installation process does not include installing an SSL certificate, the app however, will aggressive suggest this until it's done. I may even disable certain features until it's done. The application security is undermined if this is not configured.
