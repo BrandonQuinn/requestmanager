@@ -18,9 +18,11 @@ The system will be be read down, write down. A Clark-Wilson model is going to be
 
 The logon process must be computationally difficult but fast enough (and eventually use MFA).
 
-### No expense spared on passwords (complex password policies are unnecessary and annoying, long passwords are enough until MFA is set up). Where's that entropy calculator
+### No expense spared on passwords (complex password policies are unnecessary and annoying, long passwords are enough until 2FA is set up). Where's that entropy calculator
 
 They must be long, breakglass must be at least 30 characters.
+
+2FA will be multi-channel, somthing you know, something you have. Standard stuff
 
 
 ### Encryption
