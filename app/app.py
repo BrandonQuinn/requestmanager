@@ -73,7 +73,9 @@ def login():
 	
 		# Dummy authentication logic
 		if username == 'admin' and password == 'password':
-			return jsonify({'message': 'Login successful', 'status': 'success'})
+			# Return a fake token for demonstration purposes
+			fake_token = "fake-jwt-token"
+			return jsonify({'message': 'Login successful', 'status': 'success', 'token': fake_token})
 		else:
 			return jsonify({'message': 'Invalid credentials', 'status': 'failure'})
 		

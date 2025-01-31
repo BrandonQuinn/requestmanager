@@ -10,7 +10,7 @@ The root user is used briefly and deleted for the app to never remember it. The 
 
 All 3 accounts provide the same level access (to access all information). And their security profile must be the same.
 
-e.g. you can not change the breakglass account password without logging in with it first, or manually updating the table entry with the database user. No other user can, all other users will inheriently have a lower level of permissions and should never be able to modify a higher level. 
+e.g. you can not change the breakglass account password without logging in with it first (no write up), or manually updating the table entry with the database user. No other user can, all other users will inheriently have a lower level of permissions and lower integrity level and should never be able to modify a higher level.
 
 The system will be be read down, write down. A Clark-Wilson model is going to be followed throughout.
 
@@ -18,6 +18,13 @@ The system will be be read down, write down. A Clark-Wilson model is going to be
 
 The logon process must be computationally difficult but fast enough (and eventually use MFA).
 
-### No expense spared on passwords (complex password policies are unnecessary and annoying, long passwords are simple until MFA is set up). Where's that entropy calculator
+### No expense spared on passwords (complex password policies are unnecessary and annoying, long passwords are enough until MFA is set up). Where's that entropy calculator
 
 They must be long, breakglass must be at least 30 characters.
+
+
+## Encryption
+
+### Aggressive suggestion of use of valid certs
+
+The installation process does not include installing an SSL certificate, the app however, will aggressive suggest this until it's done. I may even disable certain features until it's done. The application security is undermined if this is not configured.
