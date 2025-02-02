@@ -24,14 +24,13 @@ They must be long, breakglass must be at least 30 characters.
 
 2FA will be multi-channel, somthing you know, something you have. Standard stuff
 
-
 ### Cryptography
 
 #### Aggressive suggestion of use of valid certs
 
 The installation process does not include installing an SSL certificate, the app however, will aggressive suggest this until it's done. I may even disable certain features until it's done. The application security is undermined if this is not configured.
 
-#### Token Generations
+#### Token Generation
 
 Will be random numbers, stored in a database. I don't want anything stateless like HMAC or JWT, or any other kind simply because I want the app to have very nuanced control over tokens, expiries, global non-user associated tokens with custom permissions etc.
 

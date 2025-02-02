@@ -81,7 +81,10 @@ def login():
 		password = data.get('password')
 
 		# authenticate the user 
-		token = auth.authenticate_user(username, password)
+		try:
+			token = auth.authenticate_user(username, password)
+		except Exception as error:
+			return jsonify({'message': str(error), 'status': 'failure'})
 
 		# sends the token back with the username to store in a cookie
 		if (token):

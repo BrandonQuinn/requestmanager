@@ -11,22 +11,28 @@ import datetime
 def authenticate_user(username, password):
 	token = None
 
-	user_json = database.get_user_by_username(username)
-	hashed_pw = user_json.hashed_password
+	try:
+		user_data = database.get_user_by_username(username)
+		hashed_pw = user_data[3]
 
-	# validate the password
-	if validate_pw_hash(hashed_pw, password):
-		# generate a token
-		token = generate_user_token()
+		# validate the password
+		if validate_pw_hash(hashed_pw, password):
+			# generate a token
+			token = generate_user_token()
+
+			# save the token to the database (will automatilly set times and deadlines)
+			database.save_user_token(username, token)
+			
+	except Exception as error:
+		raise Exception(error)
 
 	return token
 
 #
-# Generates a random token for the user
+# Generates a random token for the user and saves it to the database
 #
 def generate_user_token(username):
 	token = secrets.token_hex(32)
-	database.save_user_token(username, token)
 	return token
 
 #

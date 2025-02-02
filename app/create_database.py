@@ -204,6 +204,12 @@ def create_default_values(conn, cur):
 		VALUES (%s, %s, %s)
 	''', (0, 'breakglass', 'Breakglass perm with complete unrestricted access.'))
 
+	# Create a permission for allowing request creation
+	cur.execute('''
+		INSERT INTO permissions (id, permission_name, description)
+		VALUES (%s, %s, %s, %s)
+	''', (1, 'create_request', 'Permission to allow creating a new request.'))
+
 	# Create a settings to tell if the breakglass account is enabled
 	cur.execute('''
 		INSERT INTO app_settings (id, setting_name, value, description)
@@ -216,11 +222,11 @@ def create_default_values(conn, cur):
 		VALUES (%s, %s, %s, %s)
 	''', (1, 'breakglass_set', 0, '1 If the breakglass account has been set ever. The breakglass account can only ever be created once. Helps prevent it being recreated via the api if somehow removed.'))
 
-	# Create a settings to tell if the breakglass account has been set
+	# Create a settings for the timeout for a user login session (how long their session token lasts)
 	cur.execute('''
 		INSERT INTO app_settings (id, setting_name, value, description)
 		VALUES (%s, %s, %s, %s)
-	''', (2, 'create_request', 1, 'Permission to allow creating a new request.'))
+	''', (2, 'user_session_timeout', 30, 'How long a user session token will last before requiring the user to login again. In Minutes.'))
 
 	# Commit the changes
 	conn.commit()

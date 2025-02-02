@@ -3,6 +3,7 @@ from flask import jsonify
 import json
 import auth
 import db_util 
+from datetime import datetime, timedelta
 
 # Used for creating the database and new user then cleared from memory
 temp_db_username = None
@@ -12,6 +13,8 @@ temp_db_password = None
 # Connect to the database
 #
 def connect():
+	# TODO: Cache the connection. So we don't keep reading the file.
+	# TODO: Remove exception handling internally, raise the exceptions
 	credentials = db_util.read_credentials()
 
 	try:
@@ -37,10 +40,16 @@ def disconnect(connection):
 	if connection:
 		connection.close()
 
+######################################
+#	USERS
+######################################
+
 #
 # Get all users from the database
 #
 def get_all_users():
+	# TODO: Remove exception handling internally, raise the exceptions
+
 	try:
 		# Connect to your postgres DB
 		connection = connect()
@@ -65,6 +74,8 @@ def get_all_users():
 # Return all fields for a user by the username
 #
 def get_user_by_username(username):
+	# TODO: Remove exception handling internally, raise the exceptions
+
 	try:
 		# Connect to the db
 		connection = connect()
@@ -78,10 +89,10 @@ def get_user_by_username(username):
 		user = cursor.fetchone()
 
 		if user:
-			return jsonify(user), 200
+			return user
 		else:
-			return jsonify({"message": "User not found"}), 404
-
+			raise Exception("No user found when getting user by username from database")
+			
 	except Exception as error:
 		print(f"Error adding user: {error}")
 		return None
@@ -95,6 +106,7 @@ def get_user_by_username(username):
 #
 def add_user(username, email, password, permissions, team, level):
 	# TODO: check format of the inputs will be valid for the database
+	# TODO: Remove exception handling internally, raise the exceptions
 
 	try:
 		# Connect to your postgres DB
@@ -129,6 +141,8 @@ def add_user(username, email, password, permissions, team, level):
 # The policy will be; no modifications to the breakglass account once it has been set without logging in with it.
 #
 def check_breakglass_account_is_set():
+	# TODO: Remove exception handling internally, raise the exceptions
+
 	try:
 		# Connect to your postgres DB
 		connection = connect()
@@ -156,6 +170,8 @@ def check_breakglass_account_is_set():
 # Create the breakglass account in the database
 #
 def create_breakglass_account(password):
+	# TODO: Remove exception handling internally, raise the exceptions
+
 	try:
 		# Connect to your postgres DB
 		connection = connect()
@@ -193,6 +209,80 @@ def create_breakglass_account(password):
 			cursor.close()
 			disconnect(connection)
 
-
+#
+# Takes the token created and associated with the user and saves it to the database with a new time and deadline.
+# This function will refresh the token by default.
+# Returns True if the user was created, false or an exception if not
+#
 def save_user_token(username, token):
-	pass
+	# TODO: Move token time deadline login to auth.authenticate function (database module should be dumb database access)
+
+	# Connect to your postgres DB
+	connection = connect()
+	cursor = connection.cursor()
+
+	# Check if the user exists
+	query = "SELECT * FROM users WHERE username = %s"
+	cursor.execute(query, (username,))
+	user = cursor.fetchone()
+
+	if not user:
+		print(f"Error: User not found while saving token to user token table")
+		raise Exception("User not found while saving token to user token table")
+
+	# get the timeout setting value from the settings table
+	timeout_setting = get_setting_by_name('user_session_timeout')
+
+	# Generate current timestamp and deadline timestamp
+	created_at = datetime.now()
+	deadline = created_at + timedelta(minutes=timeout_setting[2])
+
+	# Execute a query to insert or update the token for the user
+	upsert_query = """
+	INSERT INTO user_tokens (token, created_at, deadline, created_by)
+	VALUES (%s, %s, %s, %s)
+	ON CONFLICT (created_by)
+	DO UPDATE SET token = EXCLUDED.token
+	"""
+	cursor.execute(upsert_query, (token, created_at, deadline, user[0]))
+
+	# Commit the transaction
+	connection.commit()
+	cursor.close()
+	disconnect(connection)
+
+	return True
+
+
+######################################
+#	SETTINGS
+######################################
+
+#
+# Get a setting by it's name
+#
+def get_setting_by_name(setting_name):
+	try:
+		# Connect to your postgres DB
+		connection = connect()
+		cursor = connection.cursor()
+
+		# Execute a query to get the setting by name
+		query = "SELECT * FROM app_settings WHERE setting_name = %s"
+		cursor.execute(query, (setting_name,))
+
+		# Retrieve query results
+		setting = cursor.fetchone()
+
+		if setting:
+			return setting
+		else:
+			raise Exception('Failed to find setting %s in database', setting_name)
+
+	except Exception as error:
+		print(f"Error fetching setting: {error}")
+		raise error
+	finally:
+		if connection:
+			cursor.close()
+			disconnect(connection)
