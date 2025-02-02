@@ -216,6 +216,12 @@ def create_default_values(conn, cur):
 		VALUES (%s, %s, %s, %s)
 	''', (1, 'breakglass_set', 0, '1 If the breakglass account has been set ever. The breakglass account can only ever be created once. Helps prevent it being recreated via the api if somehow removed.'))
 
+	# Create a settings to tell if the breakglass account has been set
+	cur.execute('''
+		INSERT INTO app_settings (id, setting_name, value, description)
+		VALUES (%s, %s, %s, %s)
+	''', (2, 'create_request', 1, 'Permission to allow creating a new request.'))
+
 	# Commit the changes
 	conn.commit()
 

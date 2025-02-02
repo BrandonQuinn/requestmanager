@@ -6,6 +6,7 @@ import os, sys
 import health_checks
 import init
 import create_database
+import auth
 
 app = Flask(__name__)
 
@@ -78,12 +79,13 @@ def login():
 		data = request.get_json()
 		username = data.get('username')
 		password = data.get('password')
-	
-		# Dummy authentication logic
-		if username == 'admin' and password == 'password':
-			# Return a fake token for demonstration purposes
-			fake_token = "fake-jwt-token"
-			return jsonify({'message': 'Login successful', 'status': 'success', 'token': fake_token})
+
+		# authenticate the user 
+		token = auth.authenticate_user(username, password)
+
+		# sends the token back with the username to store in a cookie
+		if (token):
+			return jsonify({'message': 'Login successful', 'status': 'success', 'token': token, 'user': username})
 		else:
 			return jsonify({'message': 'Invalid credentials', 'status': 'failure'})
 		

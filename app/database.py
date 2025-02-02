@@ -60,6 +60,36 @@ def get_all_users():
 		if connection:
 			cursor.close()
 			disconnect(connection)
+
+#
+# Return all fields for a user by the username
+#
+def get_user_by_username(username):
+	try:
+		# Connect to the db
+		connection = connect()
+		cursor = connection.cursor()
+
+		# Execute a query to get the user by username
+		query = "SELECT * FROM users WHERE username = %s"
+		cursor.execute(query, (username,))
+
+		# Retrieve query results
+		user = cursor.fetchone()
+
+		if user:
+			return jsonify(user), 200
+		else:
+			return jsonify({"message": "User not found"}), 404
+
+	except Exception as error:
+		print(f"Error adding user: {error}")
+		return None
+	finally:
+		if connection:
+			cursor.close()
+			disconnect(connection)
+
 #
 # Add a new user to the database
 #
@@ -162,3 +192,7 @@ def create_breakglass_account(password):
 		if connection:
 			cursor.close()
 			disconnect(connection)
+
+
+def save_user_token(username, token):
+	
