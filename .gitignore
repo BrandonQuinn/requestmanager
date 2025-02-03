@@ -174,3 +174,12 @@ app/dist
 app/static
 app/db_credentials.json
 app/temp_root_creds.json
+
+app/static/avatars
+app/static/brands
+app/static/browsers
+app/static/components
+app/static/crypto-currencies
+app/static/emails
+app/static/illustrations
+app/static/jobs
