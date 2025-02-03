@@ -102,7 +102,7 @@ def create_user_tokens_table(conn, cur):
 			token VARCHAR(256) UNIQUE NOT NULL,
 			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 			deadline TIMESTAMP,
-			created_by SERIAL NOT NULL
+			created_by SERIAL UNIQUE NOT NULL
 		)
 	''')
 	conn.commit()
@@ -116,7 +116,8 @@ def create_global_tokens_table(conn, cur):
 			id SERIAL PRIMARY KEY,
 			token VARCHAR(256) UNIQUE NOT NULL,
 			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-			deadline TIMESTAMP NOT NULL
+			deadline TIMESTAMP NOT NULL,
+			created_by SERIAL UNIQUE NOT NULL
 		)
 	''')
 	conn.commit()
@@ -207,7 +208,7 @@ def create_default_values(conn, cur):
 	# Create a permission for allowing request creation
 	cur.execute('''
 		INSERT INTO permissions (id, permission_name, description)
-		VALUES (%s, %s, %s, %s)
+		VALUES (%s, %s, %s)
 	''', (1, 'create_request', 'Permission to allow creating a new request.'))
 
 	# Create a settings to tell if the breakglass account is enabled
@@ -227,6 +228,12 @@ def create_default_values(conn, cur):
 		INSERT INTO app_settings (id, setting_name, value, description)
 		VALUES (%s, %s, %s, %s)
 	''', (2, 'user_session_timeout', 30, 'How long a user session token will last before requiring the user to login again. In Minutes.'))
+
+	# Create a settings for the timeout for a breakglass session
+	cur.execute('''
+		INSERT INTO app_settings (id, setting_name, value, description)
+		VALUES (%s, %s, %s, %s)
+	''', (2, 'breakglass_session_timeout', 10, 'How long a breakglass account session token lasts. In Minutes.'))
 
 	# Commit the changes
 	conn.commit()

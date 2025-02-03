@@ -54,6 +54,23 @@ def error_404(error):
 #
 @app.route("/dashboard")
 def dashboard():
+
+	# Get the token and check it exists 
+	token = request.cookies.get('auth_token')
+	username = request.cookies.get('user')
+	
+	# no token, problem
+	if not token:
+		print("Token not recieved from client when accessing dashboard.")
+		return redirect(url_for('index'), code=302, 
+				Response=jsonify({'message': 'Token not recieved from client', 'status': 'failure'}))
+
+	# if not a valid token, redirect to index
+	if not auth.check_token(username, token):
+		return redirect(url_for('index'), code=302,
+				Response=jsonify({'message': 'Invalid token', 'status': 'failure'}))
+
+	# present the dashboard
 	template = template_lookup.get_template("dashboard.html")
 	return template.render(title="Dashboard")
 
@@ -90,7 +107,7 @@ def login():
 		if (token):
 			return jsonify({'message': 'Login successful', 'status': 'success', 'token': token, 'user': username})
 		else:
-			return jsonify({'message': 'Invalid credentials', 'status': 'failure'})
+			return jsonify({'message': 'Username or password incorrect', 'status': 'failure'})
 		
 	return jsonify({'message': 'Invalid request', 'status': 'failure'})
 

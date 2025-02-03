@@ -209,50 +209,6 @@ def create_breakglass_account(password):
 			cursor.close()
 			disconnect(connection)
 
-#
-# Takes the token created and associated with the user and saves it to the database with a new time and deadline.
-# This function will refresh the token by default.
-# Returns True if the user was created, false or an exception if not
-#
-def save_user_token(username, token):
-	# TODO: Move token time deadline login to auth.authenticate function (database module should be dumb database access)
-
-	# Connect to your postgres DB
-	connection = connect()
-	cursor = connection.cursor()
-
-	# Check if the user exists
-	query = "SELECT * FROM users WHERE username = %s"
-	cursor.execute(query, (username,))
-	user = cursor.fetchone()
-
-	if not user:
-		print(f"Error: User not found while saving token to user token table")
-		raise Exception("User not found while saving token to user token table")
-
-	# get the timeout setting value from the settings table
-	timeout_setting = get_setting_by_name('user_session_timeout')
-
-	# Generate current timestamp and deadline timestamp
-	created_at = datetime.now()
-	deadline = created_at + timedelta(minutes=timeout_setting[2])
-
-	# Execute a query to insert or update the token for the user
-	upsert_query = """
-	INSERT INTO user_tokens (token, created_at, deadline, created_by)
-	VALUES (%s, %s, %s, %s)
-	ON CONFLICT (created_by)
-	DO UPDATE SET token = EXCLUDED.token
-	"""
-	cursor.execute(upsert_query, (token, created_at, deadline, user[0]))
-
-	# Commit the transaction
-	connection.commit()
-	cursor.close()
-	disconnect(connection)
-
-	return True
-
 
 ######################################
 #	SETTINGS
@@ -286,3 +242,86 @@ def get_setting_by_name(setting_name):
 		if connection:
 			cursor.close()
 			disconnect(connection)
+
+
+########################################################
+#			TOKENS
+########################################################
+
+#
+# Return the results from a query to get the token by the token value
+#
+def get_token(token):
+	try:
+		# Connect to your postgres DB
+		connection = connect()
+		cursor = connection.cursor()
+
+		# Execute a query to get the token
+		query = "SELECT * FROM tokens WHERE token = %s"
+		cursor.execute(query, (token,))
+
+		# Retrieve query results
+		token_data = cursor.fetchone()
+
+		if token_data:
+			return token_data
+		else:
+			raise Exception("Token not found in database")
+
+	except Exception as error:
+		print(f"Error fetching token: {error}")
+		raise error
+	finally:
+		if connection:
+			cursor.close()
+			disconnect(connection)
+
+#
+# Takes the token created and associated with the user and saves it to the database with a new time and deadline.
+# This function will refresh the token by default.
+# Returns True if the user was created, false or an exception if not
+#
+def save_user_token(username, token):
+	# TODO: Move token time deadline login to auth.authenticate function (database module should be dumb database access)
+
+	# Connect to your postgres DB
+	connection = connect()
+	cursor = connection.cursor()
+
+	# Check if the user exists
+	query = "SELECT * FROM users WHERE username = %s"
+	cursor.execute(query, (username,))
+	user = cursor.fetchone()
+
+	# User not found in the database, throw an error
+	if not user:
+		print(f"Error: User not found while saving token to user token table")
+		raise Exception("User not found while saving token to user token table")
+
+	# get the timeout setting value from the settings table
+	timeout_setting = get_setting_by_name('user_session_timeout')
+	breakglass_timeout_setting = get_setting_by_name('breakglass_session_timeout')
+
+	# Generate current timestamp and deadline timestamp, breakglass will have much shorter timeout
+	created_at = datetime.now()
+	if username == "breakglass":
+		deadline = created_at + timedelta(minutes=breakglass_timeout_setting[2])
+	else:
+		deadline = created_at + timedelta(minutes=timeout_setting[2])
+
+	# Execute a query to insert or update the token for the user
+	upsert_query = """
+	INSERT INTO tokens (token, created_at, deadline, created_by)
+	VALUES (%s, %s, %s, %s)
+	ON CONFLICT (created_by)
+	DO UPDATE SET token = EXCLUDED.token, created_at = EXCLUDED.created_at, deadline = EXCLUDED.deadline
+	"""
+	cursor.execute(upsert_query, (token, created_at, deadline, user[0]))
+
+	# Commit the transaction
+	connection.commit()
+	cursor.close()
+	disconnect(connection)
+
+	return True
