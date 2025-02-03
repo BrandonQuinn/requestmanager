@@ -325,3 +325,8 @@ def save_user_token(username, token):
 	disconnect(connection)
 
 	return True
+
+########################################################
+#			PERMISSIONS
+########################################################
+

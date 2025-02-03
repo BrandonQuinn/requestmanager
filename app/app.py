@@ -70,9 +70,13 @@ def dashboard():
 		return redirect(url_for('index'), code=302,
 				Response=jsonify({'message': 'Invalid token', 'status': 'failure'}))
 
+	# get the user to send to the html (help use permissions to hide elements that the user doesn't have perms to)
+	# if they can't use it, why offer it? "It's like showing a very tired mason a whole cathedral" - David Mitchell 
+	user_data = database.get_user_by_username(username)
+
 	# present the dashboard
 	template = template_lookup.get_template("dashboard.html")
-	return template.render(title="Dashboard")
+	return template.render(title="Dashboard", user=user_data)
 
 #############
 # Users API #
@@ -127,6 +131,11 @@ def database_api():
 #
 @app.route('/api/database/temp_db_user', methods=['POST'])
 def temp_db_user():
+
+	# return if the database has been initialised
+	if init.is_database_initialised():
+		return jsonify({'error': 'Database already initialised'}), 500
+
 	if request.is_json:
 		data = request.get_json()
 		db_username = data.get('db_username')
