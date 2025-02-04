@@ -41,7 +41,7 @@ Will be random numbers, stored in a database. I don't want anything stateless li
 
 I don't want to use a library for this, I wanted to come up with a solution myself for the fun and interest factor. Will perhaps look in to how to get a HMAC stateless style token working with a secret.
 
-### Error Management and Logging
+## Error Management and Logging
 
 - print will be consistently used to write all exceptions to console
 - when exceptions occur, after print, they are raised again futher up until a json object can be return to the client from the api call. That way the end user gets the error, and the server logs it in the console for full visiblity
