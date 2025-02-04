@@ -270,10 +270,6 @@ def init_database():
 	initialised = init.is_database_initialised()
 	return jsonify({'success': 'Database created successfully'}), 201
 
-if __name__ == "__main__":
-	app.run(debug=True)
-
-
 # ##############
 # REQUESTS API #
 ################
@@ -310,4 +306,5 @@ def get_requests_self():
 
 	return jsonify(requests), 200
 
-
+if __name__ == "__main__":
+	app.run(debug=True)

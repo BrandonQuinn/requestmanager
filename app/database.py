@@ -339,9 +339,11 @@ def get_requests_by_requester(username):
 		connection = connect()
 		cursor = connection.cursor()
 
+		username_data = get_user_by_username(username)
+
 		# Execute a query to get requests by requester username
 		query = "SELECT * FROM requests WHERE requester = %s"
-		cursor.execute(query, (username,))
+		cursor.execute(query, (username_data[0],))
 
 		# Retrieve query results
 		requests = cursor.fetchall()
