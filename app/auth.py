@@ -69,7 +69,7 @@ def hash(pw):
 	return hashed_password
 
 #
-# Check paramters if they match
+# Check paramters if they match to validate password
 #
 def validate_pw_hash(hashed_pw, plaintext_pw):
 	ph = PasswordHasher(time_cost=3, memory_cost=102400, parallelism=4)

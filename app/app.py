@@ -272,3 +272,42 @@ def init_database():
 
 if __name__ == "__main__":
 	app.run(debug=True)
+
+
+# ##############
+# REQUESTS API #
+################
+
+@app.route('/api/requests/user/self', methods=['GET'])
+def get_requests_self():
+	# get auth data
+	token = request.cookies.get('auth_token')
+	username = request.cookies.get('user')
+
+	# get what requests are needed based on filters
+	page = request.args.get('page', default=1, type=int)
+	count = request.args.get('count', default=10, type=int)
+	sort = request.args.get('sort', default=None, type=str)
+
+	# limit the count to something reasonable
+	if count > 50:
+		count = 50
+
+	# check token
+	if not token or not username:
+		return jsonify({'error': 'Authentication required'}), 401
+
+	if not auth.check_token(username, token):
+		return jsonify({'error': 'Invalid token, required to first login'}), 401
+
+	# TODO: Check permissions or user role to determine how much of the request they'll see
+
+	# TODO: Sort the return data using the sort arg if set 
+
+	requests = database.get_requests_by_requester(username)
+
+	print("test")
+
+	return jsonify(requests), 200
+
+

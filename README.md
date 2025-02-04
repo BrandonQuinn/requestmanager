@@ -40,3 +40,10 @@ The installation process does not include installing an SSL certificate, the app
 Will be random numbers, stored in a database. I don't want anything stateless like HMAC or JWT, or any other kind simply because I want the app to have very nuanced control over tokens, expiries, global non-user associated tokens with custom permissions etc.
 
 I don't want to use a library for this, I wanted to come up with a solution myself for the fun and interest factor. Will perhaps look in to how to get a HMAC stateless style token working with a secret.
+
+### Error Management and Logging
+
+- print will be consistently used to write all exceptions to console
+- when exceptions occur, after print, they are raised again futher up until a json object can be return to the client from the api call. That way the end user gets the error, and the server logs it in the console for full visiblity
+- each exception message should by customised to easily located it in code - also should be closely related to the name of the function
+- TODO: Need a log file

@@ -327,6 +327,31 @@ def save_user_token(username, token):
 	return True
 
 ########################################################
-#			PERMISSIONS
+#			REQUESTS
 ########################################################
 
+#
+# Return all requests for the user
+#
+def get_requests_by_requester(username):
+	try:
+		# Connect to your postgres DB
+		connection = connect()
+		cursor = connection.cursor()
+
+		# Execute a query to get requests by requester username
+		query = "SELECT * FROM requests WHERE requester = %s"
+		cursor.execute(query, (username,))
+
+		# Retrieve query results
+		requests = cursor.fetchall()
+
+		return requests
+
+	except Exception as error:
+		print(f"Error fetching requests by username: {error}")
+		raise error
+	finally:
+		if connection:
+			cursor.close()
+			disconnect(connection)
