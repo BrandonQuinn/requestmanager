@@ -9,31 +9,37 @@
 				<div class="row mb-3">
 					<div class="col-12">
 						<label class="form-label">Title</label>
-						<input type="text" class="form-control">
+						<input type="text" class="form-control" id="new-request-title">
 					</div>
 				</div>
 				<div class="row mb-3">
 					<div class="col-12">
 						<label class="form-label">Description</label>
-						<textarea class="form-control"></textarea>
+						<textarea class="form-control" id="new-request-description"></textarea>
 					</div>
 				</div>
 				<div class="row mb-3">
 					<div class="col-12">
 						<label class="form-label">Type</label>
-						<select type="text" class="form-select tomselected ts-hidden-accessible" id="select-users"
+						<select type="text" class="form-select tomselected ts-hidden-accessible" id="new-request-type"
 							value="" tabindex="-1">
-							<option value="3">Work/Labor</option>
-							<option value="3">Maintenance/Repair</option>
-							<option value="4">Change</option>
-							<option value="1">Disposal</option>
+							<!-- Options will be added by JS -->
+						</select>
+					</div>
+				</div>
+				<div class="row mb-3">
+					<div class="col-12">
+						<label class="form-label">Department</label>
+						<select type="text" class="form-select tomselected ts-hidden-accessible" id="new-request-department"
+							value="" tabindex="-1">
+							<!-- Options will be added by JS -->
 						</select>
 					</div>
 				</div>
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn me-auto" data-bs-dismiss="modal">Close</button>
-				<button type="button" class="btn btn-primary" data-bs-dismiss="modal">Submit</button>
+				<button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="new-request-submit">Submit</button>
 			</div>
 		</div>
 	</div>

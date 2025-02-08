@@ -56,6 +56,13 @@ def check_if_all_tables_exists(database, username, password):
 	users_exists = check_table_exists('requestmanager', username, password, 'users')
 	permssions_exists = check_table_exists('requestmanager', username, password, 'permissions')
 	requests_exists = check_table_exists('requestmanager', username, password, 'requests')
+	requests_exists = check_table_exists('requestmanager', username, password, 'tokens')
+	requests_exists = check_table_exists('requestmanager', username, password, 'app_settings')
+	requests_exists = check_table_exists('requestmanager', username, password, 'global_tokens')
+	requests_exists = check_table_exists('requestmanager', username, password, 'requests')
+	requests_exists = check_table_exists('requestmanager', username, password, 'departments')
+	requests_exists = check_table_exists('requestmanager', username, password, 'teams')
+	requests_exists = check_table_exists('requestmanager', username, password, 'request_types')
 
 	return users_exists and permssions_exists and requests_exists
 

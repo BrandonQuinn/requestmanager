@@ -77,3 +77,53 @@ def validate_pw_hash(hashed_pw, plaintext_pw):
 		return ph.verify(hashed_pw, plaintext_pw)
 	except:
 		return False
+
+#
+# Take the token and specified permissions and check the token has the permissions.
+# Return True is that's the case.
+#
+def check_permission(perm_str, token):
+	# TODO: Will need logic to determine if the token is a global token
+
+	# will need a few things, the token, the user and the permission to match everything up
+	try:
+		perm_data = database.get_permission_by_name(perm_str)
+		
+		# permission not found
+		if not perm_data:
+			print("Error while checking permission, no permission exists: " + perm_str)
+			raise Exception("Error while checking permission, no permission exists: " + perm_str)
+		
+		# get token data
+		token_data = database.get_token(token)
+
+		# token not found
+		if not token_data:
+			print("No token found while checking permissions: " + token)
+			raise Exception("Error, no token found in database while checking permissions")
+
+		# get the user using the id associated with the token
+		user_data = database.get_user_by_id(token_data[4])
+		
+		# user not found
+		if not user_data:
+			print("User not found in database while checking permssions, user id: " + token[4])
+			raise Exception("User not found in database while checking permssions, user id: " + token[4])
+		
+		# get the array of permissions from the user data
+		user_permissions = user_data[5]
+
+		# get the id of the permission we need
+		permission_id = perm_data[0]
+
+		# Does the list of user permissions contain the required permission
+		for p_id in user_permissions:
+			if p_id is permission_id:
+				return True
+			
+		return False
+	
+	except Exception as error:
+		print(error)
+		raise Exception (error)
+

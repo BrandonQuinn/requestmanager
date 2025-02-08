@@ -274,6 +274,48 @@ def init_database():
 # REQUESTS API #
 ################
 
+@app.route('/api/requests/new', methods=['POST'])
+def new_request():
+	# get auth data
+	token = request.cookies.get('auth_token')
+	username = request.cookies.get('user')
+
+	# check token
+	if not token or not username:
+		return jsonify({'error': 'Authentication required'}), 401
+	if not auth.check_token(username, token):
+		return jsonify({'error': 'Invalid token, required to first login'}), 401
+	
+	request_title = None
+	request_description = None
+	request_type = None
+	
+	# get the data sent via POST
+	if request.is_json:
+		data = request.get_json()
+		request_title = data.get('request-title')
+		request_description = data.get('request-description')
+		request_type = data.get('request-type')
+		request_department = data.get('request-department')
+
+		# check if not null or empty
+		if not request_title or request_title is "":
+			return jsonify({'error': 'Empty title send for new request.'}), 406
+		if not request_description or request_description is "":
+			return jsonify({'error': 'Empty title description for new request.'}), 406
+		if not request_type or request_type is "":
+			return jsonify({'error': 'Empty title type for new request.'}), 406
+		if not request_department or request_type is "":
+			return jsonify({'error': 'Empty title department for new request.'}), 406
+		
+	# check if the logged in user has permission to create a new request
+	create_request_permission = auth.check_permission('create_request', token)
+
+	# the token has the perms, create the new request
+	if create_request_permission:
+		database.add_request(username, request_title, request_description, request_type, request_department)
+		return jsonify({'success': 'Request created.'}), 200
+
 @app.route('/api/requests/user/self', methods=['GET'])
 def get_requests_self():
 	# get auth data
@@ -302,9 +344,56 @@ def get_requests_self():
 
 	requests = database.get_requests_by_requester(username)
 
-	print("test")
-
 	return jsonify(requests), 200
 
+#
+# Get a list of all types
+#
+@app.route('/api/requests/types', methods=['GET'])
+def get_request_types():
+	# get auth data
+	token = request.cookies.get('auth_token')
+	username = request.cookies.get('user')
+
+	# check token
+	if not token or not username:
+		return jsonify({'error': 'Authentication required'}), 401
+
+	if not auth.check_token(username, token):
+		return jsonify({'error': 'Invalid token, required to first login'}), 401
+	
+	# Get the list of request types from the database
+	request_types = database.get_request_types()
+
+	# Return the list of request types as JSON
+	return jsonify(request_types), 200
+
+#
+# Get a list of all departments
+#
+@app.route('/api/requests/departments', methods=['GET'])
+def get_request_departments():
+	# get auth data
+	token = request.cookies.get('auth_token')
+	username = request.cookies.get('user')
+
+	# check token
+	if not token or not username:
+		return jsonify({'error': 'Authentication required'}), 401
+
+	if not auth.check_token(username, token):
+		return jsonify({'error': 'Invalid token, required to first login'}), 401
+	
+	# Get the list of request types from the database
+	request_types = database.get_request_departments()
+
+	# Return the list of request types as JSON
+	return jsonify(request_types), 200
+
+
+#
+# Start the app.
+# LEAVE AT BOTTOM
+#
 if __name__ == "__main__":
 	app.run(debug=True)

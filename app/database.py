@@ -357,3 +357,83 @@ def get_requests_by_requester(username):
 		if connection:
 			cursor.close()
 			disconnect(connection)
+
+#
+# Return list of departments
+#
+def get_request_departments():
+	try:
+		# Connect to your postgres DB
+		connection = connect()
+		cursor = connection.cursor()
+
+		# Execute a query to get all departments
+		query = "SELECT * FROM departments"
+		cursor.execute(query)
+
+		# Retrieve query results
+		departments = cursor.fetchall()
+
+		return departments
+
+	except Exception as error:
+		print(f"Error fetching departments: {error}")
+		raise error
+	finally:
+		if connection:
+			cursor.close()
+			disconnect(connection)
+
+
+#
+# Return list of request types
+#
+def get_request_types():
+	try:
+		# Connect to your postgres DB
+		connection = connect()
+		cursor = connection.cursor()
+
+		# Execute a query to get all request types
+		query = "SELECT * FROM request_types"
+		cursor.execute(query)
+
+		# Retrieve query results
+		request_types = cursor.fetchall()
+
+		return request_types
+
+	except Exception as error:
+		print(f"Error fetching request types: {error}")
+		raise error
+	finally:
+		if connection:
+			cursor.close()
+			disconnect(connection)
+
+########################################################
+#			PERMISSIONS
+########################################################
+
+def get_permission_by_name(perm_name):
+	try:
+		# Connect to your postgres DB
+		connection = connect()
+		cursor = connection.cursor()
+
+		# Execute a query to get requests by requester username
+		query = "SELECT * FROM permissions WHERE permission_name = %s"
+		cursor.execute(query, (perm_name,))
+
+		# Retrieve query results
+		requests = cursor.fetchall()
+
+		return requests
+
+	except Exception as error:
+		print(f"Error fetching permissions by permission_name: {error}")
+		raise error
+	finally:
+		if connection:
+			cursor.close()
+			disconnect(connection)

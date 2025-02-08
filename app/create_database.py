@@ -58,6 +58,34 @@ def create_users_table(conn, cur):
 	conn.commit()
 
 #
+# Create a new table of departments
+#
+def create_department_table(conn, cur):
+	cur.execute('''
+		CREATE TABLE IF NOT EXISTS departments (
+			id SERIAL PRIMARY KEY,
+			name VARCHAR (32),
+			teams INTEGER[],
+			description VARCHAR(256)
+		)
+	''')
+	conn.commit()
+
+#
+# Create a new table of teams
+#
+def create_team_table(conn, cur):
+	cur.execute('''
+		CREATE TABLE IF NOT EXISTS teams (
+			id SERIAL PRIMARY KEY,
+			name VARCHAR (32),
+			users INTEGER[],
+			description VARCHAR(256)
+		)
+	''')
+	conn.commit()
+
+#
 # Create a new table of permissions with ids, names, and descriptions.
 # The ids are then added to the users table to have permissions
 #
@@ -84,10 +112,23 @@ def create_requests_table(conn, cur):
 			outage BOOLEAN,
 			title VARCHAR(256) NOT NULL,
 			description TEXT,
-			team_category SERIAL,
-			assigned_to_team SERIAL,
-			assigned_to_user SERIAL,
-			escalation_level INTEGER
+			team_category INTEGER,
+			assigned_to_team INTEGER,
+			assigned_to_user INTEGER,
+			escalation_level INTEGER,
+			type INTEGER
+		)
+	''')
+	conn.commit()
+
+#
+# Create a new table of users
+#
+def create_request_type_table(conn, cur):
+	cur.execute('''
+		CREATE TABLE IF NOT EXISTS request_types (
+			id SERIAL PRIMARY KEY,
+			name VARCHAR (32)
 		)
 	''')
 	conn.commit()
@@ -186,6 +227,9 @@ def create_database_and_tables(new_db_username, new_db_password):
 	create_user_tokens_table(conn, cur)
 	create_global_tokens_table(conn, cur)
 	create_settings_table(conn, cur)
+	create_department_table(conn, cur)
+	create_team_table(conn, cur)
+	create_request_type_table(conn, cur)
 
 	# Create default values
 	create_default_values(conn, cur)
@@ -233,7 +277,7 @@ def create_default_values(conn, cur):
 	cur.execute('''
 		INSERT INTO app_settings (id, setting_name, value, description)
 		VALUES (%s, %s, %s, %s)
-	''', (2, 'breakglass_session_timeout', 10, 'How long a breakglass account session token lasts. In Minutes.'))
+	''', (3, 'breakglass_session_timeout', 10, 'How long a breakglass account session token lasts. In Minutes.'))
 
 	# Commit the changes
 	conn.commit()
