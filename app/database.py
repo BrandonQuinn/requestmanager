@@ -102,6 +102,35 @@ def get_user_by_username(username):
 			disconnect(connection)
 
 #
+# Return user data, using id
+#
+def get_user_by_id(id):
+	try:
+		# Connect to your postgres DB
+		connection = connect()
+		cursor = connection.cursor()
+
+		# Execute a query to get the user by id
+		query = "SELECT * FROM users WHERE id = %s"
+		cursor.execute(query, (id,))
+
+		# Retrieve query results
+		user = cursor.fetchone()
+
+		if user:
+			return user
+		else:
+			raise Exception("No user found when getting user by id from database")
+
+	except Exception as error:
+		print(f"Error fetching user by id: {error}")
+		return None
+	finally:
+		if connection:
+			cursor.close()
+			disconnect(connection)
+
+#
 # Add a new user to the database
 #
 def add_user(username, email, password, permissions, team, level):
@@ -406,6 +435,36 @@ def get_request_types():
 	except Exception as error:
 		print(f"Error fetching request types: {error}")
 		raise error
+	finally:
+		if connection:
+			cursor.close()
+			disconnect(connection)
+
+#
+# Insert a new request
+#
+def add_request(username, request_title, request_description, request_type, request_department):
+	try:
+		# Connect to your postgres DB
+		connection = connect()
+		cursor = connection.cursor()
+
+		# get the user, we need the id
+		user_data = get_user_by_username(username)
+
+		# Execute a query to insert a new request
+		insert_query = """
+		INSERT INTO requests (requester, requested_at, priority, outage, title, description, team_category, assigned_to_team, assigned_to_user, escalation_level, type)
+		VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+		"""
+		cursor.execute(insert_query, (user_data[0], datetime.now(), 4, False, request_title, request_description, request_department, -1, -1, 0, request_type))
+		
+		# Commit the transaction
+		connection.commit()
+
+	except Exception as error:
+		print(f"Error adding request: {error}")
+		raise Exception("Failed to add new requests")
 	finally:
 		if connection:
 			cursor.close()

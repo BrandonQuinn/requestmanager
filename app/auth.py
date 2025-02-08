@@ -118,11 +118,11 @@ def check_permission(perm_str, token):
 
 		# Does the list of user permissions contain the required permission
 		for p_id in user_permissions:
-			if p_id is permission_id:
+			if p_id is permission_id or p_id == 0:
 				return True
 			
 		return False
-	
+
 	except Exception as error:
 		print(error)
 		raise Exception (error)

@@ -299,13 +299,13 @@ def new_request():
 		request_department = data.get('request-department')
 
 		# check if not null or empty
-		if not request_title or request_title is "":
+		if not request_title or request_title == "":
 			return jsonify({'error': 'Empty title send for new request.'}), 406
-		if not request_description or request_description is "":
+		if not request_description or request_description == "":
 			return jsonify({'error': 'Empty title description for new request.'}), 406
-		if not request_type or request_type is "":
+		if not request_type or request_type == "":
 			return jsonify({'error': 'Empty title type for new request.'}), 406
-		if not request_department or request_type is "":
+		if not request_department or request_type == "":
 			return jsonify({'error': 'Empty title department for new request.'}), 406
 		
 	# check if the logged in user has permission to create a new request
@@ -313,9 +313,14 @@ def new_request():
 
 	# the token has the perms, create the new request
 	if create_request_permission:
+		# TODO: Login to determine team and other fields that are not provided
 		database.add_request(username, request_title, request_description, request_type, request_department)
 		return jsonify({'success': 'Request created.'}), 200
-
+	else:
+		return jsonify({'error': 'Permission denied.'}), 405
+#
+# Get all the requests requested by the logged in user
+#
 @app.route('/api/requests/user/self', methods=['GET'])
 def get_requests_self():
 	# get auth data
@@ -389,7 +394,6 @@ def get_request_departments():
 
 	# Return the list of request types as JSON
 	return jsonify(request_types), 200
-
 
 #
 # Start the app.
