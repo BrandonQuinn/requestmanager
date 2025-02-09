@@ -360,6 +360,35 @@ def save_user_token(username, token):
 ########################################################
 
 #
+# Return a request by its ID
+#
+def get_request_by_id(request_id):
+	try:
+		# Connect to your postgres DB
+		connection = connect()
+		cursor = connection.cursor()
+
+		# Execute a query to get the request by id
+		query = "SELECT * FROM requests WHERE id = %s"
+		cursor.execute(query, (request_id,))
+
+		# Retrieve query results
+		request = cursor.fetchone()
+
+		if request:
+			return request
+		else:
+			raise Exception("No request found when getting request by id from database")
+
+	except Exception as error:
+		print(f"Error fetching request by id: {error}")
+		raise error
+	finally:
+		if connection:
+			cursor.close()
+			disconnect(connection)
+
+#
 # Return all requests for the user
 #
 def get_requests_by_requester(username):
@@ -412,7 +441,6 @@ def get_request_departments():
 		if connection:
 			cursor.close()
 			disconnect(connection)
-
 
 #
 # Return list of request types

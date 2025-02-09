@@ -274,6 +274,34 @@ def init_database():
 # REQUESTS API #
 ################
 
+#
+# Get a request by its ID
+#
+@app.route('/api/requests/<int:request_id>', methods=['GET'])
+def get_request_by_id(request_id):
+	# get auth data
+	token = request.cookies.get('auth_token')
+	username = request.cookies.get('user')
+
+	# check token
+	if not token or not username:
+		return jsonify({'error': 'Authentication required'}), 401
+
+	if not auth.check_token(username, token):
+		return jsonify({'error': 'Invalid token, required to first login'}), 401
+
+	# get the request from the database
+	request_data = database.get_request_by_id(request_id)
+
+	if not request_data:
+		return jsonify({'error': 'Request not found'}), 404
+
+	# TODO: Check permissions or user role to determine how much of the request they'll see
+
+	# TODO: replace values with actual names, ids are used everywhere
+
+	return jsonify(request_data), 200
+
 @app.route('/api/requests/new', methods=['POST'])
 def new_request():
 	# get auth data
@@ -307,7 +335,9 @@ def new_request():
 			return jsonify({'error': 'Empty title type for new request.'}), 406
 		if not request_department or request_type == "":
 			return jsonify({'error': 'Empty title department for new request.'}), 406
-		
+
+	# TODO: Do other input validation (limiting length of description etc.)
+	
 	# check if the logged in user has permission to create a new request
 	create_request_permission = auth.check_permission('create_request', token)
 

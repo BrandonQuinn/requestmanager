@@ -122,6 +122,21 @@ def create_requests_table(conn, cur):
 	conn.commit()
 
 #
+# Create a new table all updates
+#
+def create_request_udpates_table(conn, cur):
+	cur.execute('''
+		CREATE TABLE IF NOT EXISTS request_updates (
+			id SERIAL PRIMARY KEY,
+			update_index INTEGER NOT NULL,
+			content TEXT NOT NULL,
+			made_by INTEGER NOT NULL,
+			associated_request INTEGER NOT NULL
+		)
+	''')
+	conn.commit()
+
+#
 # Create a new table of users
 #
 def create_request_type_table(conn, cur):
@@ -230,7 +245,8 @@ def create_database_and_tables(new_db_username, new_db_password):
 	create_department_table(conn, cur)
 	create_team_table(conn, cur)
 	create_request_type_table(conn, cur)
-
+	create_request_udpates_table(conn, cur)
+	
 	# Create default values
 	create_default_values(conn, cur)
 

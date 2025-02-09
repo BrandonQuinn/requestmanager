@@ -1,229 +1,62 @@
 <div class="modal modal-blur fade" id="modal-request-view" tabindex="-1" style="display: none;" aria-hidden="true">
-	<div class="modal-dialog modal-1 modal-dialog-centered" role="document">
+	<div class="modal-dialog modal-1 modal-dialog-centered modal-dialog-scrollable" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h5 class="modal-title">Request title</h5>
+				<div class="col-1" ><div id="priority-view-badge"><span class="badge bg-purple text-purple-fg"></div></span></div>
+				<div class="col-2"><span class="badge bg-purple text-purple-fg" id="outage-view-badge"></span></div>
 				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 			</div>
 			<div class="modal-body">
-				<div class="row mb-3 align-items-end">
-					<div class="col-auto">
-						<a href="#" class="avatar avatar-upload rounded">
-							<!-- Download SVG icon from http://tabler.io/icons/icon/plus -->
-							<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-								fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-								stroke-linejoin="round" class="icon icon-1">
-								<path d="M12 5l0 14"></path>
-								<path d="M5 12l14 0"></path>
-							</svg>
-							<span class="avatar-upload-text">Add</span>
-						</a>
-					</div>
+				<div class="row align-items-end">
 					<div class="col">
-						<label class="form-label">Name</label>
-						<input type="text" class="form-control">
+						<div class="mb-3">
+							<label class="form-label">Title</label>
+							<input type="text" class="form-control" name="title-view-field" id="title-view-field"
+								placeholder="Readonly..." value="Gotta fix that thang" readonly="">
+						</div>
+					</div>
+				</div>
+				<div class="row align-items-end">
+					<div class="col">
+						<div class="mb-3">
+							<label class="form-label">Description</label>
+							<textarea readonly="" class="form-control" name="description-view-field"
+								id="description-view-field" rows="6" placeholder="Content.."
+								style="height: 153px;"></textarea>
+						</div>
 					</div>
 				</div>
 				<div class="mb-3">
-					<label class="form-label">Pick your team color</label>
-					<div class="row g-2">
-						<div class="col-auto">
-							<label class="form-colorinput">
-								<input name="color" type="radio" value="dark" class="form-colorinput-input">
-								<span class="form-colorinput-color bg-dark"></span>
-							</label>
-						</div>
-						<div class="col-auto">
-							<label class="form-colorinput form-colorinput-light">
-								<input name="color" type="radio" value="white" class="form-colorinput-input" checked="">
-								<span class="form-colorinput-color bg-white"></span>
-							</label>
-						</div>
-						<div class="col-auto">
-							<label class="form-colorinput">
-								<input name="color" type="radio" value="blue" class="form-colorinput-input">
-								<span class="form-colorinput-color bg-blue"></span>
-							</label>
-						</div>
-						<div class="col-auto">
-							<label class="form-colorinput">
-								<input name="color" type="radio" value="azure" class="form-colorinput-input">
-								<span class="form-colorinput-color bg-azure"></span>
-							</label>
-						</div>
-						<div class="col-auto">
-							<label class="form-colorinput">
-								<input name="color" type="radio" value="indigo" class="form-colorinput-input">
-								<span class="form-colorinput-color bg-indigo"></span>
-							</label>
-						</div>
-						<div class="col-auto">
-							<label class="form-colorinput">
-								<input name="color" type="radio" value="purple" class="form-colorinput-input">
-								<span class="form-colorinput-color bg-purple"></span>
-							</label>
-						</div>
-						<div class="col-auto">
-							<label class="form-colorinput">
-								<input name="color" type="radio" value="pink" class="form-colorinput-input">
-								<span class="form-colorinput-color bg-pink"></span>
-							</label>
-						</div>
-						<div class="col-auto">
-							<label class="form-colorinput">
-								<input name="color" type="radio" value="red" class="form-colorinput-input">
-								<span class="form-colorinput-color bg-red"></span>
-							</label>
-						</div>
-						<div class="col-auto">
-							<label class="form-colorinput">
-								<input name="color" type="radio" value="orange" class="form-colorinput-input">
-								<span class="form-colorinput-color bg-orange"></span>
-							</label>
-						</div>
-						<div class="col-auto">
-							<label class="form-colorinput">
-								<input name="color" type="radio" value="yellow" class="form-colorinput-input">
-								<span class="form-colorinput-color bg-yellow"></span>
-							</label>
-						</div>
-						<div class="col-auto">
-							<label class="form-colorinput">
-								<input name="color" type="radio" value="lime" class="form-colorinput-input">
-								<span class="form-colorinput-color bg-lime"></span>
-							</label>
-						</div>
-						<div class="col-auto">
-							<label class="form-colorinput">
-								<input name="color" type="radio" value="green" class="form-colorinput-input">
-								<span class="form-colorinput-color bg-green"></span>
-							</label>
-						</div>
+					Created: <strong id="created-view-date"></strong>
+				</div>
+				<div class="row mb-3">
+					<div class="col-6">
+						<label class="form-label">Type</label>
+						<input type="text" class="form-control" name="type-view-field" id="type-view-field"
+							placeholder="Readonly..." value="Change" readonly="">
+					</div>
+					<div class="col-6">
+						<label class="form-label">Department</label>
+						<input type="text" class="form-control" name="department-view-field" id="department-view-field"
+							placeholder="Readonly..." value="IT" readonly="">
 					</div>
 				</div>
-				<div>
-					<label class="form-label">Additional info</label>
-					<textarea class="form-control"></textarea>
+				<div class="row mb-3">
+					<div class="col-6">
+						<label class="form-label">Team</label>
+						<input type="text" class="form-control" name="team-view-field" id="team-view-field"
+							placeholder="Readonly..." value="Engineering" readonly="">
+					</div>
+					<div class="col-6">
+						<label class="form-label">Assignee</label>
+						<input type="text" class="form-control" name="assignee-view-field" id="assignee-view-field"
+							placeholder="Readonly..." value="Brandon Quinn" readonly="">
+					</div>
 				</div>
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn me-auto" data-bs-dismiss="modal">Close</button>
-				<button type="button" class="btn btn-primary" data-bs-dismiss="modal">Resolve Request</button>
-			</div>
-		</div>
-	</div>
-</div>
-
-<div class="modal modal-blur fade" id="modal-request-view-updates" tabindex="-1" style="display: none;" aria-hidden="true">
-	<div class="modal-dialog modal-1 modal-dialog-centered" role="document">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-			</div>
-			<div class="modal-body">
-				<div class="row mb-3 align-items-end">
-					<div class="col-auto">
-						<a href="#" class="avatar avatar-upload rounded">
-							<!-- Download SVG icon from http://tabler.io/icons/icon/plus -->
-							<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-								fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-								stroke-linejoin="round" class="icon icon-1">
-								<path d="M12 5l0 14"></path>
-								<path d="M5 12l14 0"></path>
-							</svg>
-							<span class="avatar-upload-text">Add</span>
-						</a>
-					</div>
-					<div class="col">
-						<label class="form-label">Name</label>
-						<input type="text" class="form-control">
-					</div>
-				</div>
-				<div class="mb-3">
-					<label class="form-label">Pick your team color</label>
-					<div class="row g-2">
-						<div class="col-auto">
-							<label class="form-colorinput">
-								<input name="color" type="radio" value="dark" class="form-colorinput-input">
-								<span class="form-colorinput-color bg-dark"></span>
-							</label>
-						</div>
-						<div class="col-auto">
-							<label class="form-colorinput form-colorinput-light">
-								<input name="color" type="radio" value="white" class="form-colorinput-input" checked="">
-								<span class="form-colorinput-color bg-white"></span>
-							</label>
-						</div>
-						<div class="col-auto">
-							<label class="form-colorinput">
-								<input name="color" type="radio" value="blue" class="form-colorinput-input">
-								<span class="form-colorinput-color bg-blue"></span>
-							</label>
-						</div>
-						<div class="col-auto">
-							<label class="form-colorinput">
-								<input name="color" type="radio" value="azure" class="form-colorinput-input">
-								<span class="form-colorinput-color bg-azure"></span>
-							</label>
-						</div>
-						<div class="col-auto">
-							<label class="form-colorinput">
-								<input name="color" type="radio" value="indigo" class="form-colorinput-input">
-								<span class="form-colorinput-color bg-indigo"></span>
-							</label>
-						</div>
-						<div class="col-auto">
-							<label class="form-colorinput">
-								<input name="color" type="radio" value="purple" class="form-colorinput-input">
-								<span class="form-colorinput-color bg-purple"></span>
-							</label>
-						</div>
-						<div class="col-auto">
-							<label class="form-colorinput">
-								<input name="color" type="radio" value="pink" class="form-colorinput-input">
-								<span class="form-colorinput-color bg-pink"></span>
-							</label>
-						</div>
-						<div class="col-auto">
-							<label class="form-colorinput">
-								<input name="color" type="radio" value="red" class="form-colorinput-input">
-								<span class="form-colorinput-color bg-red"></span>
-							</label>
-						</div>
-						<div class="col-auto">
-							<label class="form-colorinput">
-								<input name="color" type="radio" value="orange" class="form-colorinput-input">
-								<span class="form-colorinput-color bg-orange"></span>
-							</label>
-						</div>
-						<div class="col-auto">
-							<label class="form-colorinput">
-								<input name="color" type="radio" value="yellow" class="form-colorinput-input">
-								<span class="form-colorinput-color bg-yellow"></span>
-							</label>
-						</div>
-						<div class="col-auto">
-							<label class="form-colorinput">
-								<input name="color" type="radio" value="lime" class="form-colorinput-input">
-								<span class="form-colorinput-color bg-lime"></span>
-							</label>
-						</div>
-						<div class="col-auto">
-							<label class="form-colorinput">
-								<input name="color" type="radio" value="green" class="form-colorinput-input">
-								<span class="form-colorinput-color bg-green"></span>
-							</label>
-						</div>
-					</div>
-				</div>
-				<div>
-					<label class="form-label">Additional info</label>
-					<textarea class="form-control"></textarea>
-				</div>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn me-auto" data-bs-dismiss="modal">Close</button>
-				<button type="button" class="btn btn-primary" data-bs-dismiss="modal">Resolve Request</button>
+				<button type="button" class="btn btn-primary" data-bs-dismiss="modal">Resolve</button>
 			</div>
 		</div>
 	</div>
