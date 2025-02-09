@@ -297,8 +297,12 @@ def get_request_by_id(request_id):
 		return jsonify({'error': 'Invalid token, required to first login'}), 401
 
 	# get the request from the database
-	request_data = database.get_request_by_id(request_id)
-
+	try:
+		request_data = database.get_request_by_id(request_id)
+	except:
+		return jsonify({'error': 'No requests found with that ID.'}), 404
+	
+	# check if empty
 	if not request_data:
 		return jsonify({'error': 'Request not found'}), 404
 
