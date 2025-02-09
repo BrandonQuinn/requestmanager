@@ -1,11 +1,1 @@
 qwerQWER1234!@#$erwg4u652213r3grhg35454
-
-priority-view-badge
-outage-view-badge
-title-view-field
-description-view-field
-created-view-date
-type-view-field
-department-view-field
-team-view-field
-assignee-view-field

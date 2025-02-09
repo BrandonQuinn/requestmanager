@@ -87,7 +87,11 @@ def dashboard():
 #
 @app.route('/api/users', methods=['GET'])
 def get_users():
+
+	# TODO: Check permissions on token
+
 	users = database.get_all_users()
+
 	return jsonify(users)
 
 ######################
@@ -208,6 +212,8 @@ def database_health():
 	if not initialised:
 		return jsonify({'error': 'Database not initialised'}), 500
 
+	# TODO: Update checks
+
 	# Check if the tables exist
 	users_exists = health_checks.check_table_exists('users')
 	permissions_exists = health_checks.check_table_exists('permissions')
@@ -298,7 +304,40 @@ def get_request_by_id(request_id):
 
 	# TODO: Check permissions or user role to determine how much of the request they'll see
 
-	# TODO: replace values with actual names, ids are used everywhere
+	# get type name
+	type_name = ""
+	if request_data[11] != None:
+		type_name = database.get_request_type_by_id(request_data[11])[1]
+
+	# get department name
+	department_name = ""
+	if request_data[7] != None:
+		department_name = database.get_department_by_id(request_data[7])[1]
+	
+	# get team name
+	team_name = ""
+	if request_data[8] != None:
+		team_name = database.get_team_by_id(request_data[8])[1]
+
+	# get assignee name
+	assignee_name = ""
+	if request_data[9] != None:
+		assignee_name = database.get_user_by_id(request_data[9])[1]
+
+	request_data = (
+		request_data[0],
+		request_data[1],
+		request_data[2],
+		request_data[3],
+		request_data[4],
+		request_data[5],
+		request_data[6],
+		department_name,
+		team_name,
+		assignee_name,
+		request_data[10],
+		type_name
+	)
 
 	return jsonify(request_data), 200
 

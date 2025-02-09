@@ -469,6 +469,93 @@ def get_request_types():
 			disconnect(connection)
 
 #
+# Return a request type by its ID
+#
+def get_request_type_by_id(request_type_id):
+	try:
+		# Connect to your postgres DB
+		connection = connect()
+		cursor = connection.cursor()
+
+		# Execute a query to get the request type by id
+		query = "SELECT * FROM request_types WHERE id = %s"
+		cursor.execute(query, (request_type_id,))
+
+		# Retrieve query results
+		request_type = cursor.fetchone()
+
+		if request_type:
+			return request_type
+		else:
+			raise Exception("No request type found when getting request type by id from database")
+
+	except Exception as error:
+		print(f"Error fetching request type by id: {error}")
+		raise error
+	finally:
+		if connection:
+			cursor.close()
+			disconnect(connection)
+
+#
+# Return a department by its ID
+#
+def get_department_by_id(department_id):
+	try:
+		# Connect to your postgres DB
+		connection = connect()
+		cursor = connection.cursor()
+
+		# Execute a query to get the department by id
+		query = "SELECT * FROM departments WHERE id = %s"
+		cursor.execute(query, (department_id,))
+
+		# Retrieve query results
+		department = cursor.fetchone()
+
+		if department:
+			return department
+		else:
+			raise Exception("No department found when getting department by id from database")
+
+	except Exception as error:
+		print(f"Error fetching department by id: {error}")
+		raise error
+	finally:
+		if connection:
+			cursor.close()
+			disconnect(connection)
+
+#
+# Return a team by its ID
+#
+def get_team_by_id(team_id):
+	try:
+		# Connect to your postgres DB
+		connection = connect()
+		cursor = connection.cursor()
+
+		# Execute a query to get the team by id
+		query = "SELECT * FROM teams WHERE id = %s"
+		cursor.execute(query, (team_id,))
+
+		# Retrieve query results
+		team = cursor.fetchone()
+
+		if team:
+			return team
+		else:
+			raise Exception("No team found when getting team by id from database")
+
+	except Exception as error:
+		print(f"Error fetching team by id: {error}")
+		raise error
+	finally:
+		if connection:
+			cursor.close()
+			disconnect(connection)
+
+#
 # Insert a new request
 #
 def add_request(username, request_title, request_description, request_type, request_department):
@@ -485,7 +572,7 @@ def add_request(username, request_title, request_description, request_type, requ
 		INSERT INTO requests (requester, requested_at, priority, outage, title, description, team_category, assigned_to_team, assigned_to_user, escalation_level, type)
 		VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
 		"""
-		cursor.execute(insert_query, (user_data[0], datetime.now(), 4, False, request_title, request_description, request_department, -1, -1, 0, request_type))
+		cursor.execute(insert_query, (user_data[0], datetime.now(), 4, False, request_title, request_description, request_department, None, None, 0, request_type))
 		
 		# Commit the transaction
 		connection.commit()
