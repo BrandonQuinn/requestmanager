@@ -123,6 +123,22 @@ def create_requests_table(conn, cur):
 	conn.commit()
 
 #
+# Create a table for storing text updates to requests
+#
+def create_updates_table(conn, cur):
+	cur.execute('''
+		CREATE TABLE IF NOT EXISTS updates (
+			id SERIAL PRIMARY KEY,
+			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+			made_by INTEGER NOT NULL,
+			request_id INTEGER NOT NULL,
+			content TEXT NOT NULL,
+			customer_visible BOOLEAN DEFAULT FALSE
+		)
+	''')
+	conn.commit()
+
+#
 # Create a new table all updates
 #
 def create_request_udpates_table(conn, cur):
@@ -247,6 +263,7 @@ def create_database_and_tables(new_db_username, new_db_password):
 	create_team_table(conn, cur)
 	create_request_type_table(conn, cur)
 	create_request_udpates_table(conn, cur)
+	create_updates_table(conn, cur)
 	
 	# Create default values
 	create_default_values(conn, cur)

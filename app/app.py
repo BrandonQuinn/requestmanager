@@ -226,10 +226,11 @@ def database_health():
 	permissions_exists = health_checks.check_table_exists('permissions')
 	requests_exists = health_checks.check_table_exists('requests')
 	tokens_exists = health_checks.check_table_exists('tokens')
-	settings_exists = health_checks.check_table_exists('settings')
+	settings_exists = health_checks.check_table_exists('app_settings')
+	updates_exists = health_checks.check_table_exists('updates')
 
 	# If the tables don't exist, return an error
-	if not users_exists or not permissions_exists or not requests_exists or not tokens_exists or not settings_exists:
+	if not users_exists or not permissions_exists or not requests_exists or not tokens_exists or not settings_exists or not updates_exists:
 		return jsonify({'error': 'One or more tables do not exist'}), 500
 
 	# If everything is fine, return a success message
@@ -474,6 +475,10 @@ def get_request_departments():
 
 	# Return the list of request types as JSON
 	return jsonify(request_types), 200
+
+# ##############
+# UPDATES API  #
+################
 
 #
 # Start the app.
