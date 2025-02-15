@@ -116,7 +116,8 @@ def create_requests_table(conn, cur):
 			assigned_to_team INTEGER,
 			assigned_to_user INTEGER,
 			escalation_level INTEGER,
-			type INTEGER
+			type INTEGER,
+			resolved BOOLEAN DEFAULT FALSE
 		)
 	''')
 	conn.commit()

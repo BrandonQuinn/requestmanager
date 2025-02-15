@@ -82,7 +82,7 @@ def dashboard():
 	user_data = database.get_user_by_username(username)
 
 	# present the dashboard
-	template = template_lookup.get_template("dashboard.html")
+	template = template_lookup.get_template("dashboard_templates\dashboard.html")
 	return template.render(title="Dashboard", user=user_data)
 
 #############
