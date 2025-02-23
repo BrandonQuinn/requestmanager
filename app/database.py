@@ -586,6 +586,33 @@ def add_request(username, request_title, request_description, request_type, requ
 			disconnect(connection)
 
 ########################################################
+#			REQUEST UPDATES
+########################################################
+
+def get_updates_by_request_id(request_id):
+	try:
+		# Connect to your postgres DB
+		connection = connect()
+		cursor = connection.cursor()
+
+		# Execute a query to get updates by request id
+		query = "SELECT * FROM updates WHERE request_id = %s"
+		cursor.execute(query, (request_id,))
+
+		# Retrieve query results
+		updates = cursor.fetchall()
+
+		return updates
+
+	except Exception as error:
+		print(f"Error fetching updates by request id: {error}")
+		raise error
+	finally:
+		if connection:
+			cursor.close()
+			disconnect(connection)
+
+########################################################
 #			PERMISSIONS
 ########################################################
 

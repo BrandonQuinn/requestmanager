@@ -480,6 +480,31 @@ def get_request_departments():
 # UPDATES API  #
 ################
 
+@app.route('/api/requests/<int:request_id>/updates', methods=['GET'])
+def get_request_updates(request_id):
+	# get auth data
+	token = request.cookies.get('auth_token')
+	username = request.cookies.get('user')
+
+	# check token
+	if not token or not username:
+		return jsonify({'error': 'Authentication required'}), 401
+
+	if not auth.check_token(username, token):
+		return jsonify({'error': 'Invalid token, required to first login'}), 401
+
+	# get the request from the database
+	try:
+		updates_data = database.get_updates_by_request_id(request_id)
+	except:
+		return jsonify({'error': 'No requests found with that ID. Or no updates found.'}), 404
+	
+	# check if empty
+	if not updates_data:
+		return jsonify({'error': 'Request not found'}), 404
+	
+	return jsonify(updates_data), 200
+
 #
 # Start the app.
 # LEAVE AT BOTTOM
