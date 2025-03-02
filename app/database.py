@@ -612,6 +612,36 @@ def get_updates_by_request_id(request_id):
 			cursor.close()
 			disconnect(connection)
 
+#
+# Add a new update to the database
+#
+def add_update(request_id, username, update_content, customer_visible):
+	try:
+		# Connect to your postgres DB
+		connection = connect()
+		cursor = connection.cursor()
+
+		# Get the user, we need the id
+		user_data = get_user_by_username(username)
+
+		# Execute a query to insert a new update
+		insert_query = """
+		INSERT INTO updates (created_at, made_by, request_id, content, customer_visible)
+		VALUES (%s, %s, %s, %s, %s)
+		"""
+		cursor.execute(insert_query, (datetime.now(), user_data[0], request_id, update_content, customer_visible))
+
+		# Commit the transaction
+		connection.commit()
+
+	except Exception as error:
+		print(f"Error adding update: {error}")
+		raise Exception("Failed to add new update")
+	finally:
+		if connection:
+			cursor.close()
+			disconnect(connection)
+
 ########################################################
 #			PERMISSIONS
 ########################################################

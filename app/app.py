@@ -480,6 +480,9 @@ def get_request_departments():
 # UPDATES API  #
 ################
 
+#
+# Gets updates for a request
+#
 @app.route('/api/requests/<int:request_id>/updates', methods=['GET'])
 def get_request_updates(request_id):
 	# get auth data
@@ -504,6 +507,38 @@ def get_request_updates(request_id):
 		return jsonify({'error': 'Request not found'}), 404
 	
 	return jsonify(updates_data), 200
+
+#
+# Adds a new update
+#
+@app.route('/api/requests/<int:request_id>/updates/new', methods=['POST'])
+def new_request_update(request_id):
+	# get auth data
+	token = request.cookies.get('auth_token')
+	username = request.cookies.get('user')
+
+	# check token
+	if not token or not username:
+		return jsonify({'error': 'Authentication required'}), 401
+	if not auth.check_token(username, token):
+		return jsonify({'error': 'Invalid token, required to first login'}), 401
+	
+	update_content = None
+	
+	# get the data sent via POST
+	if request.is_json:
+		data = request.get_json()
+		update_content = data.get('update-content')
+
+		# check if not null or empty
+		if not update_content or update_content == "":
+			return jsonify({'error': 'Empty update content send for new update.'}), 406
+
+	print(update_content)
+
+	# default value for customer visible is true
+	database.add_update(request_id, username, update_content, True) 
+	return jsonify({'success': 'Update added.'}), 200
 
 #
 # Start the app.
