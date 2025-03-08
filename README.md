@@ -1,7 +1,7 @@
 ## UI Design Guideline
 
 - Using Tabler UI - looks great
-- General idea is to reduce the number key presses and mouse movement to get to the primary objective. Think the Amazon single click purchase philosophy. People (in my mind) don't want to use or interact with computers, so don't make them do it more than they absolutely have to
+- General idea is to reduce the number of clicks required to complete common tasks.
 
 ## Security Summary/Design Guideline
 
