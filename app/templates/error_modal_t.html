@@ -1,19 +1,31 @@
-<div class="modal modal-blur fade" id="modal-simple" tabindex="-1" style="display: none;" aria-hidden="true"
+<div class="modal modal-blur fade" id="error-modal" tabindex="-1" aria-modal="true"
 	role="dialog">
-	<div class="modal-dialog modal-1 modal-dialog-centered" role="document">
+	<div class="modal-dialog modal-sm modal-dialog-centered" role="document">
 		<div class="modal-content">
-			<div class="modal-header">
-				<h5 class="modal-title">Modal title</h5>
-				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-			</div>
-			<div class="modal-body">
-				Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci animi beatae delectus deleniti
-				dolorem eveniet facere fuga iste nemo nesciunt nihil odio perspiciatis, quia quis reprehenderit sit
-				tempora totam unde.
+			<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			<div class="modal-status bg-danger"></div>
+			<div class="modal-body text-center py-4">
+				<!-- Download SVG icon from http://tabler.io/icons/icon/alert-triangle -->
+				<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+					stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+					class="icon mb-2 text-danger icon-lg">
+					<path d="M12 9v4"></path>
+					<path
+						d="M10.363 3.591l-8.106 13.534a1.914 1.914 0 0 0 1.636 2.871h16.214a1.914 1.914 0 0 0 1.636 -2.87l-8.106 -13.536a1.914 1.914 0 0 0 -3.274 0z">
+					</path>
+					<path d="M12 16h.01"></path>
+				</svg>
+				<h3 id="error-modal-title">Error</h3>
+				<div id="error-modal-message">Error message.</div>
 			</div>
 			<div class="modal-footer">
-				<button type="button" class="btn me-auto" data-bs-dismiss="modal">Close</button>
-				<button type="button" class="btn btn-primary" data-bs-dismiss="modal">Save changes</button>
+				<div class="w-100">
+					<div class="row">
+						<div class="col">
+							<a href="#" class="btn btn-3 w-100" data-bs-dismiss="modal">Thanks...</a>
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
