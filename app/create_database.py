@@ -117,7 +117,8 @@ def create_requests_table(conn, cur):
 			assigned_to_user INTEGER,
 			escalation_level INTEGER,
 			type INTEGER,
-			resolved BOOLEAN DEFAULT FALSE
+			resolved BOOLEAN DEFAULT FALSE,
+			resolved_at TIMESTAMP
 		)
 	''')
 	conn.commit()

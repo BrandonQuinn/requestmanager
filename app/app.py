@@ -426,7 +426,7 @@ def get_requests_self():
 
 	# TODO: Check permissions or user role to determine how much of the request they'll see
 
-	# TODO: Sort the return data using the sort arg if set 
+	# TODO: Sort the return data using the sort arg if set
 
 	requests = database.get_requests_by_requester(username)
 
@@ -539,6 +539,45 @@ def new_request_update(request_id):
 	# default value for customer visible is true
 	database.add_update(request_id, username, update_content, True) 
 	return jsonify({'success': 'Update added.'}), 200
+
+#
+# Resolve a request by its ID
+#
+@app.route('/api/requests/<int:request_id>/resolve', methods=['POST'])
+def resolve_request(request_id):
+	# get auth data
+	token = request.cookies.get('auth_token')
+	username = request.cookies.get('user')
+
+	# check token
+	if not token or not username:
+		return jsonify({'error': 'Authentication required'}), 401
+	if not auth.check_token(username, token):
+		return jsonify({'error': 'Invalid token, required to first login'}), 401
+
+	resolve_request_permission = False
+	
+	# check if the logged in user has permission to resolve a request
+	resolve_request_permission = auth.check_permission('resolve_request', token)
+
+	# Check if the user created the request, if so, they can resolve it
+	user_data = database.get_user_by_token(token)
+	request_data = database.get_request_by_id(request_id)
+
+	if user_data[0] == request_data[1]:
+		resolve_request_permission = True
+
+	# TODO: More checks around compartmentalisation and team permissions
+
+	# If permission to resolve, resolve the request
+	if resolve_request_permission:
+		try:
+			database.resolve_request(request_id)
+			return jsonify({'success': 'Request resolved.'}), 200
+		except Exception as e:
+			return jsonify({'error': str(e)}), 500
+	else:
+		return jsonify({'error': 'Permission denied.'}), 405
 
 #
 # Start the app.

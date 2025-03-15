@@ -116,7 +116,7 @@ def check_permission(perm_str, token):
 		# get the id of the permission we need
 		permission_id = perm_data[0]
 
-		# Does the list of user permissions contain the required permission
+		# Does the list of user permissions contain the required permission, or is the user a global admin
 		for p_id in user_permissions:
 			if p_id is permission_id or p_id == 0:
 				return True

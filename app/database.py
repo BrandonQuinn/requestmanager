@@ -131,6 +131,40 @@ def get_user_by_id(id):
 			disconnect(connection)
 
 #
+# Return user data by token
+#
+def get_user_by_token(token):
+	try:
+		# Connect to your postgres DB
+		connection = connect()
+		cursor = connection.cursor()
+
+		# Execute a query to get the user by token
+		query = """
+		SELECT u.*
+		FROM users u
+		INNER JOIN tokens t ON u.id = t.created_by
+		WHERE t.token = %s
+		"""
+		cursor.execute(query, (token,))
+
+		# Retrieve query results
+		user = cursor.fetchone()
+
+		if user:
+			return user
+		else:
+			raise Exception("No user found when getting user by token from database")
+
+	except Exception as error:
+		print(f"Error fetching user by token: {error}")
+		raise error
+	finally:
+		if connection:
+			cursor.close()
+			disconnect(connection)
+
+#
 # Add a new user to the database
 #
 def add_user(username, email, password, permissions, team, level):
@@ -389,7 +423,7 @@ def get_request_by_id(request_id):
 			disconnect(connection)
 
 #
-# Return all requests for the user
+# Return all requests for the user. Excluded resolved requests.
 #
 def get_requests_by_requester(username):
 	try:
@@ -400,7 +434,7 @@ def get_requests_by_requester(username):
 		username_data = get_user_by_username(username)
 
 		# Execute a query to get requests by requester username
-		query = "SELECT * FROM requests WHERE requester = %s"
+		query = "SELECT * FROM requests WHERE requester = %s AND resolved = false" 
 		cursor.execute(query, (username_data[0],))
 
 		# Retrieve query results
@@ -550,6 +584,34 @@ def get_team_by_id(team_id):
 	except Exception as error:
 		print(f"Error fetching team by id: {error}")
 		raise error
+	finally:
+		if connection:
+			cursor.close()
+			disconnect(connection)
+
+#
+# Resolve a request by its ID
+#
+def resolve_request(request_id):
+	try:
+		# Connect to your postgres DB
+		connection = connect()
+		cursor = connection.cursor()
+
+		# Execute a query to update the request status to resolved
+		update_query = """
+		UPDATE requests
+		SET resolved = true, resolved_at = %s
+		WHERE id = %s
+		"""
+		cursor.execute(update_query, (datetime.now(), request_id))
+
+		# Commit the transaction
+		connection.commit()
+
+	except Exception as error:
+		print(f"Error resolving request: {error}")
+		raise Exception("Failed to resolve request")
 	finally:
 		if connection:
 			cursor.close()
