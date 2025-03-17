@@ -1,12 +1,8 @@
 from flask import Flask, render_template, redirect, url_for, jsonify, request
 from mako.template import Template
 from mako.lookup import TemplateLookup
-import database
 import os, sys
-import health_checks
-import init
-import create_database
-import auth
+import health_checks, init, create_database, auth, database
 
 app = Flask(__name__)
 
@@ -100,6 +96,20 @@ def get_users():
 	users = database.get_all_users()
 
 	return jsonify(users)
+
+#
+# Return currently logged in user (associated with token from cookie)
+#
+@app.route('/api/users/self', methods=['GET'])
+def get_user_self():
+	token = request.cookies.get('auth_token')
+
+	if not token:
+		return jsonify({'error': 'Authentication required'}), 401
+	
+	user = database.get_user_by_token(token)
+
+	return jsonify(user)
 
 ######################
 # Authentication API #
@@ -228,9 +238,13 @@ def database_health():
 	tokens_exists = health_checks.check_table_exists('tokens')
 	settings_exists = health_checks.check_table_exists('app_settings')
 	updates_exists = health_checks.check_table_exists('updates')
+	departments_exists = health_checks.check_table_exists('departments')
+	global_tokens_exists = health_checks.check_table_exists('global_tokens')
+	request_types_exists = health_checks.check_table_exists('request_types')
+	teams_exists = health_checks.check_table_exists('teams')
 
 	# If the tables don't exist, return an error
-	if not users_exists or not permissions_exists or not requests_exists or not tokens_exists or not settings_exists or not updates_exists:
+	if not users_exists or not permissions_exists or not requests_exists or not tokens_exists or not settings_exists or not updates_exists or not departments_exists or not global_tokens_exists or not request_types_exists or not teams_exists:
 		return jsonify({'error': 'One or more tables do not exist'}), 500
 
 	# If everything is fine, return a success message
@@ -478,7 +492,7 @@ def get_request_departments():
 
 # ##############
 # UPDATES API  #
-################
+################ 
 
 #
 # Gets updates for a request
@@ -500,11 +514,11 @@ def get_request_updates(request_id):
 	try:
 		updates_data = database.get_updates_by_request_id(request_id)
 	except:
-		return jsonify({'error': 'No requests found with that ID. Or no updates found.'}), 404
+		return jsonify({'error': 'No updates or no request found while fetching updates.'}), 404
 	
 	# check if empty
 	if not updates_data:
-		return jsonify({'error': 'Request not found'}), 404
+		return jsonify({}), 200
 	
 	return jsonify(updates_data), 200
 
