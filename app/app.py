@@ -32,6 +32,26 @@ def index():
 	template = template_lookup.get_template("index.html")
 	return template.render(title="Request Manager")
 
+
+#
+# Return organsation html page
+#
+@app.route("/organisation")
+def organisation():
+	# redirect to install page if the database is not initialised
+	if not init.is_database_initialised():
+		return redirect(url_for('install'), code=302)
+
+	# redirect to dashboard if the user is logged in
+	token = request.cookies.get('auth_token')
+	username = request.cookies.get('user')
+
+	if not token or not auth.check_token(username, token):
+		return redirect(url_for('index'), code=302)
+
+	template = template_lookup.get_template("organisation_templates\organisation.html")
+	return template.render(title="Organisation")
+
 #
 # Return install html page
 #

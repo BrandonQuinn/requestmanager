@@ -284,31 +284,57 @@ def create_default_values(conn, cur):
 		VALUES (%s, %s, %s)
 	''', (0, 'breakglass', 'Breakglass perm with complete unrestricted access.'))
 
+	#
+	# PERMISSIONS
+	#
+
 	# Create a permission for allowing request creation
 	cur.execute('''
 		INSERT INTO permissions (id, permission_name, description)
 		VALUES (%s, %s, %s)
 	''', (1, 'create_request', 'Permission to allow creating a new request.'))
 
-	# Create a settings to tell if the breakglass account is enabled
+	# Create a permission for allowing request creation
+	cur.execute('''
+		INSERT INTO permissions (id, permission_name, description)
+		VALUES (%s, %s, %s)
+	''', (2, 'resolve_request', 'Permission to allow resolving.'))
+
+	# Create a permission for allowing request creation
+	cur.execute('''
+		INSERT INTO permissions (id, permission_name, description)
+		VALUES (%s, %s, %s)
+	''', (3, 'create_user', 'Permission to allow creating a new user.'))
+
+	# Create a permission for allowing request creation
+	cur.execute('''
+		INSERT INTO permissions (id, permission_name, description)
+		VALUES (%s, %s, %s)
+	''', (4, 'delete_user', 'Permission to allow deleting a new user.'))
+
+	#
+	# SETTINGS
+	#
+
+	# Create a setting to tell if the breakglass account is enabled
 	cur.execute('''
 		INSERT INTO app_settings (id, setting_name, value, description)
 		VALUES (%s, %s, %s, %s)
 	''', (0, 'breakglass_enabled', 1, '1 If the breakglass account is enabled. Enabled by default on a fresh install.'))
 
-	# Create a settings to tell if the breakglass account has been set
+	# Create a setting to tell if the breakglass account has been set
 	cur.execute('''
 		INSERT INTO app_settings (id, setting_name, value, description)
 		VALUES (%s, %s, %s, %s)
 	''', (1, 'breakglass_set', 0, '1 If the breakglass account has been set ever. The breakglass account can only ever be created once. Helps prevent it being recreated via the api if somehow removed.'))
 
-	# Create a settings for the timeout for a user login session (how long their session token lasts)
+	# Create a setting for the timeout for a user login session (how long their session token lasts)
 	cur.execute('''
 		INSERT INTO app_settings (id, setting_name, value, description)
 		VALUES (%s, %s, %s, %s)
 	''', (2, 'user_session_timeout', 30, 'How long a user session token will last before requiring the user to login again. In Minutes.'))
 
-	# Create a settings for the timeout for a breakglass session
+	# Create a setting for the timeout for a breakglass session
 	cur.execute('''
 		INSERT INTO app_settings (id, setting_name, value, description)
 		VALUES (%s, %s, %s, %s)
