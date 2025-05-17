@@ -20,19 +20,47 @@
 				</div>
 
 				<label class="form-label">Add Teams</label>
-				<div class="row inline">
-					<select type="text" class="form-select tomselected ts-hidden-accessible" id="select-users" value=""
-						tabindex="-1">
-						<option value="1">Chuck Tesla</option>
-						<option value="2">Paweł Kuna</option>
-						<option value="3">Nikola Tesla</option>
-					</select>
-					<a href="#" class="btn btn-primary btn-2">Add</a>
+
+				<div class="row align-items-end">
+					<div class="col-10">
+						<select type="text" class="form-select tomselected ts-hidden-accessible" id="select-users"
+							value="" tabindex="-1">
+							<option value="1">Chuck Tesla</option>
+							<option value="2">Paweł Kuna</option>
+							<option value="3">Nikola Tesla</option>
+						</select>
+					</div>
+					<div class="col-2">
+						<a href="#" class="btn btn-primary btn-2">Add</a>
+					</div>
 				</div>
+				</br>
+				<div class="card">
+					<div class="table-responsive">
+						<table class="table table-vcenter card-table table-striped">
+							<thead>
+								<tr>
+									<th>Team</th>
+									<th class="w-1"></th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td class="text-secondary">Team Name</td>
+									<td>
+										<a href="#">Remove</a>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+
+
 			</div>
 			<div class="modal-footer">
-				<button type="button" class="btn me-auto" data-bs-dismiss="modal">Close</button>
-				<button type="button" class="btn btn-primary" data-bs-dismiss="modal">Add Team</button>
+				<button type="button" class="btn me-auto" data-bs-dismiss="modal">Cancel</button>
+				<button type="button" class="btn btn-primary" data-bs-dismiss="modal">Done</button>
 			</div>
 		</div>
 	</div>
