@@ -66,7 +66,8 @@ def create_department_table(conn, cur):
 			id SERIAL PRIMARY KEY,
 			name VARCHAR (32),
 			teams INTEGER[],
-			description VARCHAR(256)
+			description VARCHAR(256),
+			initial_assignment INTEGER
 		)
 	''')
 	conn.commit()

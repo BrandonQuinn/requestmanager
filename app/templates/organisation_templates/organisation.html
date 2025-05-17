@@ -63,7 +63,7 @@ THE SOFTWARE.
 								<div class="card-header">
 									<h3 class="card-title">Departments</h3>
 									<div class="card-actions">
-										<a href="#" class="btn btn-primary">
+										<a href="#" class="btn btn-primary"  data-bs-toggle="modal" data-bs-target="#modal-new-department">
 											<!-- Download SVG icon from http://tabler-icons.io/i/plus -->
 											<svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
 												viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
@@ -76,27 +76,27 @@ THE SOFTWARE.
 										</a>
 									</div>
 								</div>
-								<div class="card-body">
-									<div id="table-default" class="table-responsive">
-										<table class="table">
-											<thead>
-												<tr>
-													<th><button class="table-sort asc" data-sort="sort-name">Name</button></th>
-													<th><button class="table-sort" data-sort="sort-city">Description</button></th>
-													<th><button class="table-sort" data-sort="sort-city">Inital Assignment</button></th>
-												</tr>
-											</thead>
-											<tbody class="table-tbody">
-												<tr>
-												<tr>
-													<td class="sort-name">IT</td>
-													<td class="sort-city">Information Technology Support Department</td>
-													<td class="sort-city">Service Desk (L1)</td>
-												</tr>
-											</tbody>
-										</table>
-									</div>
+
+								<div id="table-default" class="table-responsive">
+									<table class="table table-vcenter table-mobile-md card-table" id="department-table">
+										<thead>
+											<tr>
+												<th>Name</th>
+												<th>Description</th>
+												<th>Inital Assignment</th>
+												<th class="w-1"></th>
+											</tr>
+										</thead>
+										<tbody class="table-tbody" id="department-table-rows">
+											<tr>
+												<td class="name">IT</td>
+												<td class="city">Information Technology Support Department</td>
+												<td class="city">Service Desk (L1)</td>
+											</tr>
+										</tbody>
+									</table>
 								</div>
+
 							</div>
 						</div>
 						<div class="col-6">
@@ -117,63 +117,118 @@ THE SOFTWARE.
 										</a>
 									</div>
 								</div>
-								<div class="card-body">
-									<div id="table-default" class="table-responsive">
-										<table class="table">
-											<thead>
-												<tr>
-													<th><button class="table-sort asc"
-															data-sort="sort-name">Name</button></th>
-													<th><button class="table-sort" data-sort="sort-city">Description</button></th>
-													<th><button class="table-sort" data-sort="sort-city">Department</button></th>
-												</tr>
-											</thead>
-											<tbody class="table-tbody">
-												<tr>
-													<td class="sort-name">Service Desk (L1)</td>
-													<td class="sort-description">Level 1 Support - First Line Support/Triage</td>
-													<td class="sort-department">IT</td>
-												</tr>
-												<tr>
-													<td class="sort-name">Level 2 Support</td>
-													<td class="sort-description">Escalation Path for Service Desk</td>
-													<td class="sort-department">IT</td>
-												</tr>
-												<tr>
-													<td class="sort-name">Infrastructure Engineering</td>
-													<td class="sort-description">Backend Infratructure Support (Datacentre, Cloud, Server)</td>
-													<td class="sort-department">IT</td>
-												</tr>
-												<tr>
-													<td class="sort-name">Desktop Engineering</td>
-													<td class="sort-description">Front End Engieering team (SOE)</td>
-													<td class="sort-department">IT</td>
-												</tr>
-												<tr>
-													<td class="sort-name">Data Engineering</td>
-													<td class="sort-description">Data engineering team</td>
-													<td class="sort-department">IT</td>
-												</tr>
-											</tbody>
-										</table>
-									</div>
+
+								<div id="table-default" class="table-responsive">
+									<table class="table table-vcenter table-mobile-md card-table" id="team-table">
+										<thead>
+											<tr>
+												<th>Name</th>
+												<th>Description</th>
+												<th>Department</th>
+												<th class="w-1"></th>
+											</tr>
+										</thead>
+										<tbody class="table-tbody" id="teams-table-rows">
+											<tr>
+												<td class="-name">Service Desk (L1)</td>
+												<td class="description">Level 1 Support - First Line Support/Triage</td>
+												<td class="department">IT</td>
+											</tr>
+										</tbody>
+									</table>
 								</div>
+
+							</div>
+						</div>
+					</div>
+					</br>
+
+					<div class="col">
+						<div class="card">
+							<div class="card-header">
+								<h3 class="card-title">Users</h3>
+								<div class="card-actions">
+									<a href="#" class="btn btn-primary">
+										<!-- Download SVG icon from http://tabler-icons.io/i/plus -->
+										<svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
+											viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
+											stroke-linecap="round" stroke-linejoin="round">
+											<path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+											<path d="M12 5l0 14"></path>
+											<path d="M5 12l14 0"></path>
+										</svg>
+										New User
+									</a>
+								</div>
+							</div>
+							<div class="table-responsive">
+								<table class="table table-vcenter table-mobile-md card-table">
+									<thead>
+										<tr>
+											<th>Name</th>
+											<th>Title</th>
+											<th>Departments</th>
+											<th>Teams</th>
+											<th class="w-1"></th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td data-label="Name">
+												<div class="d-flex py-1 align-items-center">
+													<div class="flex-fill">
+														<div class="font-weight-medium">Thatcher Keel</div>
+													</div>
+												</div>
+											</td>
+											<td data-label="Title">
+												<div>System Administrator</div>
+											</td>
+											<td class="text-secondary sort-tags" data-label="Role">
+												<div class="badge-list">
+													<span class="badge">IT</span>
+													<span class="badge">Home Maintenance</span>
+												</div>
+											</td>
+											<td class="text-secondary sort-tags" data-label="Role">
+												<div class="badge-list">
+													<span class="badge">IT Engineering</span>
+													<span class="badge">Insurance</span>
+												</div>
+											</td>
+											<td>
+												<div class="btn-list flex-nowrap">
+													<a href="#" class="btn btn-1"> Edit </a>
+													<div class="dropdown">
+														<button class="btn dropdown-toggle align-text-top"
+															data-bs-toggle="dropdown">Actions</button>
+														<div class="dropdown-menu dropdown-menu-end">
+															<a class="dropdown-item" href="#"> Action </a>
+															<a class="dropdown-item" href="#"> Another action </a>
+														</div>
+													</div>
+												</div>
+											</td>
+										</tr>
+									</tbody>
+								</table>
 							</div>
 						</div>
 					</div>
 				</div>
-			</div>
-			<footer class="footer footer-transparent d-print-none">
-				<div class="container-xl">
-					<div class="row text-center align-items-center flex-row-reverse">
+				<footer class="footer footer-transparent d-print-none">
+					<div class="container-xl">
+						<div class="row text-center align-items-center flex-row-reverse">
 
+						</div>
 					</div>
-				</div>
-			</footer>
+				</footer>
+			</div>
+			<%include file="error_modal_t.html" />
+			<%include file="organisation_templates\new_department_modal_t.html" />
 		</div>
-		<%include file="error_modal_t.html" />
-	</div>
-	<%include file="js_t.html" />
+		<%include file="js_t.html" />
+		<script src="./static/js/organisation.js"></script>
 </body>
 
 </html>

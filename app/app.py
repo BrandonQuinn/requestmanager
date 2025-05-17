@@ -613,6 +613,73 @@ def resolve_request(request_id):
 	else:
 		return jsonify({'error': 'Permission denied.'}), 405
 
+# ###################
+# ORGANISAITON API  #
+#####################
+
+#
+# Get a list of all departments
+#
+@app.route('/api/departments', methods=['GET'])
+def get_departments():
+	# get auth data
+	token = request.cookies.get('auth_token')
+	username = request.cookies.get('user')
+
+	# check token
+	if not token or not username:
+		return jsonify({'error': 'Authentication required'}), 401
+	if not auth.check_token(username, token):
+		return jsonify({'error': 'Invalid token, required to first login'}), 401
+	
+	# TODO: Check permissions to see which departments the user can see
+
+	# Get the list of departments from the database
+	departments = database.get_departments()
+	return jsonify(departments), 200
+
+#
+# Get a list of all teams
+#
+@app.route('/api/teams', methods=['GET'])
+def get_teams():
+	# get auth data
+	token = request.cookies.get('auth_token')
+	username = request.cookies.get('user')
+
+	# check token
+	if not token or not username:
+		return jsonify({'error': 'Authentication required'}), 401
+	if not auth.check_token(username, token):
+		return jsonify({'error': 'Invalid token, required to first login'}), 401
+
+	# TODO: Check permissions to see which departments the user can see
+
+	# Get the list of teams from the database
+	teams = database.get_teams()
+	return jsonify(teams), 200
+
+#
+# Get a team by its ID
+#
+@app.route('/api/teams/<int:team_id>', methods=['GET'])
+def get_team_by_id(team_id):
+	# get auth data
+	token = request.cookies.get('auth_token')
+	username = request.cookies.get('user')
+
+	# check token
+	if not token or not username:
+		return jsonify({'error': 'Authentication required'}), 401
+	if not auth.check_token(username, token):
+		return jsonify({'error': 'Invalid token, required to first login'}), 401
+
+	# TODO: Check permissions to see which teams a user can see
+
+	# Get the list of teams from the database
+	team = database.get_team_by_id(team_id)
+	return jsonify(team), 200
+
 #
 # Start the app.
 # LEAVE AT BOTTOM

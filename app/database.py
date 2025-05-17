@@ -708,6 +708,9 @@ def add_update(request_id, username, update_content, customer_visible):
 #			PERMISSIONS
 ########################################################
 
+#
+# Return all fields for a permission by the permission name
+#
 def get_permission_by_name(perm_name):
 	try:
 		# Connect to your postgres DB
@@ -730,3 +733,64 @@ def get_permission_by_name(perm_name):
 		if connection:
 			cursor.close()
 			disconnect(connection)
+
+
+########################################################
+#			ORGANISATION
+########################################################
+
+#
+# Return all departments
+#
+def get_departments():
+	try:
+		# Connect to postgres
+		connection = connect()
+		cursor = connection.cursor()
+
+		# Execute a query to get all departments
+		query = "SELECT * FROM departments"
+		cursor.execute(query)
+
+		# Retrieve query results
+		departments = cursor.fetchall()
+
+		return departments
+
+	except Exception as error:
+		print(f"Error fetching departments: {error}")
+		raise error
+	finally:
+		if connection:
+			cursor.close()
+			disconnect(connection)
+
+#
+# Return all teams
+#
+def get_teams():
+	try:
+		# Connect to postgres
+		connection = connect()
+		cursor = connection.cursor()
+
+		# Execute a query to get all teams
+		query = "SELECT * FROM teams"
+		cursor.execute(query)
+
+		# Retrieve query results
+		teams = cursor.fetchall()
+
+		return teams
+
+	except Exception as error:
+		print(f"Error fetching teams: {error}")
+		raise error
+	finally:
+		if connection:
+			cursor.close()
+			disconnect(connection)
+
+# Get team by id
+def get_team_by_id(team_id):
+	pass
