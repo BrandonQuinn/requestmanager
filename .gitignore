@@ -171,7 +171,6 @@ cython_debug/
 .pypirc
 
 app/dist
-app/static
 app/db_credentials.json
 app/temp_root_creds.json
 
