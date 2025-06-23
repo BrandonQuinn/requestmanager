@@ -9,13 +9,13 @@
 				<div class="row mb-3 align-items-end">
 					<div class="col">
 						<label class="form-label">Name</label>
-						<input type="text" class="form-control">
+						<input type="text" id="new-department-name" class="form-control is-invalid is-valid-lite">
 					</div>
 				</div>
 				<div class="row mb-3">
 					<div class="col">
 						<label class="form-label">Description</label>
-						<input type="text" class="form-control">
+						<input type="text" id="new-department-description" class="form-control is-invalid is-valid-lite">
 					</div>
 				</div>
 
@@ -23,15 +23,13 @@
 
 				<div class="row align-items-end">
 					<div class="col-10">
-						<select type="text" class="form-select tomselected ts-hidden-accessible" id="select-users"
+						<select type="text" class="form-select tomselected ts-hidden-accessible" id="select-new-department-teams"
 							value="" tabindex="-1">
-							<option value="1">Chuck Tesla</option>
-							<option value="2">Paweł Kuna</option>
-							<option value="3">Nikola Tesla</option>
+							<!-- Options to be added by JavaScript -->
 						</select>
 					</div>
 					<div class="col-2">
-						<a href="#" class="btn btn-primary btn-2">Add</a>
+						<a href="#" id="add-team-to-department-btn" class="btn btn-primary btn-2">Add</a>
 					</div>
 				</div>
 				</br>
@@ -44,19 +42,23 @@
 									<th class="w-1"></th>
 								</tr>
 							</thead>
-							<tbody>
-								<tr>
-									<td class="text-secondary">Team Name</td>
-									<td>
-										<a href="#">Remove</a>
-									</td>
-								</tr>
+							<tbody id="new-department-team-list">
+								<!-- Rows added by user -->
 							</tbody>
 						</table>
 					</div>
 				</div>
-
-
+				</br>
+				<div class="row align-items-end">
+					<div class="col-12">
+						<label class="form-label">Initial Team</label>
+						<small class="form-hint">The team that will recieve all new requests for this department.</small>
+						<br/>
+						<select type="text" class="form-select tomselected ts-hidden-accessible" id="select-initial-team" value="" tabindex="-1">
+							<!-- Options to be added by JavaScript -->
+						</select>
+					</div>
+				</div>
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn me-auto" data-bs-dismiss="modal">Cancel</button>

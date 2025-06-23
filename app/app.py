@@ -32,7 +32,6 @@ def index():
 	template = template_lookup.get_template("index.html")
 	return template.render(title="Request Manager")
 
-
 #
 # Return organsation html page
 #
