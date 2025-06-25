@@ -679,6 +679,44 @@ def get_team_by_id(team_id):
 	team = database.get_team_by_id(team_id)
 	return jsonify(team), 200
 
+#
+# Create a new team
+#
+@app.route('/api/teams/new', methods=['POST'])
+def new_team():
+	# get auth data
+	token = request.cookies.get('auth_token')
+	username = request.cookies.get('user')
+
+	# check token
+	if not token or not username:
+		return jsonify({'error': 'Authentication required'}), 401
+	if not auth.check_token(username, token):
+		return jsonify({'error': 'Invalid token, required to first login'}), 401
+
+	# TODO: Check permissions to see if the user can create a new team
+
+	# get the data sent via POST
+	if request.is_json:
+		data = request.get_json()
+		name = data.get('name')
+		description = data.get('description')
+
+		# check if not null or empty
+		if not name or name == "":
+			return jsonify({'error': 'Empty team name sent for new team.'}), 406
+		
+		if not description or name == "":
+			return jsonify({'error': 'Empty team description sent for new team.'}), 406
+
+		try:
+			database.add_team(name, description)
+			return jsonify({'success': 'Team added.'}), 200
+		except Exception as e:
+			return jsonify({'error': str(e)}), 500
+
+	return jsonify({'error': 'Adding team failed.'}), 400
+
 @app.route('/api/departments/new', methods=['POST'])
 def new_department():
 	# get auth data

@@ -94,6 +94,8 @@ updateDepartmentModalSelectables();
 // Update the fields that require validation and display that e.g. showing the red x or green tick etc.
 function updateFieldValidationUI() {
 	
+	// New Department Modal
+
 	// show when the new department name field is valid or not
 	const departmentNameInput = document.getElementById('new-department-name');
 	if (departmentNameInput.value.trim() === '') {
@@ -113,9 +115,35 @@ function updateFieldValidationUI() {
 		departmentDescriptionInput.classList.remove('is-invalid');
 		departmentDescriptionInput.classList.add('is-valid');
 	}
+
+	// New Team Modal
+
+	// show when the new department name field is valid or not
+	const teamNameInput = document.getElementById('new-team-name');
+	if (teamNameInput.value.trim() === '') {
+		teamNameInput.classList.remove('is-valid');
+		teamNameInput.classList.add('is-invalid');
+	} else {
+		teamNameInput.classList.remove('is-invalid');
+		teamNameInput.classList.add('is-valid');
+	}
+
+	// show when the new department description field is valid or not
+	const teamDescriptionInput = document.getElementById('new-team-description');
+	if (teamDescriptionInput.value.trim() === '') {
+		teamDescriptionInput.classList.remove('is-valid');
+		teamDescriptionInput.classList.add('is-invalid');
+	} else {
+		teamDescriptionInput.classList.remove('is-invalid');
+		teamDescriptionInput.classList.add('is-valid');
+	}
 }
 
 updateFieldValidationUI(); // call once to update
+
+/*
+	NEW DEPARTMENT MODAL FUNCTIONALITY
+*/
 
 // Add event listener to update validation UI on input change for the new department name field
 const departmentNameInput = document.getElementById('new-department-name');
@@ -249,3 +277,60 @@ async function submitNewDepartment() {
 // Add event listener to the "Submit New Department" button
 const submitNewDepartmentBtn = document.getElementById('submit-new-department-btn');
 submitNewDepartmentBtn.addEventListener('click', submitNewDepartment);
+
+/*
+	NEW TEAM MODAL FUNCTIONALITY
+*/
+
+// Add event listener to update validation UI on input change for the new department name field
+const teamNameInput = document.getElementById('new-team-name');
+teamNameInput.addEventListener('input', updateFieldValidationUI);
+
+// Add event listener to update validation UI on input change for the new department name field
+const teamDescriptionInput = document.getElementById('new-team-description');
+teamDescriptionInput.addEventListener('input', updateFieldValidationUI);
+
+/*
+	Submit a new team via the API.
+*/
+async function submitNewTeam() {
+	const teamNameInput = document.getElementById('new-team-name');
+	const teamDescriptionInput = document.getElementById('new-team-description');
+
+	if (teamNameInput.value.trim() === '') {
+		showErrorModal('Invalid Team Name', 'Please enter a valid team name.');
+		return;
+	}
+
+	const teamData = {
+		name: teamNameInput.value.trim(),
+		description: teamDescriptionInput.value.trim()
+	};
+
+	// send the data to the api
+	fetch('/api/teams/new', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify(teamData)
+	})
+	.then(response => {
+		if (!response.ok) {
+			throw new Error(`Error: ${response.status} ${response.statusText}`);
+		}
+		return response.json();
+	})
+	.then(data => {
+		console.log('Team created successfully:', data);
+		location.reload(); // Reload the page to reflect changes
+	})
+	.catch(error => {
+		console.error('Failed to create team:', error);
+		showErrorModal('Submission Failed', 'An error occurred while creating the team. Please try again.');
+	});
+}
+
+// Add event listener to the "Submit New Department" button
+const submitNewTeamBtn = document.getElementById('submit-new-team-btn');
+submitNewTeamBtn.addEventListener('click', submitNewTeam);

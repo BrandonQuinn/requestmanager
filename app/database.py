@@ -796,6 +796,32 @@ def get_team_by_id(team_id):
 	pass
 
 #
+# Add a new team in to the database
+#
+def add_team(name, description):
+	try:
+		# Connect to postgres
+		connection = connect()
+		cursor = connection.cursor()
+
+		# Insert the new team
+		insert_query = """
+		INSERT INTO teams (name, description)
+		VALUES (%s, %s)
+		"""
+
+		cursor.execute(insert_query, (name, description))
+		connection.commit()
+		
+	except Exception as error:
+		print(f"Error adding team: {error}")
+		raise error
+	finally:
+		if connection:
+			cursor.close()
+			disconnect(connection)
+
+#
 # Add a new department in to the database
 #
 def add_department(name, description, initial_team, teamList):
