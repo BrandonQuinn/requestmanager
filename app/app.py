@@ -48,7 +48,7 @@ def organisation():
 	if not token or not auth.check_token(username, token):
 		return redirect(url_for('index'), code=302)
 
-	template = template_lookup.get_template("organisation_templates\organisation.html")
+	template = template_lookup.get_template("organisation_templates\\organisation.html")
 	return template.render(title="Organisation")
 
 #
@@ -97,7 +97,7 @@ def dashboard():
 	user_data = database.get_user_by_username(username)
 
 	# present the dashboard
-	template = template_lookup.get_template("dashboard_templates\dashboard.html")
+	template = template_lookup.get_template("dashboard_templates\\dashboard.html")
 	return template.render(title="Dashboard", user=user_data)
 
 #############
@@ -678,6 +678,43 @@ def get_team_by_id(team_id):
 	# Get the list of teams from the database
 	team = database.get_team_by_id(team_id)
 	return jsonify(team), 200
+
+@app.route('/api/departments/new', methods=['POST'])
+def new_department():
+	# get auth data
+	token = request.cookies.get('auth_token')
+	username = request.cookies.get('user')
+
+	# check token
+	if not token or not username:
+		return jsonify({'error': 'Authentication required'}), 401
+	if not auth.check_token(username, token):
+		return jsonify({'error': 'Invalid token, required to first login'}), 401
+
+	department_name = None
+	
+	#TODO: Check permissions to see if the user can create a new department
+
+	print(request.get_json())
+
+	# get the data sent via POST
+	if request.is_json:
+		data = request.get_json()
+		name = data.get('name')
+		description = data.get('description')
+		initial_team = data.get('initial_team')
+		teams = data.get('teams')
+
+		# check if not null or empty
+		if not name or name == "":
+			return jsonify({'error': 'Empty department name send for new department.'}), 406
+
+		teamList = list(teams)
+		database.add_department(name, description, initial_team, teamList)
+
+		return jsonify({'success': 'Department added.'}), 200
+
+	return jsonify({'error': 'Adding department failed.'}), 200
 
 #
 # Start the app.
