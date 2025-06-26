@@ -40,8 +40,8 @@ departmentTable.innerHTML += getDepartments().then(departments => {
 	const rows = departments.map(department => `
 		<tr>
 			<td>${department[1] != null ? department[1] : ""}</td>
-			<td>${department[3] != null ? department[3] : ""}</td>
-			<td>${department[4] != null ? department[4] : ""}</td>
+			<td class="text-secondary">${department[3] != null ? department[3] : ""}</td>
+			<td class="text-secondary">${department[4] != null ? department[4] : ""}</td>
 			<td>
 				<div class="btn-list flex-nowrap">
 					<a href="#" class="btn btn-1"> Edit </a>
@@ -60,8 +60,8 @@ teamsTable.innerHTML += getTeams().then(teams => {
 	const rows = teams.map(team => `
 		<tr>
 			<td>${team[1] != null ? team[1] : ""}</td> 
-			<td>${team[3] != null ? team[3] : ""}</td>
-			<td>${team[4] != null ? team[4] : ""}</td>
+			<td class="text-secondary">${team[3] != null ? team[3] : ""}</td>
+			<td class="text-secondary">${team[4] != null ? team[4] : ""}</td>
 			<td>
 				<div class="btn-list flex-nowrap">
 					<a href="#" class="btn btn-1">Edit</a>

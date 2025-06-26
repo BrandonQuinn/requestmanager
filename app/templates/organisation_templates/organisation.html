@@ -77,7 +77,7 @@ THE SOFTWARE.
 									</div>
 								</div>
 
-								<div id="table-default" class="table-responsive">
+								<div id="table-default" class="table-responsive overflow-auto" style="max-height: 25rem">
 									<table class="table table-vcenter table-mobile-md card-table" id="department-table">
 										<thead>
 											<tr>
@@ -104,7 +104,7 @@ THE SOFTWARE.
 								<div class="card-header">
 									<h3 class="card-title">Teams</h3>
 									<div class="card-actions">
-										<a href="#" class="btn btn-primary"  data-bs-toggle="modal" data-bs-target="#modal-new-team">
+										<a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal-new-team">
 											<!-- Download SVG icon from http://tabler-icons.io/i/plus -->
 											<svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
 												viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
@@ -118,7 +118,7 @@ THE SOFTWARE.
 									</div>
 								</div>
 
-								<div id="table-default" class="table-responsive">
+								<div id="table-default" class="table-responsive overflow-auto" style="max-height: 25rem">
 									<table class="table table-vcenter table-mobile-md card-table" id="team-table">
 										<thead>
 											<tr>
@@ -148,7 +148,7 @@ THE SOFTWARE.
 							<div class="card-header">
 								<h3 class="card-title">Users</h3>
 								<div class="card-actions">
-									<a href="#" class="btn btn-primary">
+									<a href="#" class="btn btn-primary"  data-bs-toggle="modal" data-bs-target="#modal-new-user">
 										<!-- Download SVG icon from http://tabler-icons.io/i/plus -->
 										<svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24"
 											viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"
@@ -161,7 +161,7 @@ THE SOFTWARE.
 									</a>
 								</div>
 							</div>
-							<div class="table-responsive">
+							<div class="table-responsive overflow-auto" style="max-height: 35rem">
 								<table class="table table-vcenter table-mobile-md card-table">
 									<thead>
 										<tr>
@@ -227,6 +227,7 @@ THE SOFTWARE.
 			<%include file="error_modal_t.html" />
 			<%include file="organisation_templates\new_department_modal_t.html" />
 			<%include file="organisation_templates\new_team_modal_t.html" />
+			<%include file="organisation_templates\new_user_modal_t.html" />
 		</div>
 		<%include file="js_t.html" />
 		<script src="./static/js/organisation.js"></script>
