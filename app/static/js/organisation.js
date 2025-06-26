@@ -137,6 +137,48 @@ function updateFieldValidationUI() {
 		teamDescriptionInput.classList.remove('is-invalid');
 		teamDescriptionInput.classList.add('is-valid');
 	}
+
+	// New User Modal
+
+	// show when the new user first name field is valid or not
+	const teamFirstnameInput = document.getElementById('new-user-firstname');
+	if (teamFirstnameInput.value.trim() === '') {
+		teamFirstnameInput.classList.remove('is-valid');
+		teamFirstnameInput.classList.add('is-invalid');
+	} else {
+		teamFirstnameInput.classList.remove('is-invalid');
+		teamFirstnameInput.classList.add('is-valid');
+	}
+
+	// show when the new user last name field is valid or not
+	const teamLastnameInput = document.getElementById('new-user-lastname');
+	if (teamLastnameInput.value.trim() === '') {
+		teamLastnameInput.classList.remove('is-valid');
+		teamLastnameInput.classList.add('is-invalid');
+	} else {
+		teamLastnameInput.classList.remove('is-invalid');
+		teamLastnameInput.classList.add('is-valid');
+	}
+
+	// show when the new user username field is valid or not
+	const teamUsernameInput = document.getElementById('new-user-username');
+	if (teamUsernameInput.value.trim() === '') {
+		teamUsernameInput.classList.remove('is-valid');
+		teamUsernameInput.classList.add('is-invalid');
+	} else {
+		teamUsernameInput.classList.remove('is-invalid');
+		teamUsernameInput.classList.add('is-valid');
+	}
+
+	// show when the new user username field is valid or not
+	const teamEmailInput = document.getElementById('new-user-email');
+	if (teamEmailInput.value.trim() === '') {
+		teamEmailInput.classList.remove('is-valid');
+		teamEmailInput.classList.add('is-invalid');
+	} else {
+		teamEmailInput.classList.remove('is-invalid');
+		teamEmailInput.classList.add('is-valid');
+	}
 }
 
 updateFieldValidationUI(); // call once to update
@@ -334,3 +376,23 @@ async function submitNewTeam() {
 // Add event listener to the "Submit New Department" button
 const submitNewTeamBtn = document.getElementById('submit-new-team-btn');
 submitNewTeamBtn.addEventListener('click', submitNewTeam);
+
+/*
+	NEW USER MODAL FUNCTIONALITY
+*/
+
+// Add event listener to update validation UI on input change for the new user firstname field
+const userFirstnameInput = document.getElementById('new-user-firstname');
+userFirstnameInput.addEventListener('input', updateFieldValidationUI);
+
+// Add event listener to update validation UI on input change for the new user lastname field
+const userLastnameInput = document.getElementById('new-user-lastname');
+userLastnameInput.addEventListener('input', updateFieldValidationUI);
+
+// Add event listener to update validation UI on input change for the new user lastname field
+const userUsernameInput = document.getElementById('new-user-username');
+userUsernameInput.addEventListener('input', updateFieldValidationUI);
+
+// Add event listener to update validation UI on input change for the new user lastname field
+const userEmailInput = document.getElementById('new-user-email');
+userEmailInput.addEventListener('input', updateFieldValidationUI);
