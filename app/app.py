@@ -613,7 +613,7 @@ def resolve_request(request_id):
 		return jsonify({'error': 'Permission denied.'}), 405
 
 # ###################
-# ORGANISAITON API  #
+# ORGANISATION API  #
 #####################
 
 #
@@ -717,6 +717,9 @@ def new_team():
 
 	return jsonify({'error': 'Adding team failed.'}), 400
 
+#
+# Create a new department
+#
 @app.route('/api/departments/new', methods=['POST'])
 def new_department():
 	# get auth data
@@ -731,7 +734,7 @@ def new_department():
 
 	department_name = None
 	
-	#TODO: Check permissions to see if the user can create a new department
+	# TODO: Check permissions to see if the user can create a new department
 
 	print(request.get_json())
 
@@ -753,6 +756,32 @@ def new_department():
 		return jsonify({'success': 'Department added.'}), 200
 
 	return jsonify({'error': 'Adding department failed.'}), 200
+
+# ###################
+# SETTINGS API      #
+#####################
+
+@app.route('/api/settings/<string:setting_name>', methods=['GET'])
+def get_setting_by_name(setting_name):
+	# get auth data
+	token = request.cookies.get('auth_token')
+	username = request.cookies.get('user')
+
+	# check token
+	if not token or not username:
+		return jsonify({'error': 'Authentication required'}), 401
+	if not auth.check_token(username, token):
+		return jsonify({'error': 'Invalid token, required to first login'}), 401
+
+	# Check if the user has permission to view settings
+
+	# Get the settings from the database
+	try:
+		setting = database.get_setting_by_name(setting_name)
+	except Exception as e:
+		return jsonify({'error': str(e)}), 500
+	
+	return jsonify(setting), 200
 
 #
 # Start the app.

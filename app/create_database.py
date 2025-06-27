@@ -341,6 +341,12 @@ def create_default_values(conn, cur):
 		VALUES (%s, %s, %s, %s)
 	''', (3, 'breakglass_session_timeout', 10, 'How long a breakglass account session token lasts. In Minutes.'))
 
+	# Create a setting for the timeout for a breakglass session
+	cur.execute('''
+		INSERT INTO app_settings (id, setting_name, value, description)
+		VALUES (%s, %s, %s, %s)
+	''', (4, 'user_password_min_length', 16, 'Minimum length of a user password. This is used to enforce strong passwords.'))
+
 	# Commit the changes
 	conn.commit()
 

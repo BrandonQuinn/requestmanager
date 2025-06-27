@@ -18,3 +18,18 @@ function getTokenFromCookie() {
 	const token = document.cookie.split('; ').find(row => row.startsWith('auth_token=')).split('=')[1];
 	return token;
 }
+
+/*
+	Generated a random password.
+*/
+function generatePassword() {
+    var length = 32,
+        characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789)(*&^%$#@!",
+        pw = "";
+    
+	for (var i = 0, n = characters.length; i < length; ++i) {
+		pw += characters.charAt(Math.floor(Math.random() * n));
+	}
+	
+    return pw;
+}

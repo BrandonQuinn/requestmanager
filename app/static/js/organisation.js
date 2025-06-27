@@ -91,11 +91,10 @@ function updateDepartmentModalSelectables() {
 
 updateDepartmentModalSelectables();
 
-// Update the fields that require validation and display that e.g. showing the red x or green tick etc.
-function updateFieldValidationUI() {
-	
-	// New Department Modal
-
+/*
+	Update the fields that require validation and display that e.g. showing the red x or green tick etc for the department modal
+*/
+function updateFieldValidationDepartmentModal() {
 	// show when the new department name field is valid or not
 	const departmentNameInput = document.getElementById('new-department-name');
 	if (departmentNameInput.value.trim() === '') {
@@ -115,73 +114,9 @@ function updateFieldValidationUI() {
 		departmentDescriptionInput.classList.remove('is-invalid');
 		departmentDescriptionInput.classList.add('is-valid');
 	}
-
-	// New Team Modal
-
-	// show when the new department name field is valid or not
-	const teamNameInput = document.getElementById('new-team-name');
-	if (teamNameInput.value.trim() === '') {
-		teamNameInput.classList.remove('is-valid');
-		teamNameInput.classList.add('is-invalid');
-	} else {
-		teamNameInput.classList.remove('is-invalid');
-		teamNameInput.classList.add('is-valid');
-	}
-
-	// show when the new department description field is valid or not
-	const teamDescriptionInput = document.getElementById('new-team-description');
-	if (teamDescriptionInput.value.trim() === '') {
-		teamDescriptionInput.classList.remove('is-valid');
-		teamDescriptionInput.classList.add('is-invalid');
-	} else {
-		teamDescriptionInput.classList.remove('is-invalid');
-		teamDescriptionInput.classList.add('is-valid');
-	}
-
-	// New User Modal
-
-	// show when the new user first name field is valid or not
-	const teamFirstnameInput = document.getElementById('new-user-firstname');
-	if (teamFirstnameInput.value.trim() === '') {
-		teamFirstnameInput.classList.remove('is-valid');
-		teamFirstnameInput.classList.add('is-invalid');
-	} else {
-		teamFirstnameInput.classList.remove('is-invalid');
-		teamFirstnameInput.classList.add('is-valid');
-	}
-
-	// show when the new user last name field is valid or not
-	const teamLastnameInput = document.getElementById('new-user-lastname');
-	if (teamLastnameInput.value.trim() === '') {
-		teamLastnameInput.classList.remove('is-valid');
-		teamLastnameInput.classList.add('is-invalid');
-	} else {
-		teamLastnameInput.classList.remove('is-invalid');
-		teamLastnameInput.classList.add('is-valid');
-	}
-
-	// show when the new user username field is valid or not
-	const teamUsernameInput = document.getElementById('new-user-username');
-	if (teamUsernameInput.value.trim() === '') {
-		teamUsernameInput.classList.remove('is-valid');
-		teamUsernameInput.classList.add('is-invalid');
-	} else {
-		teamUsernameInput.classList.remove('is-invalid');
-		teamUsernameInput.classList.add('is-valid');
-	}
-
-	// show when the new user username field is valid or not
-	const teamEmailInput = document.getElementById('new-user-email');
-	if (teamEmailInput.value.trim() === '') {
-		teamEmailInput.classList.remove('is-valid');
-		teamEmailInput.classList.add('is-invalid');
-	} else {
-		teamEmailInput.classList.remove('is-invalid');
-		teamEmailInput.classList.add('is-valid');
-	}
 }
 
-updateFieldValidationUI(); // call once to update
+updateFieldValidationDepartmentModal(); // call once to update
 
 /*
 	NEW DEPARTMENT MODAL FUNCTIONALITY
@@ -189,11 +124,11 @@ updateFieldValidationUI(); // call once to update
 
 // Add event listener to update validation UI on input change for the new department name field
 const departmentNameInput = document.getElementById('new-department-name');
-departmentNameInput.addEventListener('input', updateFieldValidationUI);
+departmentNameInput.addEventListener('input', updateFieldValidationDepartmentModal);
 
 // Add event listener to update validation UI on input change for the new department name field
 const departmentDescriptionInput = document.getElementById('new-department-description');
-departmentDescriptionInput.addEventListener('input', updateFieldValidationUI);
+departmentDescriptionInput.addEventListener('input', updateFieldValidationDepartmentModal);
 
 // Add event listener to add a team to the department (will add to a table/list)
 const addTeamToDepartmentBtn = document.getElementById('add-team-to-department-btn');
@@ -324,13 +259,40 @@ submitNewDepartmentBtn.addEventListener('click', submitNewDepartment);
 	NEW TEAM MODAL FUNCTIONALITY
 */
 
+/*
+	Update the fields that require validation and display that e.g. showing the red x or green tick etc for the team modal
+*/
+function updateFieldValidationTeamModal() {
+	// show when the new department name field is valid or not
+	const teamNameInput = document.getElementById('new-team-name');
+	if (teamNameInput.value.trim() === '') {
+		teamNameInput.classList.remove('is-valid');
+		teamNameInput.classList.add('is-invalid');
+	} else {
+		teamNameInput.classList.remove('is-invalid');
+		teamNameInput.classList.add('is-valid');
+	}
+
+	// show when the new department description field is valid or not
+	const teamDescriptionInput = document.getElementById('new-team-description');
+	if (teamDescriptionInput.value.trim() === '') {
+		teamDescriptionInput.classList.remove('is-valid');
+		teamDescriptionInput.classList.add('is-invalid');
+	} else {
+		teamDescriptionInput.classList.remove('is-invalid');
+		teamDescriptionInput.classList.add('is-valid');
+	}
+}
+
+updateFieldValidationTeamModal(); // call once to update before the user opens the modal
+
 // Add event listener to update validation UI on input change for the new department name field
 const teamNameInput = document.getElementById('new-team-name');
-teamNameInput.addEventListener('input', updateFieldValidationUI);
+teamNameInput.addEventListener('input', updateFieldValidationTeamModal);
 
 // Add event listener to update validation UI on input change for the new department name field
 const teamDescriptionInput = document.getElementById('new-team-description');
-teamDescriptionInput.addEventListener('input', updateFieldValidationUI);
+teamDescriptionInput.addEventListener('input', updateFieldValidationTeamModal);
 
 /*
 	Submit a new team via the API.
@@ -381,18 +343,129 @@ submitNewTeamBtn.addEventListener('click', submitNewTeam);
 	NEW USER MODAL FUNCTIONALITY
 */
 
+// Update the fields that require validation and display that e.g. showing the red x or green tick etc.
+async function updateFieldValidationUserModal() {
+	// New User Modal
+
+	// show when the new user first name field is valid or not
+	const userFirstnameInput = document.getElementById('new-user-firstname');
+	if (userFirstnameInput.value.trim() === '') {
+		userFirstnameInput.classList.remove('is-valid');
+		userFirstnameInput.classList.add('is-invalid');
+	} else {
+		userFirstnameInput.classList.remove('is-invalid');
+		userFirstnameInput.classList.add('is-valid');
+	}
+
+	// show when the new user last name field is valid or not
+	const userLastnameInput = document.getElementById('new-user-lastname');
+	if (userLastnameInput.value.trim() === '') {
+		userLastnameInput.classList.remove('is-valid');
+		userLastnameInput.classList.add('is-invalid');
+	} else {
+		userLastnameInput.classList.remove('is-invalid');
+		userLastnameInput.classList.add('is-valid');
+	}
+
+	// show when the new user username field is valid or not
+	const userUsernameInput = document.getElementById('new-user-username');
+	if (userUsernameInput.value.trim() === '') {
+		userUsernameInput.classList.remove('is-valid');
+		userUsernameInput.classList.add('is-invalid');
+	} else {
+		userUsernameInput.classList.remove('is-invalid');
+		userUsernameInput.classList.add('is-valid');
+	}
+
+	// show when the new user username field is valid or not
+	const userEmailInput = document.getElementById('new-user-email');
+	const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+	if (!emailRegex.test(userEmailInput.value.trim())) {
+		userEmailInput.classList.remove('is-valid');
+		userEmailInput.classList.add('is-invalid');
+	} else if (userEmailInput.value.trim() === '') {
+		userEmailInput.classList.remove('is-valid');
+		teamEmailInput.classList.add('is-invalid');
+	} else {
+		userEmailInput.classList.remove('is-invalid');
+		userEmailInput.classList.add('is-valid');
+	}
+
+	const userPasswordInput = document.getElementById('new-user-password');
+	const minPasswordLengthSetting = await fetchSettingByName('user_password_min_length');
+
+	if (userPasswordInput.value.trim().length < minPasswordLengthSetting[2]) {
+		userPasswordInput.classList.remove('is-valid');
+		userPasswordInput.classList.remove('is-valid-lite');
+		userPasswordInput.classList.add('is-invalid');
+		userPasswordInput.classList.add('is-invalid-lite');
+	} else {
+		userPasswordInput.classList.remove('is-invalid');
+		userPasswordInput.classList.remove('is-invalid-lite');
+		userPasswordInput.classList.add('is-valid'); 
+		userPasswordInput.classList.add('is-valid-lite');
+	}
+}
+
+updateFieldValidationUserModal(); // call once to update
+
 // Add event listener to update validation UI on input change for the new user firstname field
 const userFirstnameInput = document.getElementById('new-user-firstname');
-userFirstnameInput.addEventListener('input', updateFieldValidationUI);
+userFirstnameInput.addEventListener('input', updateFieldValidationUserModal);
 
 // Add event listener to update validation UI on input change for the new user lastname field
 const userLastnameInput = document.getElementById('new-user-lastname');
-userLastnameInput.addEventListener('input', updateFieldValidationUI);
+userLastnameInput.addEventListener('input', updateFieldValidationUserModal);
 
 // Add event listener to update validation UI on input change for the new user lastname field
 const userUsernameInput = document.getElementById('new-user-username');
-userUsernameInput.addEventListener('input', updateFieldValidationUI);
+userUsernameInput.addEventListener('input', updateFieldValidationUserModal);
 
 // Add event listener to update validation UI on input change for the new user lastname field
 const userEmailInput = document.getElementById('new-user-email');
-userEmailInput.addEventListener('input', updateFieldValidationUI);
+userEmailInput.addEventListener('input', updateFieldValidationUserModal);
+
+// Add event listener to update validation UI on input change for the new user lastname field
+const userPasswordInput = document.getElementById('new-user-password');
+userPasswordInput.addEventListener('input', updateFieldValidationUserModal);
+
+/*
+	Generate a random password.
+*/
+function generatePasswordAndUpdateField() {
+	const userPasswordInput = document.getElementById('new-user-password');
+	const generatedPassword = generatePassword();
+	userPasswordInput.value = generatedPassword;
+	updateFieldValidationUserModal();
+}
+
+// add listener for when the user clicks the generate password button
+const generatePasswordBtn = document.getElementById('generate-password-btn');
+generatePasswordBtn.addEventListener('click', generatePasswordAndUpdateField);
+
+function togglePasswordVisibility() {
+	const userPasswordInput = document.getElementById('new-user-password');
+	if (userPasswordInput.type === 'password') {
+		userPasswordInput.type = 'text';
+		pwHiddenBtn.style.display = 'none';
+		pwVisibleBtn.style.display = 'inline';
+	} else {
+		userPasswordInput.type = 'password';
+		pwHiddenBtn.style.display = 'inline';
+		pwVisibleBtn.style.display = 'none';
+	}
+}
+
+/*
+	Add event listeners for the password visibility toggle buttons.
+*/
+
+const pwVisibleBtn = document.getElementById('new-user-pw-visible-icon');
+pwVisibleBtn.addEventListener('click', togglePasswordVisibility);
+
+const pwHiddenBtn = document.getElementById('new-user-pw-hidden-icon');
+pwHiddenBtn.addEventListener('click', togglePasswordVisibility);
+
+// set initial state for password visiblity toggle
+pwHiddenBtn.style.display = 'inline';
+pwVisibleBtn.style.display = 'none';
