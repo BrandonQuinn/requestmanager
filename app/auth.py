@@ -41,23 +41,28 @@ def generate_user_token(username):
 #
 def check_token(username, token):
 	# get the full token data out of the database and check if anything is returned
-	token_data = database.get_token(token)
+	try:
+		token_data = database.get_token(token)
 
-	# Get user by username sent from client
-	user_data = database.get_user_by_username(username)
+		# Get user by username sent from client
+		user_data = database.get_user_by_username(username)
 
-	# nothing returned, no token exists
-	if not token_data:
+		# nothing returned, no token exists
+		if not token_data:
+			return False
+
+		# check if the person who created the token is the person claiming to be logged in (via cookie)
+		if not token_data[4] == user_data[0]:
+			return False
+
+		# check if the deadline is less than the current time
+		if token_data[3] < datetime.datetime.now():
+			return False
+		
+	except Exception as error:
+		print(f"Error while checking token: {error}. It may not exist or is invalid. Or there was a database error retrieving it.")
 		return False
 
-	# check if the person who created the token is the person claiming to be logged in (via cookie)
-	if not token_data[4] == user_data[0]:
-		return False
-
-	# check if the deadline is less than the current time
-	if token_data[3] < datetime.datetime.now():
-		return False
-	
 	return True
 
 #

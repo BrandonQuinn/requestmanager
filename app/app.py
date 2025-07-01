@@ -638,6 +638,31 @@ def get_departments():
 	return jsonify(departments), 200
 
 #
+# Get a department by its ID
+#
+@app.route('/api/departments/<int:department_id>', methods=['GET'])
+def get_department_by_id(department_id):
+	# get auth data
+	token = request.cookies.get('auth_token')
+	username = request.cookies.get('user')
+
+	# check token
+	if not token or not username:
+		return jsonify({'error': 'Authentication required'}), 401
+	if not auth.check_token(username, token):
+		return jsonify({'error': 'Invalid token, required to first login'}), 401
+
+	# TODO: Check permissions to see which departments the user can see
+
+	# Get the department details from the database
+	department = database.get_department_by_id(department_id)
+	if not department:
+		return jsonify({'error': 'Department not found'}), 404
+
+	return jsonify(department), 200
+
+
+#
 # Get a list of all teams
 #
 @app.route('/api/teams', methods=['GET'])

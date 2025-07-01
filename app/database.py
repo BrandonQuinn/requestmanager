@@ -561,35 +561,6 @@ def get_department_by_id(department_id):
 			disconnect(connection)
 
 #
-# Return a team by its ID
-#
-def get_team_by_id(team_id):
-	try:
-		# Connect to your postgres DB
-		connection = connect()
-		cursor = connection.cursor()
-
-		# Execute a query to get the team by id
-		query = "SELECT * FROM teams WHERE id = %s"
-		cursor.execute(query, (team_id,))
-
-		# Retrieve query results
-		team = cursor.fetchone()
-
-		if team:
-			return team
-		else:
-			raise Exception("No team found when getting team by id from database")
-
-	except Exception as error:
-		print(f"Error fetching team by id: {error}")
-		raise error
-	finally:
-		if connection:
-			cursor.close()
-			disconnect(connection)
-
-#
 # Resolve a request by its ID
 #
 def resolve_request(request_id):
@@ -791,9 +762,34 @@ def get_teams():
 			cursor.close()
 			disconnect(connection)
 
-# Get team by id
+#
+# Return a team by its ID
+#
 def get_team_by_id(team_id):
-	pass
+	try:
+		# Connect to your postgres DB
+		connection = connect()
+		cursor = connection.cursor()
+
+		# Execute a query to get the team by id
+		query = "SELECT * FROM teams WHERE id = %s"
+		cursor.execute(query, (team_id,))
+
+		# Retrieve query results
+		team = cursor.fetchone()
+
+		if team:
+			return team
+		else:
+			raise Exception("No team found when getting team by id from database")
+
+	except Exception as error:
+		print(f"Error fetching team by id from database: {error}")
+		raise error
+	finally:
+		if connection:
+			cursor.close()
+			disconnect(connection)
 
 #
 # Add a new team in to the database

@@ -16,6 +16,24 @@ async function getDepartments() {
 }
 
 /*
+	Get a team from the server and return the Promise.
+*/
+async function getDepartmentById(departmentId) {
+	try {
+		const response = await fetch('/api/departments/' + departmentId);
+		// Check if the response is ok (status in the range 200-299)
+		if (!response.ok) {
+			throw new Error(`Error: ${response.status} ${response.statusText}`);
+		}
+		const department = await response.json();
+		return department; // Assuming the API returns an array with one department object
+	} catch (error) {
+		console.error('Failed to fetch teams:', error);
+		return [];
+	}
+}
+
+/*
 	Get all teams from the server and return the Promise.
 */
 async function getTeams() {
@@ -33,23 +51,43 @@ async function getTeams() {
 }
 
 /*
+	Get team by id
+*/
+async function getTeamById(teamId) {
+	try {
+		const response = await fetch('/api/teams/' + teamId);
+		if (!response.ok) {
+			throw new Error(`Error: ${response.status} ${response.statusText}`);
+		}
+		const team = await response.json();
+		return team[1]; // Assuming the API returns an array with one team object
+	} catch (error) {
+		console.error('Failed to fetch team:', error);
+		return '';
+	}
+}
+/*
 	Populate the department table.
 */
 const departmentTable = document.getElementById('department-table-rows');
-departmentTable.innerHTML += getDepartments().then(departments => {
-	const rows = departments.map(department => `
-		<tr>
-			<td>${department[1] != null ? department[1] : ""}</td>
-			<td class="text-secondary">${department[3] != null ? department[3] : ""}</td>
-			<td class="text-secondary">${department[4] != null ? department[4] : ""}</td>
-			<td>
-				<div class="btn-list flex-nowrap">
-					<a href="#" class="btn btn-1"> Edit </a>
-				</div>
-			</td>
-		</tr>
-	`).join('');
-	departmentTable.innerHTML = rows;
+getDepartments().then(departments => {
+	departmentTable.innerHTML = "";
+	const rows = departments.map(department => {
+		getTeamById(department[4]).then(team => {
+			departmentTable.innerHTML += `
+				<tr>
+					<td>${department[1] != null ? department[1] : ""}</td>
+					<td class="text-secondary">${department[3] != null ? department[3] : ""}</td>
+					<td class="text-secondary">${team}</td>
+					<td>
+						<div class="btn-list flex-nowrap">
+							<a href="#" class="btn btn-1"> Edit </a>
+						</div>
+					</td>
+				</tr>
+			`;
+		});
+	});
 });
 
 /*
@@ -132,12 +170,12 @@ departmentDescriptionInput.addEventListener('input', updateFieldValidationDepart
 
 // Add event listener to add a team to the department (will add to a table/list)
 const addTeamToDepartmentBtn = document.getElementById('add-team-to-department-btn');
-addTeamToDepartmentBtn.addEventListener('click', function() {
+addTeamToDepartmentBtn.addEventListener('click', function () {
 	const selectedTeamId = document.getElementById('select-new-department-teams').value;
-	
+
 	const teamListTable = document.getElementById('new-department-team-list');
 	const selectedTeamName = document.querySelector(`#select-new-department-teams option[value="${selectedTeamId}"]`).textContent;
-	
+
 	// Check if the team is already in the list
 	const existingTeams = Array.from(teamListTable.querySelectorAll('tr td:first-child')).map(td => td.textContent);
 	if (existingTeams.includes(selectedTeamId)) {
@@ -173,7 +211,7 @@ addTeamToDepartmentBtn.addEventListener('click', function() {
 
 // Add event listener to remove a team from the list when the "Remove" button is clicked
 const teamListTable = document.getElementById('new-department-team-list');
-teamListTable.addEventListener('click', function(event) {
+teamListTable.addEventListener('click', function (event) {
 	if (event.target.id == 'remove-team-btn') {
 		const row = event.target.closest('tr');
 		if (row) {
@@ -184,7 +222,7 @@ teamListTable.addEventListener('click', function(event) {
 			const removedTeamName = row.querySelector('td:nth-child(2)').textContent;
 			const addTeamsSelect = document.getElementById('select-new-department-teams');
 			const newOption = document.createElement('option');
-			
+
 			newOption.value = removedTeamId;
 			newOption.textContent = removedTeamName;
 			addTeamsSelect.appendChild(newOption);
@@ -234,21 +272,21 @@ async function submitNewDepartment() {
 		},
 		body: JSON.stringify(departmentData)
 	})
-	.then(response => {
-		if (!response.ok) {
-			throw new Error(`Error: ${response.status} ${response.statusText}`);
-		}
-		return response.json();
-	})
-	.then(data => {
-		console.log('Department created successfully:', data);
-		// Optionally, refresh the department table or clear the form
-		location.reload(); // Reload the page to reflect changes
-	})
-	.catch(error => {
-		console.error('Failed to create department:', error);
-		showErrorModal('Submission Failed', 'An error occurred while creating the department. Please try again.');
-	});
+		.then(response => {
+			if (!response.ok) {
+				throw new Error(`Error: ${response.status} ${response.statusText}`);
+			}
+			return response.json();
+		})
+		.then(data => {
+			console.log('Department created successfully:', data);
+			// Optionally, refresh the department table or clear the form
+			location.reload(); // Reload the page to reflect changes
+		})
+		.catch(error => {
+			console.error('Failed to create department:', error);
+			showErrorModal('Submission Failed', 'An error occurred while creating the department. Please try again.');
+		});
 }
 
 // Add event listener to the "Submit New Department" button
@@ -319,20 +357,20 @@ async function submitNewTeam() {
 		},
 		body: JSON.stringify(teamData)
 	})
-	.then(response => {
-		if (!response.ok) {
-			throw new Error(`Error: ${response.status} ${response.statusText}`);
-		}
-		return response.json();
-	})
-	.then(data => {
-		console.log('Team created successfully:', data);
-		location.reload(); // Reload the page to reflect changes
-	})
-	.catch(error => {
-		console.error('Failed to create team:', error);
-		showErrorModal('Submission Failed', 'An error occurred while creating the team. Please try again.');
-	});
+		.then(response => {
+			if (!response.ok) {
+				throw new Error(`Error: ${response.status} ${response.statusText}`);
+			}
+			return response.json();
+		})
+		.then(data => {
+			console.log('Team created successfully:', data);
+			location.reload(); // Reload the page to reflect changes
+		})
+		.catch(error => {
+			console.error('Failed to create team:', error);
+			showErrorModal('Submission Failed', 'An error occurred while creating the team. Please try again.');
+		});
 }
 
 // Add event listener to the "Submit New Department" button
@@ -402,7 +440,7 @@ async function updateFieldValidationUserModal() {
 	} else {
 		userPasswordInput.classList.remove('is-invalid');
 		userPasswordInput.classList.remove('is-invalid-lite');
-		userPasswordInput.classList.add('is-valid'); 
+		userPasswordInput.classList.add('is-valid');
 		userPasswordInput.classList.add('is-valid-lite');
 	}
 }
