@@ -507,3 +507,75 @@ pwHiddenBtn.addEventListener('click', togglePasswordVisibility);
 // set initial state for password visiblity toggle
 pwHiddenBtn.style.display = 'inline';
 pwVisibleBtn.style.display = 'none';
+
+/*
+	Configure and populate the new team modal.
+*/
+
+// Set the initial options in the model, will be updated when the teams are fetched
+function updateTeamModalSelectables() {
+	const addTeamsSelect = document.getElementById('select-new-team-for-user');
+	getTeams().then(teams => {
+		const options = teams.map(team => `
+			<option value="${team[0]}">${team[1]}</option>
+		`).join('');
+		addTeamsSelect.innerHTML = options;
+	});
+}
+
+updateTeamModalSelectables();
+
+// Add event listener to add a team to the user (will add to a table/list)
+const addTeamToUserBtn = document.getElementById('add-team-to-user-btn');
+addTeamToUserBtn.addEventListener('click', function () {
+	const selectedTeamId = document.getElementById('select-new-team-for-user').value;
+
+	const teamListTable = document.getElementById('new-user-team-list');
+	const selectedTeamName = document.querySelector(`#select-new-team-for-user option[value="${selectedTeamId}"]`).textContent;
+
+	// Check if the team is already in the list
+	const existingTeams = Array.from(teamListTable.querySelectorAll('tr td:first-child')).map(td => td.textContent);
+	if (existingTeams.includes(selectedTeamId)) {
+		return;
+	}
+
+	if (selectedTeamId) {
+		const newRow = `
+			<tr>
+				<td style="display:none">${selectedTeamId}</td>
+				<td>${selectedTeamName}</td>
+				<td>
+					<a href="#" id="remove-team-btn-user-list">Remove</button>
+				</td>
+			</tr>
+		`;
+		teamListTable.innerHTML += newRow;
+	}
+
+	// Remove the selected team from the dropdown list
+	const selectedOption = document.querySelector(`#select-new-team-for-user option[value="${selectedTeamId}"]`);
+	if (selectedOption) {
+		selectedOption.remove();
+	}
+});
+
+// Add event listener to remove a team from the list when the "Remove" button is clicked
+const userTeamListTable = document.getElementById('new-user-team-list');
+userTeamListTable.addEventListener('click', function (event) {
+	if (event.target.id == 'remove-team-btn-user-list') {
+		const row = event.target.closest('tr');
+		if (row) {
+			row.remove();
+
+			// Add the removed team back to the dropdown list
+			const removedTeamId = row.querySelector('td:first-child').textContent;
+			const removedTeamName = row.querySelector('td:nth-child(2)').textContent;
+			const addTeamsSelect = document.getElementById('select-new-team-for-user');
+			const newOption = document.createElement('option');
+
+			newOption.value = removedTeamId;
+			newOption.textContent = removedTeamName;
+			addTeamsSelect.appendChild(newOption);
+		}
+	}
+});
