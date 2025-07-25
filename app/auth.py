@@ -40,6 +40,11 @@ def generate_user_token(username):
 # Checks if the token is valid (in the database)
 #
 def check_token(username, token):
+
+	# if no username or token is provided, return false
+	if not username or not token:
+		return False
+	
 	# get the full token data out of the database and check if anything is returned
 	try:
 		token_data = database.get_token(token)

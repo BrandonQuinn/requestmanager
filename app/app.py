@@ -117,6 +117,50 @@ def get_users():
 	return jsonify(users)
 
 #
+# Return all users
+#
+@app.route('/api/users/new', methods=['POST'])
+def create_new_user():
+	# check token and user from cookies
+	if auth.check_token(request.cookies.get('user'), request.cookies.get('auth_token')) is False:
+		return jsonify({'error': 'Authentication required'}), 401
+
+	if request.is_json:
+		data = request.get_json()
+		firstname = data.get('firstname')
+		lastname = data.get('lastname')
+		new_username = data.get('username')
+		email = data.get('email')
+		password = data.get('password')
+		teams = data.get('teams')
+
+		if not firstname or not lastname or not new_username or not email or not password:
+			return jsonify({'error': 'One or more fields not provided.'}), 400
+
+		# hash the password
+		try:
+			password = auth.hash(password)
+		except Exception as e:
+			return jsonify({'error': 'Error hashing password'}), 500
+		
+		# check if the user already exists
+		try:
+			if database.get_user_by_username(new_username):
+				return jsonify({'error': 'User already exists'}), 400
+			if database.get_user_by_email(email):
+				return jsonify({'error': 'Email already in use'}), 400
+		except Exception as e:
+			pass  # an exception in this case is fine, it just means the user or email doesn't exist
+		
+		try:
+			database.add_user(new_username, email, password, [], teams, 0, False, firstname, lastname)
+			return jsonify({'success': 'User created successfully'}), 201
+		except Exception as e:
+			return jsonify({'error': str(e)}), 500
+	else:
+		return jsonify({'error': 'Invalid request format'}), 400
+
+#
 # Return currently logged in user (associated with token from cookie)
 #
 @app.route('/api/users/self', methods=['GET'])
@@ -330,12 +374,9 @@ def get_request_by_id(request_id):
 	token = request.cookies.get('auth_token')
 	username = request.cookies.get('user')
 
-	# check token
-	if not token or not username:
+	# check token and user from cookies
+	if auth.check_token(username, token) is False:
 		return jsonify({'error': 'Authentication required'}), 401
-
-	if not auth.check_token(username, token):
-		return jsonify({'error': 'Invalid token, required to first login'}), 401
 
 	# get the request from the database
 	try:
@@ -386,17 +427,18 @@ def get_request_by_id(request_id):
 
 	return jsonify(request_data), 200
 
+#
+# Create a new request
+#
 @app.route('/api/requests/new', methods=['POST'])
 def new_request():
 	# get auth data
 	token = request.cookies.get('auth_token')
 	username = request.cookies.get('user')
 
-	# check token
-	if not token or not username:
+	# check token and user from cookies
+	if auth.check_token(username, token) is False:
 		return jsonify({'error': 'Authentication required'}), 401
-	if not auth.check_token(username, token):
-		return jsonify({'error': 'Invalid token, required to first login'}), 401
 	
 	request_title = None
 	request_description = None
@@ -441,6 +483,10 @@ def get_requests_self():
 	token = request.cookies.get('auth_token')
 	username = request.cookies.get('user')
 
+	# check token and user from cookies
+	if auth.check_token(username, token) is False:
+		return jsonify({'error': 'Authentication required'}), 401
+
 	# get what requests are needed based on filters
 	page = request.args.get('page', default=1, type=int)
 	count = request.args.get('count', default=10, type=int)
@@ -474,12 +520,9 @@ def get_request_types():
 	token = request.cookies.get('auth_token')
 	username = request.cookies.get('user')
 
-	# check token
-	if not token or not username:
+	# check token and user from cookies
+	if auth.check_token(username, token) is False:
 		return jsonify({'error': 'Authentication required'}), 401
-
-	if not auth.check_token(username, token):
-		return jsonify({'error': 'Invalid token, required to first login'}), 401
 	
 	# Get the list of request types from the database
 	request_types = database.get_request_types()
@@ -496,12 +539,9 @@ def get_request_departments():
 	token = request.cookies.get('auth_token')
 	username = request.cookies.get('user')
 
-	# check token
-	if not token or not username:
+	# check token and user from cookies
+	if auth.check_token(username, token) is False:
 		return jsonify({'error': 'Authentication required'}), 401
-
-	if not auth.check_token(username, token):
-		return jsonify({'error': 'Invalid token, required to first login'}), 401
 	
 	# Get the list of request types from the database
 	request_types = database.get_request_departments()
@@ -522,12 +562,9 @@ def get_request_updates(request_id):
 	token = request.cookies.get('auth_token')
 	username = request.cookies.get('user')
 
-	# check token
-	if not token or not username:
+	# check token and user from cookies
+	if auth.check_token(username, token) is False:
 		return jsonify({'error': 'Authentication required'}), 401
-
-	if not auth.check_token(username, token):
-		return jsonify({'error': 'Invalid token, required to first login'}), 401
 
 	# get the request from the database
 	try:
@@ -550,11 +587,9 @@ def new_request_update(request_id):
 	token = request.cookies.get('auth_token')
 	username = request.cookies.get('user')
 
-	# check token
-	if not token or not username:
+	# check token and user from cookies
+	if auth.check_token(username, token) is False:
 		return jsonify({'error': 'Authentication required'}), 401
-	if not auth.check_token(username, token):
-		return jsonify({'error': 'Invalid token, required to first login'}), 401
 	
 	update_content = None
 	
@@ -582,11 +617,9 @@ def resolve_request(request_id):
 	token = request.cookies.get('auth_token')
 	username = request.cookies.get('user')
 
-	# check token
-	if not token or not username:
+	# check token and user from cookies
+	if auth.check_token(username, token) is False:
 		return jsonify({'error': 'Authentication required'}), 401
-	if not auth.check_token(username, token):
-		return jsonify({'error': 'Invalid token, required to first login'}), 401
 
 	resolve_request_permission = False
 	
@@ -625,11 +658,9 @@ def get_departments():
 	token = request.cookies.get('auth_token')
 	username = request.cookies.get('user')
 
-	# check token
-	if not token or not username:
+	# check token and user from cookies
+	if auth.check_token(username, token) is False:
 		return jsonify({'error': 'Authentication required'}), 401
-	if not auth.check_token(username, token):
-		return jsonify({'error': 'Invalid token, required to first login'}), 401
 	
 	# TODO: Check permissions to see which departments the user can see
 
@@ -646,11 +677,9 @@ def get_department_by_id(department_id):
 	token = request.cookies.get('auth_token')
 	username = request.cookies.get('user')
 
-	# check token
-	if not token or not username:
+	# check token and user from cookies
+	if auth.check_token(username, token) is False:
 		return jsonify({'error': 'Authentication required'}), 401
-	if not auth.check_token(username, token):
-		return jsonify({'error': 'Invalid token, required to first login'}), 401
 
 	# TODO: Check permissions to see which departments the user can see
 
@@ -671,11 +700,9 @@ def get_teams():
 	token = request.cookies.get('auth_token')
 	username = request.cookies.get('user')
 
-	# check token
-	if not token or not username:
+	# check token and user from cookies
+	if auth.check_token(username, token) is False:
 		return jsonify({'error': 'Authentication required'}), 401
-	if not auth.check_token(username, token):
-		return jsonify({'error': 'Invalid token, required to first login'}), 401
 
 	# TODO: Check permissions to see which departments the user can see
 
@@ -692,11 +719,9 @@ def get_team_by_id(team_id):
 	token = request.cookies.get('auth_token')
 	username = request.cookies.get('user')
 
-	# check token
-	if not token or not username:
+	# check token and user from cookies
+	if auth.check_token(username, token) is False:
 		return jsonify({'error': 'Authentication required'}), 401
-	if not auth.check_token(username, token):
-		return jsonify({'error': 'Invalid token, required to first login'}), 401
 
 	# TODO: Check permissions to see which teams a user can see
 
@@ -713,11 +738,9 @@ def new_team():
 	token = request.cookies.get('auth_token')
 	username = request.cookies.get('user')
 
-	# check token
-	if not token or not username:
+	# check token and user from cookies
+	if auth.check_token(username, token) is False:
 		return jsonify({'error': 'Authentication required'}), 401
-	if not auth.check_token(username, token):
-		return jsonify({'error': 'Invalid token, required to first login'}), 401
 
 	# TODO: Check permissions to see if the user can create a new team
 
@@ -751,11 +774,9 @@ def new_department():
 	token = request.cookies.get('auth_token')
 	username = request.cookies.get('user')
 
-	# check token
-	if not token or not username:
+	# check token and user from cookies
+	if auth.check_token(username, token) is False:
 		return jsonify({'error': 'Authentication required'}), 401
-	if not auth.check_token(username, token):
-		return jsonify({'error': 'Invalid token, required to first login'}), 401
 
 	department_name = None
 	
@@ -792,11 +813,9 @@ def get_setting_by_name(setting_name):
 	token = request.cookies.get('auth_token')
 	username = request.cookies.get('user')
 
-	# check token
-	if not token or not username:
+	# check token and user from cookies
+	if auth.check_token(username, token) is False:
 		return jsonify({'error': 'Authentication required'}), 401
-	if not auth.check_token(username, token):
-		return jsonify({'error': 'Invalid token, required to first login'}), 401
 
 	# Check if the user has permission to view settings
 

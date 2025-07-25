@@ -74,8 +74,6 @@ def get_all_users():
 # Return all fields for a user by the username
 #
 def get_user_by_username(username):
-	# TODO: Remove exception handling internally, raise the exceptions
-
 	try:
 		# Connect to the db
 		connection = connect()
@@ -94,8 +92,35 @@ def get_user_by_username(username):
 			raise Exception("No user found when getting user by username from database")
 			
 	except Exception as error:
-		print(f"Error adding user: {error}")
-		return None
+		raise Exception("Failed to get user by username: {error}")
+	finally:
+		if connection:
+			cursor.close()
+			disconnect(connection)
+
+#
+# Return the user data searching by email
+#
+def get_user_by_email(email):
+	try:
+		# Connect to the db
+		connection = connect()
+		cursor = connection.cursor()
+
+		# Execute a query to get the user by email
+		query = "SELECT * FROM users WHERE email = %s"
+		cursor.execute(query, (email,))
+
+		# Retrieve query results
+		user = cursor.fetchone()
+
+		if user:
+			return user
+		else:
+			raise Exception("No user found when getting user by email from database")
+			
+	except Exception as error:
+		raise Exception("Failed to get user by email: {error}")
 	finally:
 		if connection:
 			cursor.close()
@@ -167,31 +192,33 @@ def get_user_by_token(token):
 #
 # Add a new user to the database
 #
-def add_user(username, email, password, permissions, team, level):
-	# TODO: check format of the inputs will be valid for the database
-	# TODO: Remove exception handling internally, raise the exceptions
+def add_user(username, email, password, permissions, teams, level, end_user, firstname, lastname):
+	# input validation
+	if username.len() > 50 or email.len() > 100 or password.len() > 128 or firstname.len() > 128 or lastname.len() > 128:
+		raise Exception("Username, email, password, firstname or lastname too long")
+
+	# map to integers, database columns are integer arrays, json format from client will be lists of strings
+	teams = list(map(int, teams))
+	permissions = list(map(int, permissions))
 
 	try:
-		# Connect to your postgres DB
+		# Connect to the database
 		connection = connect()
-
 		cursor = connection.cursor()
-
+		
 		# Execute a query to insert a new user
 		insert_query = """
-		INSERT INTO users (username, email, password, permissions, team, level)
-		VALUES (%s, %s, %s, %s)
+		INSERT INTO users (username, email, password, created_at, permissions, team, level, end_user, firstname, lastname)
+		VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
 		"""
-		cursor.execute(insert_query, (username, password, email, permissions, team, level))
-
+		cursor.execute(insert_query, (username, email, password, datetime.now(), permissions, teams, level, end_user, firstname, lastname))
+		
 		# Commit the transaction
 		connection.commit()
-
-		return jsonify({"message": "User added successfully"}), 201
-
+		return True
 	except Exception as error:
-		print(f"Error adding user: {error}")
-		return jsonify({"message": "Error adding user"}), 500
+		print(f"Error adding user to database: {error}")
+		raise Exception(f"Error adding user in to database: {error}")
 	finally:
 		if connection:
 			cursor.close()

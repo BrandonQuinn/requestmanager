@@ -579,3 +579,62 @@ userTeamListTable.addEventListener('click', function (event) {
 		}
 	}
 });
+
+
+/*
+	Submit a new user request.
+*/
+
+async function submitNewUser() {
+	const userFirstnameInput = document.getElementById('new-user-firstname');
+	const userLastnameInput = document.getElementById('new-user-lastname');
+	const userUsernameInput = document.getElementById('new-user-username');
+	const userEmailInput = document.getElementById('new-user-email');
+	const passwordInput = document.getElementById('new-user-password');
+
+	// validate the user inputs
+
+	const teamListTable = document.getElementById('new-user-team-list');
+	const selectedTeams = Array.from(teamListTable.querySelectorAll('tr td:first-child')).map(td => td.textContent);
+
+	const userData = {
+		firstname: userFirstnameInput.value.trim(),
+		lastname: userLastnameInput.value.trim(),
+		username: userUsernameInput.value.trim(),
+		email: userEmailInput.value.trim(),
+		password: passwordInput.value.trim(),
+		teams: selectedTeams
+	};
+
+	// send the data to the api
+	fetch('/api/users/new', {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify(userData)
+	})
+		.then(response => {
+			if (!response.ok) {
+				throw new Error(`Error: ${response.status} ${response.statusText}`);
+			}
+			return response.json();
+		})
+		.then(data => {
+			// Optionally, refresh the user table or clear the form
+
+			if (data.error) {
+				showErrorModal('Failed to create user: ', data.error);
+				return;
+			}
+
+			location.reload(); // Reload the page to reflect changes
+		})
+		.catch(error => {
+			showErrorModal('Submission Failed', 'An error occurred while creating the user: ' + error);
+		});
+}
+
+// Add event listener to the "Submit New Department" button
+const submitNewUserBtn = document.getElementById('submit-new-user-btn');
+submitNewUserBtn.addEventListener('click', submitNewUser);

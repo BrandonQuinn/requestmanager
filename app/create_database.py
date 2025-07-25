@@ -52,7 +52,10 @@ def create_users_table(conn, cur):
 			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 			permissions INTEGER[],
 			team INTEGER[],
-			level INTEGER DEFAULT 0
+			level INTEGER DEFAULT 0,
+			end_user BOOLEAN DEFAULT TRUE,
+			firstname VARCHAR(128),
+			lastname VARCHAR(128)
 		)
 	''')
 	conn.commit()
