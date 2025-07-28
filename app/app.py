@@ -1,7 +1,7 @@
 from flask import Flask, render_template, redirect, url_for, jsonify, request
 from mako.template import Template
 from mako.lookup import TemplateLookup
-import os, sys
+import os, sys, cryptography
 import health_checks, init, create_database, auth, database
 
 app = Flask(__name__)
@@ -105,14 +105,23 @@ def dashboard():
 #############
 
 #
-# Return all users
+# Return all users that the user can see in their scope defined by their permissions
 #
 @app.route('/api/users', methods=['GET'])
 def get_users():
+	token = request.cookies.get('auth_token')
+	username = request.cookies.get('user')
 
-	# TODO: Check permissions on token
+	if auth.check_token(username, token) is False:
+		return jsonify({'error': 'Authentication required'}), 401
 
-	users = database.get_all_users()
+	users = []
+
+	# breakglass can see all users
+	if auth.check_permission('breakglass', token) is True:
+		users = database.get_all_users()
+	
+	# normal users can only limited scope of users and data depending on their permissions
 
 	return jsonify(users)
 
@@ -121,6 +130,7 @@ def get_users():
 #
 @app.route('/api/users/new', methods=['POST'])
 def create_new_user():
+
 	# check token and user from cookies
 	if auth.check_token(request.cookies.get('user'), request.cookies.get('auth_token')) is False:
 		return jsonify({'error': 'Authentication required'}), 401
@@ -156,6 +166,7 @@ def create_new_user():
 			database.add_user(new_username, email, password, [], teams, 0, False, firstname, lastname)
 			return jsonify({'success': 'User created successfully'}), 201
 		except Exception as e:
+			print(f"Error creating user: {e}")
 			return jsonify({'error': str(e)}), 500
 	else:
 		return jsonify({'error': 'Invalid request format'}), 400

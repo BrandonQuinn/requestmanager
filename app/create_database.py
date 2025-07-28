@@ -50,8 +50,7 @@ def create_users_table(conn, cur):
 			email VARCHAR(100) UNIQUE NOT NULL,
 			password VARCHAR(256) NOT NULL,
 			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-			permissions INTEGER[],
-			team INTEGER[],
+			permissions INTEGER[] DEFAULT '{}',
 			level INTEGER DEFAULT 0,
 			end_user BOOLEAN DEFAULT TRUE,
 			firstname VARCHAR(128),
@@ -68,7 +67,7 @@ def create_department_table(conn, cur):
 		CREATE TABLE IF NOT EXISTS departments (
 			id SERIAL PRIMARY KEY,
 			name VARCHAR (32),
-			teams INTEGER[],
+			teams INTEGER[] DEFAULT '{}',
 			description VARCHAR(256),
 			initial_assignment INTEGER
 		)

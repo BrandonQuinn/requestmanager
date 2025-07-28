@@ -1,8 +1,5 @@
-import psycopg2
 from flask import jsonify
-import json
-import auth
-import db_util 
+import json, auth, db_util, psycopg2, logger
 from datetime import datetime, timedelta
 
 # Used for creating the database and new user then cleared from memory
@@ -56,7 +53,7 @@ def get_all_users():
 		cursor = connection.cursor()
 
 		# Execute a query
-		cursor.execute("SELECT * FROM users")
+		cursor.execute("SELECT id, username, email, created_at, permissions, level, end_user, firstname, lastname FROM users")
 
 		# Retrieve query results
 		users = cursor.fetchall()
@@ -194,9 +191,9 @@ def get_user_by_token(token):
 #
 def add_user(username, email, password, permissions, teams, level, end_user, firstname, lastname):
 	# input validation
-	if username.len() > 50 or email.len() > 100 or password.len() > 128 or firstname.len() > 128 or lastname.len() > 128:
+	if len(username) > 50 or len(email) > 100 or len(password) > 128 or len(firstname) > 128 or len(lastname) > 128:
 		raise Exception("Username, email, password, firstname or lastname too long")
-
+	
 	# map to integers, database columns are integer arrays, json format from client will be lists of strings
 	teams = list(map(int, teams))
 	permissions = list(map(int, permissions))
@@ -208,16 +205,58 @@ def add_user(username, email, password, permissions, teams, level, end_user, fir
 		
 		# Execute a query to insert a new user
 		insert_query = """
-		INSERT INTO users (username, email, password, created_at, permissions, team, level, end_user, firstname, lastname)
-		VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+		INSERT INTO users (username, email, password, created_at, permissions, level, end_user, firstname, lastname)
+		VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
 		"""
-		cursor.execute(insert_query, (username, email, password, datetime.now(), permissions, teams, level, end_user, firstname, lastname))
+		cursor.execute(insert_query, (username, email, password, datetime.now(), permissions, level, end_user, firstname, lastname))
 		
 		# Commit the transaction
 		connection.commit()
+		
+		# Get the user id of the newly created user
+		cursor.execute("SELECT id FROM users WHERE username = %s", (username,))
+		userId = cursor.fetchone()
+		if not userId:
+			raise Exception("Failed to get user id after adding user to database")
+		userId = userId[0]
+
+		# Add the user to each team
+		for teamId in teams:
+			add_user_to_team(userId, teamId)
+
+		connection.commit()
+		
 		return True
 	except Exception as error:
-		print(f"Error adding user to database: {error}")
+		print(f'Error adding user to database: {error}')
+		raise Exception(f"Error adding user in to database: {error}")
+	finally:
+		if connection:
+			cursor.close()
+			disconnect(connection)
+
+# 
+# Add the user id to the array of users in the teams table
+#
+def add_user_to_team(userId, teamId):
+	try:
+		# Connect to the database
+		connection = connect()
+		cursor = connection.cursor()
+
+		# Execute a query to add the user to the team
+		update_query = """
+		UPDATE teams
+		SET users = array_append(users, %s)
+		WHERE id = %s
+		"""
+		cursor.execute(update_query, (userId, teamId))
+
+		# Commit the transaction
+		connection.commit()
+
+	except Exception as error:
+		print(f'Error adding user to database: {error}')
 		raise Exception(f"Error adding user in to database: {error}")
 	finally:
 		if connection:

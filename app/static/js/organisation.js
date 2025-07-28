@@ -45,10 +45,86 @@ async function getTeams() {
 		const teams = await response.json();
 		return teams;
 	} catch (error) {
-		console.error('Failed to fetch teams:', error);
+		showErrorModal('Failed to fetch teams', 'An error occurred while fetching teams. Please try again later.');
 		return [];
 	}
 }
+
+/*
+	Get a team by ID from the server and return the Promise.
+*/
+async function getTeamById(teamId) {
+	try {
+		const response = await fetch('/api/teams/' + teamId);
+		if (!response.ok) {
+			throw new Error(`Error: ${response.status} ${response.statusText}`);
+		}
+		const team = await response.json();
+		return team; // Assuming the API returns an array with one team object
+	} catch (error) {
+		showErrorModal('Failed to fetch team', 'An error occurred while fetching the team. Please try again later.');
+		return '';
+	}
+}
+
+/*
+	Get all users from the server and return the Promise.
+*/
+async function getUsers() {
+	try {
+		const response = await fetch('/api/users');
+		if (!response.ok) {
+			throw new Error(`Error: ${response.status} ${response.statusText}`);
+		}
+		const users = await response.json();
+		return users;
+	} catch (error) {
+		showErrorModal('Failed to fetch users', 'An error occurred while fetching users. Please try again later.');
+		return [];
+	}
+}
+
+/*
+	Populate the users table.
+*/
+const usersTable = document.getElementById('users-table-rows');
+getUsers().then(users => {
+	usersTable.innerHTML = "";
+
+	badges = [];
+
+	users.forEach(user => {
+
+		usersTable.innerHTML += `
+			<tr>
+				<td data-label="name">
+					<div class="d-flex py-1 align-items-center">
+						<div class="flex-fill">
+							<div class="font-weight-medium">${user[7]} ${user[8]}</div>
+						</div>
+					</div>
+				</td>
+				<td data-label="username">
+					<div>${user[1]}</div>
+				</td>
+				<td data-label="email">
+					<div>${user[2]}</div>
+				</td>
+				<td class="text-secondary sort-tags" data-label="Role">
+					<div class="badge-list" id="user-team-badge-list">
+						<span class="badge">IT</span>
+						<span class="badge">Home Maintenance -> Repairs</span>
+					</div>
+				</td>
+				<td>
+					<div class="btn-list flex-nowrap">
+						<a href="#" class="btn btn-1"> Edit </a>
+					</div>
+				</td>
+			</tr>
+		`;
+	});
+});
 
 /*
 	Get team by id
@@ -582,7 +658,7 @@ userTeamListTable.addEventListener('click', function (event) {
 
 
 /*
-	Submit a new user request.
+	Submit a new user request. Grabbing the data from the form and sending it to the API.
 */
 
 async function submitNewUser() {
