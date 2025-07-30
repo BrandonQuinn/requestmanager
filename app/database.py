@@ -308,13 +308,13 @@ def create_breakglass_account(password):
 
 		# Execute a query to insert a new user
 		insert_query = """
-		INSERT INTO users (username, email, password, permissions, team, level)
-		VALUES (%s, %s, %s, %s, %s, %s)
+		INSERT INTO users (username, email, password, permissions, level)
+		VALUES (%s, %s, %s, %s, %s)
 		"""
 
 		# Hash the password and create the entry in the database
 		hash = auth.hash(password)
-		cursor.execute(insert_query, ('breakglass', 'breakglass@breakglass.com', hash, '{0}', '{0}', 0))
+		cursor.execute(insert_query, ('breakglass', 'breakglass@breakglass.com', hash, '{0}', 0))
 		connection.commit()
 
 		# Update the settings table to set breakglass_set to 1
