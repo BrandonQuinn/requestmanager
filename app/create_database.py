@@ -375,10 +375,7 @@ def create_db_user(new_username, new_password, conn, cur):
 #
 # Save the credentials to a file.
 #
-def save_credentials_to_file(username, password, filename='db_credentials.json'):
-	# w mode doesnt seem to work - at the same time this might not be the problem
-	os.remove(filename)
-	
+def save_credentials_to_file(username, password, filename='db_credentials.json'):	
 	credentials = {
 		"username": username,
 		"password": password
