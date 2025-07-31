@@ -199,28 +199,28 @@
 		dbUsernameField.addEventListener("input", function () {
 			console.log("DB Username Input Changed");
 			if (dbPasswordField.value.trim() !== "") {
-				validPostgresCreds++;
+				validPostgresCreds = validPostgresCreds | 1;
 				
-				if (validPostgresCreds === 2) {
+				if (validPostgresCreds === 3) {
 					step1Button.classList.remove("disabled");
 				}
 			} else {
 				step1Button.classList.add("disabled");
-				validPostgresCreds--;
+				validPostgresCreds = validPostgresCreds & 2;
 			}
 		});
 
 		// Enable the step 1 button when both inputs are filled
 		dbPasswordField.addEventListener("input", function () {
 			if (dbPasswordField.value.trim() !== "") {
-				validPostgresCreds++;
+				validPostgresCreds = validPostgresCreds | 2;
 				
-				if (validPostgresCreds === 2) {
+				if (validPostgresCreds === 3) {
 					step1Button.classList.remove("disabled");
 				}
 			} else {
 				step1Button.classList.add("disabled");
-				validPostgresCreds--;
+				validPostgresCreds = validPostgresCreds & 1;
 			}
 		});
 
