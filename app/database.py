@@ -37,6 +37,28 @@ def disconnect(connection):
 	if connection:
 		connection.close()
 
+#
+# Make sure the database credentials are valid
+#
+def test_connection(db_username, db_password):
+	try:
+		# Connect to the database with the provided credentials
+		connection = psycopg2.connect(
+			dbname="requestmanager",
+			user=db_username,
+			password=db_password,
+			host="localhost",
+			port="5432"
+		)
+
+		connection.close()
+		return True
+	except psycopg2.Error as e:
+		return False
+	finally:
+		if connection:
+			connection.close()
+
 ######################################
 #	USERS
 ######################################
