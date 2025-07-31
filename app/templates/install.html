@@ -192,11 +192,12 @@
 		steps[0].style.display = "block"; // Show the first step by default
 
 		const step1Button = document.querySelector(".step1-btn");
-		const dbUsername = document.getElementById("db_username").value;
-		const dbPassword = document.getElementById("db_password").value;
 
 		// Enable the step 1 button when both inputs are filled
 		dbUsername.addEventListener("input", function () {
+			const dbUsername = document.getElementById("db_username").value;
+			const dbPassword = document.getElementById("db_password").value;
+
 			if (dbUsername.value.trim() && dbPassword.value.trim()) {
 				step1Button.classList.remove("disabled");
 			} else {
@@ -206,6 +207,9 @@
 
 		// Enable the step 1 button when both inputs are filled
 		dbPassword.addEventListener("input", function () {
+			const dbUsername = document.getElementById("db_username").value;
+			const dbPassword = document.getElementById("db_password").value;
+
 			if (dbUsername.value.trim() && dbPassword.value.trim()) {
 				step1Button.classList.remove("disabled");
 			} else {
