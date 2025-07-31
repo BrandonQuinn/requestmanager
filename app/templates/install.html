@@ -182,7 +182,7 @@
 	</div>
 	<script src="https://unpkg.com/@tabler/core@latest/dist/js/tabler.min.js"></script>
 
-	<script defer>
+	<script>
 		usernameIsValid = false;
 		passwordIsValid = false;
 
@@ -205,6 +205,7 @@
 					step1Button.classList.remove("disabled");
 				}
 			} else {
+				step1Button.classList.add("disabled");
 				validPostgresCreds--;
 			}
 		});
@@ -218,6 +219,7 @@
 					step1Button.classList.remove("disabled");
 				}
 			} else {
+				step1Button.classList.add("disabled");
 				validPostgresCreds--;
 			}
 		});
