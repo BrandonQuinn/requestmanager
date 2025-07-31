@@ -222,14 +222,6 @@
 			const nextButtons = document.querySelectorAll(".btn-primary");
 			const dbPasswordInput = document.getElementById("new_db_password");
 
-			// Check if both the username and password are valid and enabled the button
-			// to go to the next step
-			function enableNextButton() {
-				if (usernameIsValid && passwordIsValid) {
-					nextButtons[1].classList.remove("disabled");
-				}
-			}
-
 			// validate the new password input
 			dbPasswordInput.addEventListener("input", function () {
 				const value = dbPasswordInput.value;
@@ -243,7 +235,7 @@
 					dbPasswordInput.classList.remove("is-invalid");
 					dbPasswordInput.classList.add("is-valid");
 					passwordIsValid = true;
-					enableNextButton();
+					nextButtons[1].classList.remove("disabled");
 				} else {
 					nextButtons[1].classList.add("disabled");
 					dbPasswordInput.classList.add("is-invalid");
