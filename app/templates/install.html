@@ -212,6 +212,7 @@
 
 		// Enable the step 1 button when both inputs are filled
 		dbPasswordField.addEventListener("input", function () {
+			console.log("DB Password Input Changed");
 			if (dbPasswordField.value.trim() !== "") {
 				validPostgresCreds = validPostgresCreds | 2;
 				
