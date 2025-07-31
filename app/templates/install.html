@@ -183,9 +183,6 @@
 	<script src="https://unpkg.com/@tabler/core@latest/dist/js/tabler.min.js"></script>
 
 	<script>
-		usernameIsValid = false;
-		passwordIsValid = false;
-
 		const steps = document.querySelectorAll(".card");
 		steps.forEach(step => step.style.display = "none");
 		steps[0].style.display = "block"; // Show the first step by default
@@ -193,8 +190,6 @@
 		const step1Button = document.querySelector(".step1-btn");
 		const dbUsernameField = document.getElementById("db_username");
 		const dbPasswordField = document.getElementById("db_password");
-		var validPostgresUsername = false;
-		var validPostgresPassword = false;
 
 		// Check if the Postgres fields are filled and enable the step 1 button
 		function checkPostgresFields() {
@@ -218,8 +213,8 @@
 		// Send the creds to the server for the initial creation of the database
 		step1Button.addEventListener("click", function (event) {
 			event.preventDefault();
-			const dbUsername = document.getElementById("db_username").value;
-			const dbPassword = document.getElementById("db_password").value;
+			const dbUsername = dbUsernameField.value;
+			const dbPassword = dbPasswordField.value;
 
 			fetch('/api/database/temp_db_user', {
 				method: 'POST',
@@ -237,7 +232,7 @@
 						steps[0].style.display = "none";
 						steps[1].style.display = "block";
 					} else {
-						alert("Error: " + data.message);
+						alert("Error: " + data.error);
 					}
 				})
 				.catch(error => {
@@ -271,7 +266,10 @@
 			}
 		});
 
-		// validate the nnew username input
+		usernameIsValid = false;
+		passwordIsValid = false;
+
+		// validate the new username input
 		const usernameInput = document.getElementById("new_db_username");
 
 		usernameInput.addEventListener("input", function () {

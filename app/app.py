@@ -240,6 +240,8 @@ def temp_db_user():
 			return jsonify({'error': 'Username and password are required'}), 400
 
 		# TODO: test the credentials, if it fails, return error code
+		if database.test_credentials(db_username, db_password) is False:
+			return jsonify({'error': 'Invalid database credentials.'}), 400
 
 		# set the password
 		try:
