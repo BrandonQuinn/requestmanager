@@ -228,6 +228,7 @@
 			})
 				.then(response => response.json())
 				.then(data => {
+					console.log(data);
 					if (data['success']) {
 						steps[0].style.display = "none";
 						steps[1].style.display = "block";
