@@ -228,11 +228,11 @@
 			})
 				.then(response => response.json())
 				.then(data => {
-					if (data.success) {
+					if (data['success']) {
 						steps[0].style.display = "none";
 						steps[1].style.display = "block";
 					} else {
-						alert("Error: " + data.error);
+						alert("Error: " + data['error']);
 					}
 				})
 				.catch(error => {
