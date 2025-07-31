@@ -196,32 +196,23 @@
 		var validPostgresUsername = false;
 		var validPostgresPassword = false;
 
-		// Enable the step 1 button when both inputs are filled
-		dbUsernameField.addEventListener("input", function () {
-			if (dbPasswordField.value.trim() !== "") {
-				validPostgresUsername = true;
-				
-				if (validPostgresUsername && validPostgresPassword) {
-					step1Button.classList.remove("disabled");
-				}
+		// Check if the Postgres fields are filled and enable the step 1 button
+		function checkPostgresFields() {
+			if (dbUsernameField.value.trim() !== "" && dbPasswordField.value.trim() !== "") {
+				step1Button.classList.remove("disabled");
 			} else {
 				step1Button.classList.add("disabled");
-				validPostgresUsername = false;
 			}
+		}
+
+		// Enable the step 1 button when both inputs are filled
+		dbUsernameField.addEventListener("input", function () {
+			checkPostgresFields();
 		});
 
 		// Enable the step 1 button when both inputs are filled
 		dbPasswordField.addEventListener("input", function () {
-			if (dbPasswordField.value.trim() !== "") {
-				validPostgresPassword = true;
-				
-				if (validPostgresUsername && validPostgresPassword) {
-					step1Button.classList.remove("disabled");
-				}
-			} else {
-				step1Button.classList.add("disabled");
-				validPostgresPassword = false;
-			}
+			checkPostgresFields();
 		});
 
 		// Send the creds to the server for the initial creation of the database
