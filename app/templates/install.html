@@ -186,7 +186,6 @@
 		usernameIsValid = false;
 		passwordIsValid = false;
 
-
 		const steps = document.querySelectorAll(".card");
 		steps.forEach(step => step.style.display = "none");
 		steps[0].style.display = "block"; // Show the first step by default
@@ -194,28 +193,31 @@
 		const step1Button = document.querySelector(".step1-btn");
 		const dbUsernameField = document.getElementById("db_username");
 		const dbPasswordField = document.getElementById("db_password");
+		const validPostgresCreds = 0;
 
 		// Enable the step 1 button when both inputs are filled
 		dbUsernameField.addEventListener("input", function () {
-			const dbUsername = document.getElementById("db_username").value;
-			const dbPassword = document.getElementById("db_password").value;
-
-			if (dbUsername.value.trim() && dbPassword.value.trim()) {
-				step1Button.classList.remove("disabled");
+			if (dbPasswordField.value.trim() !== "") {
+				validPostgresCreds++;
+				
+				if (validPostgresCreds === 2) {
+					step1Button.classList.remove("disabled");
+				}
 			} else {
-				step1Button.classList.add("disabled");
+				validPostgresCreds--;
 			}
 		});
 
 		// Enable the step 1 button when both inputs are filled
 		dbPasswordField.addEventListener("input", function () {
-			const dbUsername = document.getElementById("db_username").value;
-			const dbPassword = document.getElementById("db_password").value;
-
-			if (dbUsername.value.trim() && dbPassword.value.trim()) {
-				step1Button.classList.remove("disabled");
+			if (dbPasswordField.value.trim() !== "") {
+				validPostgresCreds++;
+				
+				if (validPostgresCreds === 2) {
+					step1Button.classList.remove("disabled");
+				}
 			} else {
-				step1Button.classList.add("disabled");
+				validPostgresCreds--;
 			}
 		});
 
