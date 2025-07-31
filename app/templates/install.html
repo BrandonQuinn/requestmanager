@@ -55,7 +55,8 @@
 				<a href="#" class="btn btn-primary w-100 step1-btn disabled">
 					Continue
 				</a>
-				<ul class="steps steps-green steps-counter" style="border-left: none; margin-top:20px; padding-left: 0px; margin-left: 0px;">
+				<ul class="steps steps-green steps-counter"
+					style="border-left: none; margin-top:20px; padding-left: 0px; margin-left: 0px;">
 					<li class="step-item active">DB User</li>
 					<li class="step-item ">New DB User</li>
 					<li class="step-item">Create DB</li>
@@ -95,7 +96,8 @@
 				<a href="#" class="btn btn-primary disabled w-100 step2-btn">
 					Create Database
 				</a>
-				<ul class="steps steps-green steps-counter" style="border-left: none; margin-top:20px; padding-left: 0px; margin-left: 0px;">
+				<ul class="steps steps-green steps-counter"
+					style="border-left: none; margin-top:20px; padding-left: 0px; margin-left: 0px;">
 					<li class="step-item">DB User</li>
 					<li class="step-item active">New DB User</li>
 					<li class="step-item">Create DB</li>
@@ -117,7 +119,8 @@
 				<a href="#" class="btn btn-primary disabled w-100 step3-btn">
 					Next Step
 				</a>
-				<ul class="steps steps-green steps-counter" style="border-left: none; margin-top:20px; padding-left: 0px; margin-left: 0px;">
+				<ul class="steps steps-green steps-counter"
+					style="border-left: none; margin-top:20px; padding-left: 0px; margin-left: 0px;">
 					<li class="step-item">DB User</li>
 					<li class="step-item">New DB User</li>
 					<li class="step-item active">Create DB</li>
@@ -146,7 +149,8 @@
 				<a href="#" class="btn btn-primary disabled w-100 step4-btn">
 					Next Step
 				</a>
-				<ul class="steps steps-green steps-counter" style="border-left: none; margin-top:20px; padding-left: 0px; margin-left: 0px;">
+				<ul class="steps steps-green steps-counter"
+					style="border-left: none; margin-top:20px; padding-left: 0px; margin-left: 0px;">
 					<li class="step-item">DB User</li>
 					<li class="step-item">New DB User</li>
 					<li class="step-item">Create DB</li>
@@ -165,7 +169,8 @@
 				<a href="#" class="btn btn-primary w-100 step5-btn">
 					Done
 				</a>
-				<ul class="steps steps-green steps-counter" style="border-left: none; margin-top:20px; padding-left: 0px; margin-left: 0px;">
+				<ul class="steps steps-green steps-counter"
+					style="border-left: none; margin-top:20px; padding-left: 0px; margin-left: 0px;">
 					<li class="step-item">DB User</li>
 					<li class="step-item">New DB User</li>
 					<li class="step-item">Create DB</li>
@@ -186,9 +191,21 @@
 			steps.forEach(step => step.style.display = "none");
 			steps[0].style.display = "block"; // Show the first step by default
 
-
 			const step1Button = document.querySelector(".step1-btn");
+			const dbUsername = document.getElementById("db_username").value;
+			const dbPassword = document.getElementById("db_password").value;
+			step1Button.classList.add("disabled");
+		
+			// Enable the step 1 button when both inputs are filled
+			dbUsername.addEventListener("input", function () {
+				if (dbUsername.value.trim() && dbPassword.value.trim()) {
+					step1Button.classList.remove("disabled");
+				} else {
+					step1Button.classList.add("disabled");
+				}
+			});
 
+			// Send the creds to the server for the initial creation of the database
 			step1Button.addEventListener("click", function (event) {
 				event.preventDefault();
 				const dbUsername = document.getElementById("db_username").value;
