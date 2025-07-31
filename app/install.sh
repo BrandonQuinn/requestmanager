@@ -5,6 +5,8 @@
 # Release:        22.04
 # Codename:       jammy
 
+# The python version needs to be 3.11 or lower - no importlib support
+
 # Update package lists
 sudo apt-get update
 
