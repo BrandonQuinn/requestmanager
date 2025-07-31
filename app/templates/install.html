@@ -193,20 +193,21 @@
 		const step1Button = document.querySelector(".step1-btn");
 		const dbUsernameField = document.getElementById("db_username");
 		const dbPasswordField = document.getElementById("db_password");
-		var validPostgresCreds = 0;
+		var validPostgresUsername = false;
+		var validPostgresPassword = false;
 
 		// Enable the step 1 button when both inputs are filled
 		dbUsernameField.addEventListener("input", function () {
 			console.log(validPostgresCreds);
 			if (dbPasswordField.value.trim() !== "") {
-				validPostgresCreds = validPostgresCreds | 1;
+				validPostgresUsername = true;
 				
-				if (validPostgresCreds === 3) {
+				if (validPostgresUsername && validPostgresPassword) {
 					step1Button.classList.remove("disabled");
 				}
 			} else {
 				step1Button.classList.add("disabled");
-				validPostgresCreds = validPostgresCreds & 2;
+				validPostgresUsername = false;
 			}
 		});
 
@@ -214,14 +215,14 @@
 		dbPasswordField.addEventListener("input", function () {
 			console.log(validPostgresCreds);
 			if (dbPasswordField.value.trim() !== "") {
-				validPostgresCreds = validPostgresCreds | 2;
+				validPostgresPassword = true;
 				
-				if (validPostgresCreds === 3) {
+				if (validPostgresUsername && validPostgresPassword) {
 					step1Button.classList.remove("disabled");
 				}
 			} else {
 				step1Button.classList.add("disabled");
-				validPostgresCreds = validPostgresCreds & 1;
+				validPostgresPassword = false;
 			}
 		});
 
