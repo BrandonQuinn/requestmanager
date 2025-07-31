@@ -198,7 +198,6 @@
 
 		// Enable the step 1 button when both inputs are filled
 		dbUsernameField.addEventListener("input", function () {
-			console.log(validPostgresCreds);
 			if (dbPasswordField.value.trim() !== "") {
 				validPostgresUsername = true;
 				
@@ -213,7 +212,6 @@
 
 		// Enable the step 1 button when both inputs are filled
 		dbPasswordField.addEventListener("input", function () {
-			console.log(validPostgresCreds);
 			if (dbPasswordField.value.trim() !== "") {
 				validPostgresPassword = true;
 				
