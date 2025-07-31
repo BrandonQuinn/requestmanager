@@ -55,9 +55,6 @@ def test_connection(db_username, db_password):
 		return True
 	except psycopg2.Error as e:
 		return False
-	finally:
-		if connection:
-			connection.close()
 
 ######################################
 #	USERS
