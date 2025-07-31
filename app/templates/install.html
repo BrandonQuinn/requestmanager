@@ -186,215 +186,213 @@
 		usernameIsValid = false;
 		passwordIsValid = false;
 
-		document.addEventListener("DOMContentLoaded", function () {
-			const steps = document.querySelectorAll(".card");
-			steps.forEach(step => step.style.display = "none");
-			steps[0].style.display = "block"; // Show the first step by default
 
-			const step1Button = document.querySelector(".step1-btn");
+		const steps = document.querySelectorAll(".card");
+		steps.forEach(step => step.style.display = "none");
+		steps[0].style.display = "block"; // Show the first step by default
+
+		const step1Button = document.querySelector(".step1-btn");
+		const dbUsername = document.getElementById("db_username").value;
+		const dbPassword = document.getElementById("db_password").value;
+
+		// Enable the step 1 button when both inputs are filled
+		dbUsername.addEventListener("input", function () {
+			if (dbUsername.value.trim() && dbPassword.value.trim()) {
+				step1Button.classList.remove("disabled");
+			} else {
+				step1Button.classList.add("disabled");
+			}
+		});
+
+		// Enable the step 1 button when both inputs are filled
+		dbPassword.addEventListener("input", function () {
+			if (dbUsername.value.trim() && dbPassword.value.trim()) {
+				step1Button.classList.remove("disabled");
+			} else {
+				step1Button.classList.add("disabled");
+			}
+		});
+
+		// Send the creds to the server for the initial creation of the database
+		step1Button.addEventListener("click", function (event) {
+			event.preventDefault();
 			const dbUsername = document.getElementById("db_username").value;
 			const dbPassword = document.getElementById("db_password").value;
-			step1Button.classList.add("disabled");
-		
-			// Enable the step 1 button when both inputs are filled
-			dbUsername.addEventListener("input", function () {
-				if (dbUsername.value.trim() && dbPassword.value.trim()) {
-					step1Button.classList.remove("disabled");
-				} else {
-					step1Button.classList.add("disabled");
-				}
-			});
 
-			// Enable the step 1 button when both inputs are filled
-			dbPassword.addEventListener("input", function () {
-				if (dbUsername.value.trim() && dbPassword.value.trim()) {
-					step1Button.classList.remove("disabled");
-				} else {
-					step1Button.classList.add("disabled");
-				}
-			});
+			fetch('/api/database/temp_db_user', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					'db_username': dbUsername,
+					'db_password': dbPassword
+				})
+			})
+				.then(response => response.json())
+				.then(data => {
+					if (data.success) {
+						steps[0].style.display = "none";
+						steps[1].style.display = "block";
+					} else {
+						alert("Error: " + data.message);
+					}
+				})
+				.catch(error => {
+					console.error('Error:', error);
+					alert("An error occurred.");
+				});
+		});
 
-			// Send the creds to the server for the initial creation of the database
-			step1Button.addEventListener("click", function (event) {
-				event.preventDefault();
-				const dbUsername = document.getElementById("db_username").value;
-				const dbPassword = document.getElementById("db_password").value;
+		const nextButtons = document.querySelectorAll(".btn-primary");
+		const dbPasswordInput = document.getElementById("new_db_password");
 
-				fetch('/api/database/temp_db_user', {
+		// validate the new password input
+		dbPasswordInput.addEventListener("input", function () {
+			const value = dbPasswordInput.value;
+			const isValid = value.length >= 10 &&
+				/[A-Z]/.test(value) &&
+				/[a-z]/.test(value) &&
+				/[0-9]/.test(value) &&
+				/[^A-Za-z0-9]/.test(value);
+
+			if (isValid) {
+				dbPasswordInput.classList.remove("is-invalid");
+				dbPasswordInput.classList.add("is-valid");
+				passwordIsValid = true;
+				nextButtons[1].classList.remove("disabled");
+			} else {
+				nextButtons[1].classList.add("disabled");
+				dbPasswordInput.classList.add("is-invalid");
+				dbPasswordInput.classList.remove("is-valid");
+				passwordIsValid = false;
+			}
+		});
+
+		// validate the nnew username input
+		const usernameInput = document.getElementById("new_db_username");
+
+		usernameInput.addEventListener("input", function () {
+			const value = usernameInput.value.trim();
+			if (value) {
+				usernameInput.classList.remove("is-invalid");
+				usernameInput.classList.add("is-valid");
+				usernameIsValid = true;
+
+				enableNextButton();
+			} else {
+				nextButtons[0].classList.add("disabled");
+				usernameInput.classList.add("is-invalid");
+				usernameInput.classList.remove("is-valid");
+				usernameIsValid = false;
+			}
+		});
+
+
+		// if the step 1 complete button is clicked, send a request to the server to create the database with user
+		nextButtons[1].addEventListener("click", function (event) {
+			event.preventDefault();
+			if (!nextButtons[1].classList.contains("disabled")) {
+				steps[1].style.display = "none";
+				steps[2].style.display = "block";
+
+				fetch('/api/database/initialise', {
 					method: 'POST',
 					headers: {
 						'Content-Type': 'application/json'
 					},
 					body: JSON.stringify({
-						'db_username': dbUsername,
-						'db_password': dbPassword
+						'new_db_username': usernameInput.value,
+						'new_db_password': dbPasswordInput.value
 					})
 				})
 					.then(response => response.json())
 					.then(data => {
+
+						console.log(data);
+
 						if (data.success) {
-							steps[0].style.display = "none";
-							steps[1].style.display = "block";
+							steps[2].style.display = "none";
+							steps[3].style.display = "block";
 						} else {
-							alert("Error: " + data.message);
+							alert("Error initializing database: " + data.message);
 						}
 					})
 					.catch(error => {
 						console.error('Error:', error);
-						alert("An error occurred.");
+						alert("An error occurred while initializing the database.");
 					});
-			});
 
-			const nextButtons = document.querySelectorAll(".btn-primary");
-			const dbPasswordInput = document.getElementById("new_db_password");
+			}
+		});
 
-			// validate the new password input
-			dbPasswordInput.addEventListener("input", function () {
-				const value = dbPasswordInput.value;
-				const isValid = value.length >= 10 &&
-					/[A-Z]/.test(value) &&
-					/[a-z]/.test(value) &&
-					/[0-9]/.test(value) &&
-					/[^A-Za-z0-9]/.test(value);
+		const breakGlassPassword = document.getElementById("breakglass-password");
 
-				if (isValid) {
-					dbPasswordInput.classList.remove("is-invalid");
-					dbPasswordInput.classList.add("is-valid");
-					passwordIsValid = true;
-					nextButtons[1].classList.remove("disabled");
-				} else {
-					nextButtons[1].classList.add("disabled");
-					dbPasswordInput.classList.add("is-invalid");
-					dbPasswordInput.classList.remove("is-valid");
-					passwordIsValid = false;
-				}
-			});
+		breakglassPasswordIsValid = false;
 
-			// validate the nnew username input
-			const usernameInput = document.getElementById("new_db_username");
+		// validate the new password input
+		breakGlassPassword.addEventListener("input", function () {
+			const value = breakGlassPassword.value;
+			const isValid = value.length >= 30 &&
+				/[A-Z]/.test(value) &&
+				/[a-z]/.test(value) &&
+				/[0-9]/.test(value) &&
+				/[^A-Za-z0-9]/.test(value);
 
-			usernameInput.addEventListener("input", function () {
-				const value = usernameInput.value.trim();
-				if (value) {
-					usernameInput.classList.remove("is-invalid");
-					usernameInput.classList.add("is-valid");
-					usernameIsValid = true;
+			if (isValid) {
+				breakGlassPassword.classList.remove("is-invalid");
+				breakGlassPassword.classList.add("is-valid");
+				breakglassPasswordIsValid = true;
+				nextButtons[3].classList.remove("disabled");
+			} else {
+				nextButtons[3].classList.add("disabled");
+				breakGlassPassword.classList.add("is-invalid");
+				breakGlassPassword.classList.remove("is-valid");
+				breakglassPasswordIsValid = false;
+			}
+		});
 
-					enableNextButton();
-				} else {
-					nextButtons[0].classList.add("disabled");
-					usernameInput.classList.add("is-invalid");
-					usernameInput.classList.remove("is-valid");
-					usernameIsValid = false;
-				}
-			});
+		// if the step 3 complete button is clicked, send a request to the server to create the breakglass account
+		nextButtons[3].addEventListener("click", function (event) {
+			event.preventDefault();
+			if (!nextButtons[3].classList.contains("disabled") && breakglassPasswordIsValid) {
+				steps[3].style.display = "none";
+				steps[4].style.display = "block";
 
-
-			// if the step 1 complete button is clicked, send a request to the server to create the database with user
-			nextButtons[1].addEventListener("click", function (event) {
-				event.preventDefault();
-				if (!nextButtons[1].classList.contains("disabled")) {
-					steps[1].style.display = "none";
-					steps[2].style.display = "block";
-
-					fetch('/api/database/initialise', {
-						method: 'POST',
-						headers: {
-							'Content-Type': 'application/json'
-						},
-						body: JSON.stringify({
-							'new_db_username': usernameInput.value,
-							'new_db_password': dbPasswordInput.value
-						})
+				fetch('/api/database/breakglass', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					body: JSON.stringify({
+						'breakglass-password': breakGlassPassword.value
 					})
-						.then(response => response.json())
-						.then(data => {
+				})
+					.then(response => response.json())
+					.then(data => {
 
-							console.log(data);
+						console.log(data);
 
-							if (data.success) {
-								steps[2].style.display = "none";
-								steps[3].style.display = "block";
-							} else {
-								alert("Error initializing database: " + data.message);
-							}
-						})
-						.catch(error => {
-							console.error('Error:', error);
-							alert("An error occurred while initializing the database.");
-						});
-
-				}
-			});
-
-			const breakGlassPassword = document.getElementById("breakglass-password");
-
-			breakglassPasswordIsValid = false;
-
-			// validate the new password input
-			breakGlassPassword.addEventListener("input", function () {
-				const value = breakGlassPassword.value;
-				const isValid = value.length >= 30 &&
-					/[A-Z]/.test(value) &&
-					/[a-z]/.test(value) &&
-					/[0-9]/.test(value) &&
-					/[^A-Za-z0-9]/.test(value);
-
-				if (isValid) {
-					breakGlassPassword.classList.remove("is-invalid");
-					breakGlassPassword.classList.add("is-valid");
-					breakglassPasswordIsValid = true;
-					nextButtons[3].classList.remove("disabled");
-				} else {
-					nextButtons[3].classList.add("disabled");
-					breakGlassPassword.classList.add("is-invalid");
-					breakGlassPassword.classList.remove("is-valid");
-					breakglassPasswordIsValid = false;
-				}
-			});
-
-			// if the step 3 complete button is clicked, send a request to the server to create the breakglass account
-			nextButtons[3].addEventListener("click", function (event) {
-				event.preventDefault();
-				if (!nextButtons[3].classList.contains("disabled") && breakglassPasswordIsValid) {
-					steps[3].style.display = "none";
-					steps[4].style.display = "block";
-
-					fetch('/api/database/breakglass', {
-						method: 'POST',
-						headers: {
-							'Content-Type': 'application/json'
-						},
-						body: JSON.stringify({
-							'breakglass-password': breakGlassPassword.value
-						})
+						if (data.success) {
+							steps[3].style.display = "none";
+							steps[4].style.display = "block";
+						} else {
+							alert("Error initializing breakglass account: " + data.message);
+						}
 					})
-						.then(response => response.json())
-						.then(data => {
+					.catch(error => {
+						console.error('Error:', error);
+						alert("An error occurred while initializing the breakglass account.");
+					});
 
-							console.log(data);
+			}
+		});
 
-							if (data.success) {
-								steps[3].style.display = "none";
-								steps[4].style.display = "block";
-							} else {
-								alert("Error initializing breakglass account: " + data.message);
-							}
-						})
-						.catch(error => {
-							console.error('Error:', error);
-							alert("An error occurred while initializing the breakglass account.");
-						});
+		const step5Button = document.querySelector(".step5-btn");
 
-				}
-			});
-
-			const step5Button = document.querySelector(".step5-btn");
-
-			step5Button.addEventListener("click", function (event) {
-				event.preventDefault();
-				window.location.href = "/";
-			});
+		step5Button.addEventListener("click", function (event) {
+			event.preventDefault();
+			window.location.href = "/";
 		});
 
 	</script>
