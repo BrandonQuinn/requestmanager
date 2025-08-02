@@ -47,7 +47,7 @@ template_lookup = TemplateLookup(directories=['templates'])
 """ UI Routes """
 
 @app.route('/')
-def index():
+def index() -> str:
     ''' Return the index page to the client. Checks database 
     initialisation and user authentication.
     If the database is not initialised, redirects to the install page.
@@ -71,7 +71,7 @@ def index():
     return template.render(title='Request Manager')
 
 @app.route('/organisation')
-def organisation():
+def organisation() -> str:
     ''' Return the organisation page. 
     Checks database initialisation and user authentication.
     If the database is not initialised, redirects to the install page.
@@ -95,7 +95,7 @@ def organisation():
     return template.render(title='Organisation')
 
 @app.route('/install')
-def install():
+def install() -> str:
     ''' Return the install html page. Checks database initialisation.
 
     Returns:
@@ -110,7 +110,7 @@ def install():
     return template.render(title='Install')
 
 @app.errorhandler(404)
-def error_404(error):
+def error_404(error) -> str:
     ''' Return the 404 html page.
 
     Returns:
@@ -121,7 +121,7 @@ def error_404(error):
     return template.render(title="404")
 
 @app.route('/dashboard')
-def dashboard():
+def dashboard() -> str:
     ''' Return the dashboard html page. Checks database initialisation. 
     Checks user authentication.
     Redirects to index if not authenticated.
@@ -157,7 +157,7 @@ def dashboard():
 ''' Users API '''
 
 @app.route('/api/users', methods=['GET'])
-def get_users():
+def get_users() -> str:
     ''' Return all users.
    Will only return users that the user has permissions to see.
 
@@ -182,7 +182,7 @@ def get_users():
     return jsonify(users)
 
 @app.route('/api/users/new', methods=['POST'])
-def create_new_user():
+def create_new_user() -> str:
     ''' API Route that creates a new user with the 
     data provided in the request body.
 
@@ -233,7 +233,7 @@ def create_new_user():
         return jsonify({'error': 'Invalid request format'}), 400
 
 @app.route('/api/users/self', methods=['GET'])
-def get_user_self():
+def get_user_self() -> str:
     ''' Return currently logged in user (associated with token from cookie)
 
     Returns:
@@ -255,8 +255,8 @@ def get_user_self():
 ''' Authentication API '''
 
 @app.route('/api/authenticate', methods=['POST'])
-def login():
-    ''' API Routes that authenticates the user with username and password.
+def login() -> str:
+    ''' API Route that authenticates the user with username and password.
     Checks if the request is JSON formatted and contains username and password.
 
     Returns:
@@ -282,22 +282,27 @@ def login():
         
     return jsonify({'message': 'Invalid request', 'status': 'failure'})
 
-################
-# Database API #
-################
+''' Database API '''
 
-#
-# Return nothing
-#
 @app.route('/api/database/', methods=['GET'])
-def database_api():
+def database_api() -> str:
+    ''' API Route that just returns text to indiciate this is the database API.
+
+    Returns:
+        str: Just a json formatted string indicating this is the database API.
+    '''
+
     return jsonify("database api")
 
-#
-# Used to send the root postgres username and password initially for database creation
-#
+
 @app.route('/api/database/temp_db_user', methods=['POST'])
-def temp_db_user():
+def temp_db_user() -> str:
+    ''' Used to send the root postgres username 
+    and password initially for database creation
+
+    Returns:
+        str: json formatted string of success or failure message
+    '''
 
     # return if the database has been initialised
     if init.is_database_initialised():
@@ -324,11 +329,15 @@ def temp_db_user():
     else:
         return jsonify({'error': 'Invalid request format'}), 400
 
-#
-# Set the breakglass account
-#
 @app.route('/api/database/breakglass', methods=['POST'])
-def set_breakglass():
+def set_breakglass() -> str:
+    ''' API Route to create the breakglass account.
+    Checks if the database is initialised and if the breakglass account has already been set.
+
+    Returns:
+        str: json formatted string of success or failure message
+    '''
+        
     if not init.is_database_initialised():
         return jsonify({'error': 'Database not initialised'}), 400
     
@@ -353,11 +362,15 @@ def set_breakglass():
     else:
         return jsonify({'error': 'Invalid request format'}), 400
 
-#
-# Return true if the database is set up, false if not. 
-#
 @app.route('/api/database/checkinstall', methods=['GET'])
 def database_check_install():
+    ''' Return true if the database is set up, false if not.
+    Checks if the database is initialised and returns the status.
+
+    Returns:
+        str: json formatted string with install status as True or False 
+    '''
+
     installed = init.is_database_initialised()
 
     if installed:
@@ -365,11 +378,14 @@ def database_check_install():
     
     return jsonify({'installed': False}), 500
 
-#
-# Conduct a details health check
-#
 @app.route('/api/database/health', methods=['GET'])
 def database_health():
+    ''' Return true if the database is set up, false if not.
+
+    Returns:
+        str: json formatted string with success or error message
+    '''
+        
     # Check if the database is initialised
     initialised = init.is_database_initialised()
 
@@ -398,11 +414,15 @@ def database_health():
     # If everything is fine, return a success message
     return jsonify({'success': 'Database is healthy'}), 200
 
-#
-# Create a new user in the database
-# 
 @app.route('/api/database/create_user', methods=['POST'])
 def create_user():
+    ''' API Route that creates a new user with the
+    data provided in the request body.
+
+    Returns:
+        str: json formatted string of success or error message
+    '''
+
     if not init.is_database_initialised():
         return jsonify({'error': 'Database not initialised'}), 400
 
@@ -422,11 +442,14 @@ def create_user():
     else:
         return jsonify({'error': 'Invalid request format'}), 400
 
-#
-# Create the database and tables
-#
 @app.route('/api/database/initialise', methods=['POST'])
 def init_database():
+    ''' Initialise the database with the provided username and password.
+
+    Returns:
+        str: json formatted string of success or error message
+    '''
+        
     initialised = init.is_database_initialised()
 
     new_db_username = None
@@ -446,15 +469,17 @@ def init_database():
     initialised = init.is_database_initialised()
     return jsonify({'success': 'Database created successfully'}), 201
 
-# ##############
-# REQUESTS API #
-################
+''' Requests API '''
 
-#
-# Get a request by its ID
-#
 @app.route('/api/requests/<int:request_id>', methods=['GET'])
 def get_request_by_id(request_id):
+    ''' Get a request by its ID.
+    Checks if the user is authenticated and if the request exists in the database.
+
+    Returns:
+        str: json formatted string of the request data or error message
+    '''
+
     # get auth data
     token = request.cookies.get('auth_token')
     username = request.cookies.get('user')
@@ -512,11 +537,14 @@ def get_request_by_id(request_id):
 
     return jsonify(request_data), 200
 
-#
-# Create a new request
-#
 @app.route('/api/requests/new', methods=['POST'])
 def new_request():
+    ''' Create a new request with the data provided in the request body.
+
+    Returns:
+        str: json formatted string of success or error message
+    '''
+
     # get auth data
     token = request.cookies.get('auth_token')
     username = request.cookies.get('user')
@@ -559,11 +587,15 @@ def new_request():
         return jsonify({'success': 'Request created.'}), 200
     else:
         return jsonify({'error': 'Permission denied.'}), 405
-#
-# Get all the requests requested by the logged in user
-#
+
 @app.route('/api/requests/user/self', methods=['GET'])
 def get_requests_self():
+    ''' Get all requests made by the currently logged in user.
+
+    Returns:
+        str: json formatted string of all request data made by the user or error message
+    '''
+        
     # get auth data
     token = request.cookies.get('auth_token')
     username = request.cookies.get('user')
@@ -596,11 +628,14 @@ def get_requests_self():
 
     return jsonify(requests), 200
 
-#
-# Get a list of all types
-#
 @app.route('/api/requests/types', methods=['GET'])
 def get_request_types():
+    ''' Get all request types.
+
+    Returns:
+        str: json formatted string of request types or error message
+    '''
+        
     # get auth data
     token = request.cookies.get('auth_token')
     username = request.cookies.get('user')
@@ -615,11 +650,14 @@ def get_request_types():
     # Return the list of request types as JSON
     return jsonify(request_types), 200
 
-#
-# Get a list of all departments
-#
 @app.route('/api/requests/departments', methods=['GET'])
 def get_request_departments():
+    ''' Get all departments
+
+    Returns:
+        str: json formatted string of departments or error message
+    '''
+        
     # get auth data
     token = request.cookies.get('auth_token')
     username = request.cookies.get('user')
@@ -634,15 +672,16 @@ def get_request_departments():
     # Return the list of request types as JSON
     return jsonify(request_types), 200
 
-# ##############
-# UPDATES API  #
-################ 
+''' Updates API '''
 
-#
-# Gets updates for a request
-#
 @app.route('/api/requests/<int:request_id>/updates', methods=['GET'])
 def get_request_updates(request_id):
+    ''' Get all the updates for a request by its ID.
+
+    Returns:
+        str: json formatted string of all updates for the request or error message
+    '''
+        
     # get auth data
     token = request.cookies.get('auth_token')
     username = request.cookies.get('user')
@@ -654,8 +693,8 @@ def get_request_updates(request_id):
     # get the request from the database
     try:
         updates_data = database.get_updates_by_request_id(request_id)
-    except:
-        return jsonify({'error': 'No updates or no request found while fetching updates.'}), 404
+    except Exception as e:
+        return jsonify({'error': f"No updates or no request found while fetching updates. {e}"}), 404
     
     # check if empty
     if not updates_data:
@@ -663,11 +702,14 @@ def get_request_updates(request_id):
     
     return jsonify(updates_data), 200
 
-#
-# Adds a new update
-#
 @app.route('/api/requests/<int:request_id>/updates/new', methods=['POST'])
 def new_request_update(request_id):
+    ''' Add an update to a request by its ID.
+
+    Returns:
+        str: json formatted string of success or error message
+    '''
+
     # get auth data
     token = request.cookies.get('auth_token')
     username = request.cookies.get('user')
@@ -693,11 +735,14 @@ def new_request_update(request_id):
     database.add_update(request_id, username, update_content, True) 
     return jsonify({'success': 'Update added.'}), 200
 
-#
-# Resolve a request by its ID
-#
 @app.route('/api/requests/<int:request_id>/resolve', methods=['POST'])
 def resolve_request(request_id):
+    ''' Mark a request as resolved by its ID.
+
+    Returns:
+        str: json formatted string of success or error message
+    '''
+       
     # get auth data
     token = request.cookies.get('auth_token')
     username = request.cookies.get('user')
@@ -730,15 +775,16 @@ def resolve_request(request_id):
     else:
         return jsonify({'error': 'Permission denied.'}), 405
 
-# ###################
-# ORGANISATION API  #
-#####################
+''' Organisation API '''
 
-#
-# Get a list of all departments
-#
 @app.route('/api/departments', methods=['GET'])
 def get_departments():
+    ''' Get a list of all departments.
+
+    Returns:
+        str: json formatted string of departments or error message
+    '''
+
     # get auth data
     token = request.cookies.get('auth_token')
     username = request.cookies.get('user')
@@ -753,11 +799,14 @@ def get_departments():
     departments = database.get_departments()
     return jsonify(departments), 200
 
-#
-# Get a department by its ID
-#
 @app.route('/api/departments/<int:department_id>', methods=['GET'])
 def get_department_by_id(department_id):
+    ''' Get a department by its ID.
+
+    Returns:
+        str: json formatted string of department data or error message
+    '''
+
     # get auth data
     token = request.cookies.get('auth_token')
     username = request.cookies.get('user')
@@ -775,12 +824,14 @@ def get_department_by_id(department_id):
 
     return jsonify(department), 200
 
-
-#
-# Get a list of all teams
-#
 @app.route('/api/teams', methods=['GET'])
 def get_teams():
+    ''' Get a list of all teams.
+
+    Returns:
+        str: json formatted string of teams data or error message
+    '''
+        
     # get auth data
     token = request.cookies.get('auth_token')
     username = request.cookies.get('user')
@@ -795,11 +846,14 @@ def get_teams():
     teams = database.get_teams()
     return jsonify(teams), 200
 
-#
-# Get a team by its ID
-#
 @app.route('/api/teams/<int:team_id>', methods=['GET'])
 def get_team_by_id(team_id):
+    ''' Get a team by its ID.
+
+    Returns:
+        str: json formatted string of team data or error message
+    '''
+        
     # get auth data
     token = request.cookies.get('auth_token')
     username = request.cookies.get('user')
@@ -814,11 +868,14 @@ def get_team_by_id(team_id):
     team = database.get_team_by_id(team_id)
     return jsonify(team), 200
 
-#
-# Create a new team
-#
 @app.route('/api/teams/new', methods=['POST'])
 def new_team():
+    ''' Create a new team with the data provided in the request body.
+
+    Returns:
+        str: json formatted string of success or error message
+    '''
+
     # get auth data
     token = request.cookies.get('auth_token')
     username = request.cookies.get('user')
@@ -850,11 +907,14 @@ def new_team():
 
     return jsonify({'error': 'Adding team failed.'}), 400
 
-#
-# Create a new department
-#
 @app.route('/api/departments/new', methods=['POST'])
 def new_department():
+    ''' Create a new department.
+
+    Returns:
+        str: json formatted string of success or error message
+    '''
+
     # get auth data
     token = request.cookies.get('auth_token')
     username = request.cookies.get('user')
@@ -888,12 +948,16 @@ def new_department():
 
     return jsonify({'error': 'Adding department failed.'}), 200
 
-# ###################
-# SETTINGS API      #
-#####################
+''' Settings API '''
 
 @app.route('/api/settings/<string:setting_name>', methods=['GET'])
 def get_setting_by_name(setting_name):
+    ''' Get a setting by its name.
+
+    Returns:
+        str: json formatted string of setting data or error message
+    '''
+
     # get auth data
     token = request.cookies.get('auth_token')
     username = request.cookies.get('user')
@@ -909,12 +973,10 @@ def get_setting_by_name(setting_name):
         setting = database.get_setting_by_name(setting_name)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-    
+
     return jsonify(setting), 200
 
-#
-# Start the app.
-# LEAVE AT BOTTOM
-#
-if __name__ == "__main__":
+if __name__ == '__main__':
+    ''' Start the Flask application. '''
+
     app.run(debug=True)
