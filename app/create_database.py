@@ -224,7 +224,7 @@ def create_database_and_tables(new_db_username, new_db_password):
 
     # Connect to the requestmanager database to create the tables and values
     conn = psycopg2.connect(
-        dbname="requestmanager",
+        dbname='requestmanager',
         user=creds['username'],
         password=creds['password'],
         host=host,
@@ -377,8 +377,8 @@ def create_db_user(new_username, new_password, conn, cur):
 #
 def save_credentials_to_file(username, password, filename='db_credentials.json'):	
     credentials = {
-        "username": username,
-        "password": password
+        'username': username,
+        'password': password
     }
     with open(filename, 'w', encoding='utf-8') as file:
         json.dump(credentials, file, indent=4)
