@@ -13,7 +13,7 @@ class Logger:
 
     def log(self, message, severity=Severity.INFO):
         try:
-            with open(self.log_file, "a") as f:
+            with open(self.log_file, "a", encoding="utf-8") as f:
                 f.write(f"[{datetime.now()}][{severity}]: {message}\n")
         except Exception as e:
             print(f"Failed to write to log file {self.log_file}: {e}")

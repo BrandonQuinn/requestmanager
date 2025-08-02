@@ -136,7 +136,7 @@ def get_user_by_email(email):
             raise Exception("No user found when getting user by email from database")
             
     except Exception as error:
-        raise Exception("Failed to get user by email: {error}")
+        raise Exception(f'Failed to get user by email: {error}')
     finally:
         if connection:
             cursor.close()
@@ -233,22 +233,22 @@ def add_user(username, email, password, permissions, teams, level, end_user, fir
         connection.commit()
         
         # Get the user id of the newly created user
-        cursor.execute("SELECT id FROM users WHERE username = %s", (username,))
-        userId = cursor.fetchone()
-        if not userId:
-            raise Exception("Failed to get user id after adding user to database")
-        userId = userId[0]
+        cursor.execute('SELECT id FROM users WHERE username = %s', (username,))
+        user_id = cursor.fetchone()
+        if not user_id:
+            raise Exception('Failed to get user id after adding user to database')
+        user_id = user_id[0]
 
         # Add the user to each team
         for teamId in teams:
-            add_user_to_team(userId, teamId)
+            add_user_to_team(user_id, teamId)
 
         connection.commit()
         
         return True
     except Exception as error:
         print(f'Error adding user to database: {error}')
-        raise Exception(f"Error adding user in to database: {error}")
+        raise Exception(f'Error adding user in to database: {error}')
     finally:
         if connection:
             cursor.close()
@@ -264,11 +264,11 @@ def add_user_to_team(userId, teamId):
         cursor = connection.cursor()
 
         # Execute a query to add the user to the team
-        update_query = """
+        update_query = '''
         UPDATE teams
         SET users = array_append(users, %s)
         WHERE id = %s
-        """
+        '''
         cursor.execute(update_query, (userId, teamId))
 
         # Commit the transaction
@@ -276,7 +276,7 @@ def add_user_to_team(userId, teamId):
 
     except Exception as error:
         print(f'Error adding user to database: {error}')
-        raise Exception(f"Error adding user in to database: {error}")
+        raise Exception(f'Error adding user in to database: {error}')
     finally:
         if connection:
             cursor.close()
@@ -297,7 +297,7 @@ def check_breakglass_account_is_set():
         cursor = connection.cursor()
 
         # Execute a query
-        cursor.execute("SELECT * FROM app_settings WHERE setting_name='breakglass_set'")
+        cursor.execute('SELECT * FROM app_settings WHERE setting_name=\'breakglass_set\'')
 
         # Check if the value column is 1
         breakglass_account = cursor.fetchone()
@@ -307,7 +307,7 @@ def check_breakglass_account_is_set():
             return False
         
     except Exception as error:
-        print(f"Error fetching breakglass account: {error}")
+        print(f'Error fetching breakglass account: {error}')
         return False
     finally:
         if connection:
@@ -326,10 +326,10 @@ def create_breakglass_account(password):
         cursor = connection.cursor()
 
         # Execute a query to insert a new user
-        insert_query = """
+        insert_query = '''
         INSERT INTO users (username, email, password, permissions, level)
         VALUES (%s, %s, %s, %s, %s)
-        """
+        '''
 
         # Hash the password and create the entry in the database
         hash = auth.hash(password)
@@ -337,11 +337,11 @@ def create_breakglass_account(password):
         connection.commit()
 
         # Update the settings table to set breakglass_set to 1
-        update_query = """
+        update_query = '''
         UPDATE app_settings
         SET value = 1
         WHERE setting_name = 'breakglass_set'
-        """
+        '''
         cursor.execute(update_query)
 
         # Commit the transaction
@@ -350,7 +350,7 @@ def create_breakglass_account(password):
     # print the error first before sending it to the calling function, which will likely be an api call to send the
     # error back to the user interface
     except Exception as error:
-        print(f"Error creating breakglass account: {error}")
+        print(f'Error creating breakglass account: {error}')
         raise error
     finally:
         if connection:
@@ -372,7 +372,7 @@ def get_setting_by_name(setting_name):
         cursor = connection.cursor()
 
         # Execute a query to get the setting by name
-        query = "SELECT * FROM app_settings WHERE setting_name = %s"
+        query = 'SELECT * FROM app_settings WHERE setting_name = %s'
         cursor.execute(query, (setting_name,))
 
         # Retrieve query results

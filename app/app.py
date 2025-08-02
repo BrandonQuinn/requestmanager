@@ -130,7 +130,7 @@ def dashboard() -> str:
     Returns:
         str: HTML str for install page
     '''
-   
+
     # Get the token and check it exists 
     token = request.cookies.get('auth_token')
     username = request.cookies.get('user')

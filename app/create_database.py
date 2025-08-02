@@ -5,8 +5,8 @@ import json
 import db_util
 import os
 
-host = "localhost"
-port = "5432"
+host = 'localhost'
+port = '5432'
 
 ## NOTE: If you add a table here, you need to add it in the checks in init.py and the health checks api
 
@@ -17,7 +17,7 @@ def create_database():
     creds = db_util.read_credentials('temp_root_creds.json')
 
     conn = psycopg2.connect(
-        dbname="postgres",
+        dbname='postgres',
         user=creds['username'],
         password=creds['password'],
         host=host,
@@ -26,7 +26,7 @@ def create_database():
 
     conn.autocommit = True
     cur = conn.cursor()
-    cur.execute(sql.SQL("CREATE DATABASE requestmanager"))
+    cur.execute(sql.SQL('CREATE DATABASE requestmanager'))
     
     cur.close()
     conn.close()
@@ -247,7 +247,7 @@ def create_database_and_tables(new_db_username, new_db_password):
     creds = db_util.read_credentials()
 
     conn = psycopg2.connect(
-        dbname="requestmanager",
+        dbname='requestmanager',
         user=creds['username'],
         password=creds['password'],
         host=host,
@@ -360,10 +360,10 @@ def create_db_user(new_username, new_password, conn, cur):
     cur = conn.cursor()
 
     # Create a new user
-    cur.execute(sql.SQL("CREATE USER {} WITH PASSWORD %s").format(sql.Identifier(new_username)), [new_password])
-    cur.execute(sql.SQL("GRANT ALL PRIVILEGES ON DATABASE requestmanager TO {}").format(sql.Identifier(new_username)))
-    cur.execute(sql.SQL("GRANT ALL PRIVILEGES ON SCHEMA public TO {}").format(sql.Identifier(new_username)))
-    cur.execute(sql.SQL("ALTER DATABASE requestmanager OWNER TO {}").format(sql.Identifier(new_username)))
+    cur.execute(sql.SQL('CREATE USER {} WITH PASSWORD %s').format(sql.Identifier(new_username)), [new_password])
+    cur.execute(sql.SQL('GRANT ALL PRIVILEGES ON DATABASE requestmanager TO {}').format(sql.Identifier(new_username)))
+    cur.execute(sql.SQL('GRANT ALL PRIVILEGES ON SCHEMA public TO {}').format(sql.Identifier(new_username)))
+    cur.execute(sql.SQL('ALTER DATABASE requestmanager OWNER TO {}').format(sql.Identifier(new_username)))
 
     # Close communication with the database
     cur.close()
@@ -380,5 +380,5 @@ def save_credentials_to_file(username, password, filename='db_credentials.json')
         "username": username,
         "password": password
     }
-    with open(filename, 'w') as file:
+    with open(filename, 'w', encoding='utf-8') as file:
         json.dump(credentials, file, indent=4)

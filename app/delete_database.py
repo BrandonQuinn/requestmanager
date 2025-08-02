@@ -2,8 +2,8 @@ import psycopg2
 import json
 import os
 
-username = "postgres"
-password = "postgres1234!"
+username = 'postgres'
+password = 'postgres1234!'
 
 #
 # USED FOR COMPLETELY DESTROYING THE DATABASE (for testing) - to ensure the database
@@ -13,25 +13,25 @@ password = "postgres1234!"
 #
 # Delete all tables
 #
-def delete_tables(db_name, user, password, host='localhost', port='5432'):
-    conn = psycopg2.connect(dbname=db_name, user=user, password=password, host=host, port=port)
+def delete_tables(db_name, db_user, db_password, host='localhost', port='5432'):
+    conn = psycopg2.connect(dbname=db_name, user=db_user, password=db_password, host=host, port=port)
     
     try:
         conn.autocommit = True
         cur = conn.cursor()
 
         # Get all table names
-        cur.execute("SELECT tablename FROM pg_tables WHERE schemaname='public';")
+        cur.execute('SELECT tablename FROM pg_tables WHERE schemaname=\'public\';')
         tables = cur.fetchall()
 
         # Drop all tables
         for table_name in tables:
-            cur.execute(f"DROP TABLE IF EXISTS {table_name[0]} CASCADE;")
+            cur.execute(f'DROP TABLE IF EXISTS {table_name[0]} CASCADE;')
         
-        print("All tables dropped successfully.")
+        print('All tables dropped successfully.')
 
     except psycopg2.Error as e:
-        print(f"An error occurred: {e}")
+        print(f'An error occurred: {e}')
     finally:
         if conn:
             conn.close()
@@ -39,28 +39,28 @@ def delete_tables(db_name, user, password, host='localhost', port='5432'):
 #
 # Delete the database
 #
-def delete_database(db_name, user, password, host='localhost', port='5432'):
-    conn = psycopg2.connect(dbname='postgres', user=user, password=password, host=host, port=port)
+def delete_database(db_name,db_user, db_password, host='localhost', port='5432'):
+    conn = psycopg2.connect(dbname='postgres', user=db_user, password=db_password, host=host, port=port)
     
     try:
         conn.autocommit = True
         cur = conn.cursor()
 
         # Terminate all connections to th e database
-        cur.execute(f"""
+        cur.execute(f'''
             SELECT pg_terminate_backend(pg_stat_activity.pid)
             FROM pg_stat_activity
             WHERE pg_stat_activity.datname = '{db_name}'
             AND pid <> pg_backend_pid();
-        """)
+        ''')
 
         # Drop the database
-        cur.execute(f"DROP DATABASE IF EXISTS {db_name};")
+        cur.execute(f'DROP DATABASE IF EXISTS {db_name};')
         
-        print(f"Database {db_name} dropped successfully.")
+        print(f'Database {db_name} dropped successfully.')
 
     except psycopg2.Error as e:
-        print(f"An error occurred: {e}")
+        print(f'An error occurred: {e}')
     finally:
         if conn:
             conn.close()
@@ -80,18 +80,18 @@ def delete_user():
         cur = conn.cursor()
 
         # Revoke all privileges on the public schema, need to remove these otherwise user can't be deleted
-        cur.execute(f"REVOKE ALL PRIVILEGES ON SCHEMA public FROM {user_to_delete};")
+        cur.execute(f'REVOKE ALL PRIVILEGES ON SCHEMA public FROM {user_to_delete};')
 
         # Revoke default privileges on the public schema, need to remove these otherwise user can't be deleted
-        cur.execute(f"ALTER DEFAULT PRIVILEGES IN SCHEMA public REVOKE ALL ON TABLES FROM {user_to_delete};")
+        cur.execute(f'ALTER DEFAULT PRIVILEGES IN SCHEMA public REVOKE ALL ON TABLES FROM {user_to_delete};')
 
         # Drop the user
-        cur.execute(f"DROP USER IF EXISTS {user_to_delete};")
+        cur.execute(f'DROP USER IF EXISTS {user_to_delete};')
         
-        print(f"User {user_to_delete} dropped successfully.")
+        print(f'User {user_to_delete} dropped successfully.')
 
     except psycopg2.Error as e:
-        print(f"An error occurred: {e}")
+        print(f'An error occurred: {e}')
     finally:
         if conn:
             conn.close()
@@ -102,9 +102,9 @@ def delete_user():
 def delete_db_credentials_file():
     try:
         os.remove('app/db_credentials.json')
-        print("db_credentials.json file deleted successfully.")
+        print('db_credentials.json file deleted successfully.')
     except OSError as e:
-        print(f"Error: {e.strerror}")
+        print(f'Error: {e.strerror}')
 
 #
 # Deletes everything. Be careful with this one.

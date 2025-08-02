@@ -1,17 +1,16 @@
 import psycopg2
 import create_database
-import delete_database
 
-username = "postgres"
-password = "postgres1234!"
+username = 'postgres'
+password = 'postgres1234!'
 
 # 
 # Check if the database exists
 #
-def check_database_exists(dbname, user, password, host='localhost', port='5432'):
+def check_database_exists(dbname, db_user, db_password, host='localhost', port='5432'):
     try:
         # Connect to the default database
-        conn = psycopg2.connect(dbname='requestmanager', user=username, password=password, host=host, port=port)
+        conn = psycopg2.connect(dbname='requestmanager', user=db_user, password=db_password, host=host, port=port)
         conn.autocommit = True
         cursor = conn.cursor()
 
@@ -24,16 +23,16 @@ def check_database_exists(dbname, user, password, host='localhost', port='5432')
 
         return exists
     except Exception as e:
-        print(f"An error occurred: {e}")
+        print(f'An error occurred: {e}')
         return False
 
 #
 # Check if a table exists
 #
-def check_table_exists(dbname, user, password, table_name, host='localhost', port='5432'):
+def check_table_exists(dbname, db_user, db_password, table_name, host='localhost', port='5432'):
     try:
         # Connect to the specified database
-        conn = psycopg2.connect(dbname=dbname, user=username, password=password, host=host, port=port)
+        conn = psycopg2.connect(dbname=dbname, user=db_user, password=db_password, host=host, port=port)
         conn.autocommit = True
         cursor = conn.cursor()
 

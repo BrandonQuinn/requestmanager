@@ -9,13 +9,13 @@ import db_util
 #
 def check_credentials():
     if not os.path.exists('db_credentials.json'):
-        return {"status": "failed", "message": "File not found"}
+        return {'status': 'failed', 'message': 'File not found'}
 
-    with open('db_credentials.json') as f:
+    with open('db_credentials.json', encoding='utf-8') as f:
         credentials = json.load(f)
 
     if not credentials.get('username') or not credentials.get('password'):
-        return {"status": "failed", "message": "Username or password not found in file"}
+        return {'status': 'failed', 'message': 'Username or password not found in file'}
     
     # check if the credentials work with the database
     try:
@@ -25,9 +25,9 @@ def check_credentials():
         cursor.close()
         conn.close()
     except Exception as e:
-        return {"status": "failed", "message": f"An error occurred: {e}"}
+        return {'status': 'failed', 'message': f'An error occurred: {e}'}
 
-    return {"status": "success", "message": "Credentials are valid"}
+    return {'status': 'success', 'message': 'Credentials are valid'}
 
 #
 # Use the db_credentials.json file to check if a table exists
@@ -38,10 +38,10 @@ def check_table_exists(table_name):
     try:
         # Connect to your postgres DB
         connection = psycopg2.connect(
-            dbname="requestmanager",
+            dbname='requestmanager',
             user=credentials['username'],
             password=credentials['password'],
-            host="localhost",
+            host='localhost',
             port=5432
         )
 
@@ -54,7 +54,7 @@ def check_table_exists(table_name):
         return exists
 
     except Exception as error:
-        print(f"Error checking table: {error}")
+        print(f'Error checking table: {error}')
     finally:
         if connection:
             cursor.close()
