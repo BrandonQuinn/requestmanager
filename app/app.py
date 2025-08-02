@@ -363,7 +363,7 @@ def set_breakglass() -> str:
         return jsonify({'error': 'Invalid request format'}), 400
 
 @app.route('/api/database/checkinstall', methods=['GET'])
-def database_check_install():
+def database_check_install() -> str:
     ''' Return true if the database is set up, false if not.
     Checks if the database is initialised and returns the status.
 
@@ -379,7 +379,7 @@ def database_check_install():
     return jsonify({'installed': False}), 500
 
 @app.route('/api/database/health', methods=['GET'])
-def database_health():
+def database_health() -> str:
     ''' Return true if the database is set up, false if not.
 
     Returns:
@@ -415,7 +415,7 @@ def database_health():
     return jsonify({'success': 'Database is healthy'}), 200
 
 @app.route('/api/database/create_user', methods=['POST'])
-def create_user():
+def create_user() -> str:
     ''' API Route that creates a new user with the
     data provided in the request body.
 
@@ -443,7 +443,7 @@ def create_user():
         return jsonify({'error': 'Invalid request format'}), 400
 
 @app.route('/api/database/initialise', methods=['POST'])
-def init_database():
+def init_database() -> str:
     ''' Initialise the database with the provided username and password.
 
     Returns:
@@ -472,7 +472,7 @@ def init_database():
 ''' Requests API '''
 
 @app.route('/api/requests/<int:request_id>', methods=['GET'])
-def get_request_by_id(request_id):
+def get_request_by_id(request_id) -> str:
     ''' Get a request by its ID.
     Checks if the user is authenticated and if the request exists in the database.
 
@@ -538,7 +538,7 @@ def get_request_by_id(request_id):
     return jsonify(request_data), 200
 
 @app.route('/api/requests/new', methods=['POST'])
-def new_request():
+def new_request() -> str:
     ''' Create a new request with the data provided in the request body.
 
     Returns:
@@ -589,7 +589,7 @@ def new_request():
         return jsonify({'error': 'Permission denied.'}), 405
 
 @app.route('/api/requests/user/self', methods=['GET'])
-def get_requests_self():
+def get_requests_self() -> str:
     ''' Get all requests made by the currently logged in user.
 
     Returns:
@@ -629,7 +629,7 @@ def get_requests_self():
     return jsonify(requests), 200
 
 @app.route('/api/requests/types', methods=['GET'])
-def get_request_types():
+def get_request_types() -> str:
     ''' Get all request types.
 
     Returns:
@@ -651,7 +651,7 @@ def get_request_types():
     return jsonify(request_types), 200
 
 @app.route('/api/requests/departments', methods=['GET'])
-def get_request_departments():
+def get_request_departments() -> str:
     ''' Get all departments
 
     Returns:
@@ -675,7 +675,7 @@ def get_request_departments():
 ''' Updates API '''
 
 @app.route('/api/requests/<int:request_id>/updates', methods=['GET'])
-def get_request_updates(request_id):
+def get_request_updates(request_id) -> str:
     ''' Get all the updates for a request by its ID.
 
     Returns:
@@ -703,7 +703,7 @@ def get_request_updates(request_id):
     return jsonify(updates_data), 200
 
 @app.route('/api/requests/<int:request_id>/updates/new', methods=['POST'])
-def new_request_update(request_id):
+def new_request_update(request_id) -> str:
     ''' Add an update to a request by its ID.
 
     Returns:
@@ -736,7 +736,7 @@ def new_request_update(request_id):
     return jsonify({'success': 'Update added.'}), 200
 
 @app.route('/api/requests/<int:request_id>/resolve', methods=['POST'])
-def resolve_request(request_id):
+def resolve_request(request_id) -> str:
     ''' Mark a request as resolved by its ID.
 
     Returns:
@@ -778,7 +778,7 @@ def resolve_request(request_id):
 ''' Organisation API '''
 
 @app.route('/api/departments', methods=['GET'])
-def get_departments():
+def get_departments() -> str:
     ''' Get a list of all departments.
 
     Returns:
@@ -800,7 +800,7 @@ def get_departments():
     return jsonify(departments), 200
 
 @app.route('/api/departments/<int:department_id>', methods=['GET'])
-def get_department_by_id(department_id):
+def get_department_by_id(department_id) -> str:
     ''' Get a department by its ID.
 
     Returns:
@@ -825,7 +825,7 @@ def get_department_by_id(department_id):
     return jsonify(department), 200
 
 @app.route('/api/teams', methods=['GET'])
-def get_teams():
+def get_teams() -> str:
     ''' Get a list of all teams.
 
     Returns:
@@ -847,7 +847,7 @@ def get_teams():
     return jsonify(teams), 200
 
 @app.route('/api/teams/<int:team_id>', methods=['GET'])
-def get_team_by_id(team_id):
+def get_team_by_id(team_id) -> str:
     ''' Get a team by its ID.
 
     Returns:
@@ -869,7 +869,7 @@ def get_team_by_id(team_id):
     return jsonify(team), 200
 
 @app.route('/api/teams/new', methods=['POST'])
-def new_team():
+def new_team() -> str:
     ''' Create a new team with the data provided in the request body.
 
     Returns:
@@ -908,7 +908,7 @@ def new_team():
     return jsonify({'error': 'Adding team failed.'}), 400
 
 @app.route('/api/departments/new', methods=['POST'])
-def new_department():
+def new_department() -> str:
     ''' Create a new department.
 
     Returns:
@@ -922,8 +922,6 @@ def new_department():
     # check token and user from cookies
     if auth.check_token(username, token) is False:
         return jsonify({'error': 'Authentication required'}), 401
-
-    department_name = None
     
     # TODO: Check permissions to see if the user can create a new department
 
@@ -941,8 +939,8 @@ def new_department():
         if not name or name == "":
             return jsonify({'error': 'Empty department name send for new department.'}), 406
 
-        teamList = list(teams)
-        database.add_department(name, description, initial_team, teamList)
+        team_list = list(teams)
+        database.add_department(name, description, initial_team, team_list)
 
         return jsonify({'success': 'Department added.'}), 200
 
@@ -951,7 +949,7 @@ def new_department():
 ''' Settings API '''
 
 @app.route('/api/settings/<string:setting_name>', methods=['GET'])
-def get_setting_by_name(setting_name):
+def get_setting_by_name(setting_name) -> str:
     ''' Get a setting by its name.
 
     Returns:

@@ -8,7 +8,7 @@ import datetime
 # Takes the username and password - checks the hash
 # returns a token
 #
-def authenticate_user(username, password):
+def authenticate_user(username, password) -> str:
     token = None
 
     try:
@@ -19,7 +19,7 @@ def authenticate_user(username, password):
         # validate the password
         if validate_pw_hash(hashed_pw, password):
             # generate a token
-            token = generate_user_token(username)
+            token = generate_user_token()
 
             # save the token to the database (will automatilly set times and deadlines)
             database.save_user_token(username, token)
@@ -32,14 +32,14 @@ def authenticate_user(username, password):
 #
 # Generates a random token for the user and saves it to the database
 #
-def generate_user_token(username):
+def generate_user_token() -> str:
     token = secrets.token_hex(32)
     return token
 
 #
 # Checks if the token is valid (in the database)
 #
-def check_token(username, token):
+def check_token(username, token) -> bool:
 
     # if no username or token is provided, return false
     if not username or not token:
@@ -65,7 +65,7 @@ def check_token(username, token):
             return False
         
     except Exception as error:
-        print(f"Error while checking token: {error}. It may not exist or is invalid. Or there was a database error retrieving it.")
+        print(f'Error while checking token: {error}. It may not exist or is invalid. Or there was a database error retrieving it.')
         return False
 
     return True
@@ -73,7 +73,7 @@ def check_token(username, token):
 #
 # Hash a password with argon2
 #
-def hash(pw):
+def hash(pw) -> str:
     ph = PasswordHasher(time_cost=3, memory_cost=102400, parallelism=4)
     hashed_password = ph.hash(pw)
     return hashed_password
@@ -85,7 +85,7 @@ def validate_pw_hash(hashed_pw, plaintext_pw):
     ph = PasswordHasher(time_cost=3, memory_cost=102400, parallelism=4)
     try:
         return ph.verify(hashed_pw, plaintext_pw)
-    except:
+    except Exception as error:
         return False
 
 #
@@ -101,24 +101,24 @@ def check_permission(perm_str, token):
         
         # permission not found
         if not perm_data:
-            print("Error while checking permission, no permission exists: " + perm_str)
-            raise Exception("Error while checking permission, no permission exists: " + perm_str)
+            print(f'Error while checking permission, no permission exists:  {perm_data}')
+            raise Exception(f'Error while checking permission, no permission exists:  {perm_data}')
         
         # get token data
         token_data = database.get_token(token)
 
         # token not found
         if not token_data:
-            print("No token found while checking permissions: " + token)
-            raise Exception("Error, no token found in database while checking permissions")
+            print(f'No token found while checking permissions: {token}')
+            raise Exception(f'No token found while checking permissions')
 
         # get the user using the id associated with the token
         user_data = database.get_user_by_id(token_data[4])
         
         # user not found
         if not user_data:
-            print("User not found in database while checking permssions, user id: " + token[4])
-            raise Exception("User not found in database while checking permssions, user id: " + token[4])
+            print(f'User not found in database while checking permssions, user id: {token[4]}')
+            raise Exception(f'User not found in database while checking permssions, user id: {token[4]}')
         
         # get the array of permissions from the user data
         user_permissions = user_data[5]

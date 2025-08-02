@@ -927,36 +927,3 @@ def add_department(name, description, initial_team, teamList):
         if connection:
             cursor.close()
             disconnect(connection)
-
-########################################################
-#			SETTINGS
-########################################################
-
-#
-# Get a setting by its name
-#
-def get_setting_by_name(setting_name):
-    try:
-        # Connect to your postgres DB
-        connection = connect()
-        cursor = connection.cursor()
-
-        # Execute a query to get the setting by name
-        query = "SELECT * FROM app_settings WHERE setting_name = %s"
-        
-        cursor.execute(query, (setting_name,))
-
-        # Retrieve query results
-        setting = cursor.fetchone()
-        if setting:
-            return setting
-        else:
-            raise Exception(f"Setting '{setting_name}' not found in the database")
-            
-    except Exception as error:
-        print(f"Error fetching setting from database: {error}")
-        raise error
-    finally:
-        if connection:
-            cursor.close()
-            disconnect(connection)
