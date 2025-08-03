@@ -300,10 +300,6 @@ def temp_db_user() -> str:
         str: json formatted string of success or failure message
     '''
 
-    # return if the database has been initialised
-    if init.is_database_initialised():
-        return jsonify({'error': 'Database already initialised'}), 500
-
     if request.is_json:
         data = request.get_json()
         db_username = data.get('db_username')
