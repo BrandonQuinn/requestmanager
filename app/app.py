@@ -309,8 +309,12 @@ def temp_db_user() -> str:
         db_username = data.get('db_username')
         db_password = data.get('db_password')
 
-        if not db_username or not db_password:
+        if not db_username:
             return jsonify({'error': 'Username and password are required'}), 400
+
+        # Set a blank password if not provided
+        if not db_password:
+            db_password = ''
 
         # Test the credentials, if it fails, return error code
         if not database.test_connection(db_username, db_password):
