@@ -102,10 +102,6 @@ def install() -> str:
         str: HTML str for install page
     '''
 
-    # redirect to home page if the database is already initialised
-    if init.is_database_initialised():
-        return redirect(url_for('index'), code=302)
-
     template = template_lookup.get_template('install.html')
     return template.render(title='Install')
 
