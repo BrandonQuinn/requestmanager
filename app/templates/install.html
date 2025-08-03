@@ -193,7 +193,7 @@
 
 		// Check if the Postgres fields are filled and enable the step 1 button
 		function checkPostgresFields() {
-			if (dbUsernameField.value.trim() !== "" && dbPasswordField.value.trim() !== "") {
+			if (dbUsernameField.value.trim() !== "") {
 				step1Button.classList.remove("disabled");
 			} else {
 				step1Button.classList.add("disabled");

@@ -3,7 +3,7 @@ import json
 import os
 
 username = 'postgres'
-password = 'postgres1234!'
+password = ''
 
 #
 # USED FOR COMPLETELY DESTROYING THE DATABASE (for testing) - to ensure the database
@@ -69,7 +69,7 @@ def delete_database(db_name,db_user, db_password, host='localhost', port='5432')
 # Deletes the user created for the database
 #
 def delete_user():
-    with open('app/db_credentials.json') as f:
+    with open('db_credentials.json', encoding='utf-8') as f:
         credentials = json.load(f)
         user_to_delete = credentials['username']
 

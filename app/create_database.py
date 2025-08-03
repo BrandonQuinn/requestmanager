@@ -10,10 +10,17 @@ port = '5432'
 
 ## NOTE: If you add a table here, you need to add it in the checks in init.py and the health checks api
 
-#
-# Create a new database called requestmanager
-#
 def create_database():
+    '''
+    Creates a new PostgreSQL database named 'requestmanager' using temporarily stored credentials.
+    Reads database credentials from 'temp_root_creds.json', establishes a connection to the PostgreSQL server,
+    and executes a SQL command to create the 'requestmanager' database.
+    
+    Raises:
+        psycopg2.Error: If there is an error connecting to the database or executing the SQL command.
+        FileNotFoundError: If the credentials file does not exist.
+        KeyError: If required credential keys are missing in the JSON file.
+    '''
     creds = db_util.read_credentials('temp_root_creds.json')
 
     conn = psycopg2.connect(
@@ -31,10 +38,17 @@ def create_database():
     cur.close()
     conn.close()
 
-#
-# Set the temporary username and password
-#
 def set_temp_db_user(db_username, db_password):
+    '''
+    Saves temporary database user credentials to a file.
+
+    Args:
+        db_username (str): The username for the temporary database user.
+        db_password (str): The password for the temporary database user.
+
+    Returns:
+        None
+    '''
 
     # Save the credentials to a file
     save_credentials_to_file(db_username, db_password, 'temp_root_creds.json')
