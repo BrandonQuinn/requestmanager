@@ -310,7 +310,7 @@ def temp_db_user() -> str:
         db_password = data.get('db_password')
 
         if not db_username:
-            return jsonify({'error': 'Username and password are required'}), 400
+            return jsonify({'error': 'Username is required'}), 400
 
         # Set a blank password if not provided
         if not db_password:
