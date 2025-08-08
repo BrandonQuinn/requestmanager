@@ -4,6 +4,10 @@ import database
 import secrets
 import datetime
 
+ARGON_PARRALELISM = 4
+ARGON_MEMORY_COST = 102400
+ARGON_TIME_COST = 3
+
 #
 # Takes the username and password - checks the hash
 # returns a token
@@ -74,7 +78,7 @@ def check_token(username, token) -> bool:
 # Hash a password with argon2
 #
 def hash(pw) -> str:
-    ph = PasswordHasher(time_cost=3, memory_cost=102400, parallelism=4)
+    ph = PasswordHasher(time_cost=ARGON_PARRALELISM, memory_cost=ARGON_MEMORY_COST, parallelism=ARGON_PARRALELISM)
     hashed_password = ph.hash(pw)
     return hashed_password
 
@@ -82,7 +86,7 @@ def hash(pw) -> str:
 # Check paramters if they match to validate password
 #
 def validate_pw_hash(hashed_pw, plaintext_pw):
-    ph = PasswordHasher(time_cost=3, memory_cost=102400, parallelism=4)
+    ph = PasswordHasher(time_cost=ARGON_PARRALELISM, memory_cost=ARGON_MEMORY_COST, parallelism=ARGON_PARRALELISM)
     try:
         return ph.verify(hashed_pw, plaintext_pw)
     except Exception as error:

@@ -28,6 +28,7 @@ source venv/bin/activate
 
 # Install Flask
 pip install Flask
+pip install logging
 pip install cryptography
 pip install mako
 pip install argon2-cffi

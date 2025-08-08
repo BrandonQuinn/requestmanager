@@ -1,35 +1,27 @@
-import datetime
+import logging
+import os
 
-class Severity:
-    DEBUG = "DEBUG"
-    INFO = "INFO"
-    WARNING = "WARNING"
-    ERROR = "ERROR"
-    CRITICAL = "CRITICAL"
+def get_logger(name: str, log_file: str = 'app.log', level=logging.DEBUG) -> logging.Logger:
+    logger = logging.getLogger(name)
 
-class Logger:
-    def __init__(self, log_file="app.log"):
-        self.log_file = log_file
+    if logger.hasHandlers():
+        return logger  # Already configured, don’t be dumb and double it
 
-    def log(self, message, severity=Severity.INFO):
-        try:
-            with open(self.log_file, "a", encoding="utf-8") as f:
-                f.write(f"[{datetime.now()}][{severity}]: {message}\n")
-        except Exception as e:
-            print(f"Failed to write to log file {self.log_file}: {e}")
-            # Optionally, you could raise an exception or handle it in another way
+    logger.setLevel(level)
 
-    def debug(self, message):
-        self.log(message, Severity.DEBUG)
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
-    def info(self, message):
-        self.log(message, Severity.INFO)
+    # Console handler
+    ch = logging.StreamHandler()
+    ch.setLevel(level)
+    ch.setFormatter(formatter)
 
-    def warning(self, message):
-        self.log(message, Severity.WARNING)
+    # File handler
+    fh = logging.FileHandler(log_file)
+    fh.setLevel(level)
+    fh.setFormatter(formatter)
 
-    def error(self, message):
-        self.log(message, Severity.ERROR)
+    logger.addHandler(ch)
+    logger.addHandler(fh)
 
-    def critical(self, message):
-        self.log(message, Severity.CRITICAL)
+    return logger

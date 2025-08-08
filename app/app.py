@@ -37,12 +37,15 @@ from flask import Flask, render_template, redirect, url_for, jsonify, request
 from mako.template import Template
 from mako.lookup import TemplateLookup
 import os, sys, cryptography
-import health_checks, init, create_database, auth, database
+import health_checks, init, create_database, auth, database, logger
 
 app = Flask(__name__)
 
 # Configure Mako template  lookup
 template_lookup = TemplateLookup(directories=['templates'])
+
+# Create a logger for the API
+api_logger = logger.get_logger('api', log_file='logs/api.log')
 
 """ UI Routes """
 
@@ -58,6 +61,7 @@ def index() -> str:
 
     # redirect to install page if the database is not initialised
     if not init.is_database_initialised():
+        api_logger.info('Database not initialised when accessing \'/\', redirecting to install page.')
         return redirect(url_for('install'), code=302)
 
     # redirect to dashboard if the user is logged in
@@ -65,6 +69,7 @@ def index() -> str:
     username = request.cookies.get('user')
 
     if token and auth.check_token(username, token):
+        api_logger.info('User %s is authenticated, redirecting to dashboard.', username)
         return redirect(url_for('dashboard'), code=302)
 
     template = template_lookup.get_template('index.html')
@@ -82,6 +87,7 @@ def organisation() -> str:
         
     # redirect to install page if the database is not initialised
     if not init.is_database_initialised():
+        api_logger.info('Database not initialised when accessing \'/install\', redirecting to install page.')
         return redirect(url_for('install'), code=302)
 
     # redirect to dashboard if the user is logged in
@@ -89,6 +95,7 @@ def organisation() -> str:
     username = request.cookies.get('user')
 
     if not token or not auth.check_token(username, token):
+        api_logger.info('User %s is not authenticated, redirecting to index.', username)
         return redirect(url_for('index'), code=302)
 
     template = template_lookup.get_template('organisation_templates\\organisation.html')
@@ -101,7 +108,7 @@ def install() -> str:
     Returns:
         str: HTML str for install page
     '''
-
+    api_logger.info('Routing to install page.')
     template = template_lookup.get_template('install.html')
     return template.render(title='Install')
 
@@ -112,7 +119,8 @@ def error_404(error) -> str:
     Returns:
         str: HTML str for the 404 page
     '''
-        
+
+    api_logger.info('Routing to 404 page.')
     template = template_lookup.get_template("404.html")
     return template.render(title="404")
 
@@ -131,14 +139,9 @@ def dashboard() -> str:
     token = request.cookies.get('auth_token')
     username = request.cookies.get('user')
     
-    # no token, problem
-    if not token:
-        print('Token not recieved from client when accessing dashboard.')
-        return redirect(url_for('index'), code=302, 
-                Response=jsonify({'message': 'Token not recieved from client', 'status': 'failure'}))
-
     # if not a valid token, redirect to index
     if not auth.check_token(username, token):
+        api_logger.info('Invalid credentials when accessing \'/dashboard\', redirecting to index.')
         return redirect(url_for('index'), code=302,
                 Response=jsonify({'message': 'Invalid token', 'status': 'failure'}))
 
@@ -165,12 +168,14 @@ def get_users() -> str:
     username = request.cookies.get('user')
 
     if auth.check_token(username, token) is False:
+        api_logger.info('User %s not authenticated when accessing \'/api/users\'. Return error JSON.', username)
         return jsonify({'error': 'Authentication required'}), 401
 
     users = []
 
     # breakglass can see all users
     if auth.check_permission('breakglass', token) is True:
+        api_logger.warning('Breakglass user %s accessed \'/api/users\'', username)
         users = database.get_all_users()
     
     # normal users can only limited scope of users and data depending on their permissions
@@ -187,8 +192,12 @@ def create_new_user() -> str:
         user was created successfully.
     '''
 
+    token = request.cookies.get('auth_token')
+    username = request.cookies.get('user')
+
     # check token and user from cookies
-    if auth.check_token(request.cookies.get('user'), request.cookies.get('auth_token')) is False:
+    if auth.check_token(username, token) is False:
+        api_logger.info('User %s not authenticated when accessing \'/api/users/new\'. Return error JSON.', username)
         return jsonify({'error': 'Authentication required'}), 401
 
     if request.is_json:
@@ -201,26 +210,31 @@ def create_new_user() -> str:
         teams = data.get('teams')
 
         if not firstname or not lastname or not new_username or not email or not password:
+            api_logger.warning('Insuffienct fields or data provided when creating a new user via \'/api/users/new\' by %s', username)
             return jsonify({'error': 'One or more fields not provided.'}), 400
 
         # hash the password
         try:
             password = auth.hash(password)
         except Exception as e:
+            api_logger.error('Error trying to hash password for user %s - error from argon2 library: %s', username, e)
             return jsonify({'error': f"Error hashing password: {e}"}), 500
         
         # check if the user already exists
         try:
             if database.get_user_by_username(new_username):
+                api_logger.info('User %s already exists when trying to create a new user via \'/api/users/new\'', new_username)
                 return jsonify({'error': 'User already exists'}), 400
             if database.get_user_by_email(email):
+                api_logger.info('Email %s already in use when trying to create a new user via \'/api/users/new\'', email)
                 return jsonify({'error': 'Email already in use'}), 400
         except Exception as e:
-            print(f"Error checking user existence: {e}")
+            api_logger.info('User or email already exists when trying to create a new user via \'/api/users/new\': %s', e)
             pass  # an exception in this case is fine, it just means the user or email doesn't exist
         
         try:
             database.add_user(new_username, email, password, [], teams, 0, False, firstname, lastname)
+            api_logger.info('New user created %s', new_username)
             return jsonify({'success': 'User created successfully'}), 201
         except Exception as e:
             print(f"Error creating user: {e}")
@@ -972,5 +986,6 @@ def get_setting_by_name(setting_name) -> str:
 
 if __name__ == '__main__':
     ''' Start the Flask application. '''
-
+   
+    api_logger.info('Starting application...')
     app.run(debug=True)
