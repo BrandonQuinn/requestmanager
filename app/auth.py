@@ -1,19 +1,20 @@
 from argon2 import PasswordHasher
 from flask import request
-import database
-import secrets
-import datetime
+import datetime, logger, secrets, database
 
 ARGON_PARRALELISM = 4
 ARGON_MEMORY_COST = 102400
 ARGON_TIME_COST = 3
 
+auth_logger = logger.get_logger('auth', 'logs/auth.log')
+
 #
-# Takes the username and password - checks the hash
+# Takes the username and password - checks  the hash
 # returns a token
 #
 def authenticate_user(username, password) -> str:
     token = None
+    auth_logger.info('Authenticating user %s', username)
 
     try:
         # get user data from database and then hashed password 
@@ -24,11 +25,14 @@ def authenticate_user(username, password) -> str:
         if validate_pw_hash(hashed_pw, password):
             # generate a token
             token = generate_user_token()
+            auth_logger.info('User %s authenticated successfully, token generated', username)
 
             # save the token to the database (will automatilly set times and deadlines)
             database.save_user_token(username, token)
+            auth_logger.info('Token for user %s saved to database', username)
             
     except Exception as error:
+        auth_logger.error('Error while authenticating user %s: %s', username, error)
         raise Exception(error)
 
     return token

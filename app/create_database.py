@@ -1,6 +1,5 @@
 import psycopg2
 from psycopg2 import sql
-from argon2 import PasswordHasher
 import json
 import db_util
 import os
