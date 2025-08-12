@@ -1,0 +1,80 @@
+<!--
+Copyright (c) 2018-2025 The Tabler Authors
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+-->
+
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Organisation</title>
+    <!-- CSS files -->
+    <%include file="css_t.html" />
+    <style>
+        @import url('https://rsms.me/inter/inter.css');
+
+        :root {
+            --tblr-font-sans-serif: 'Inter Var', -apple-system, BlinkMacSystemFont, San Francisco, Segoe UI, Roboto, Helvetica Neue, sans-serif;
+        }
+
+        body {
+            font-feature-settings: "cv03", "cv04", "cv11";
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page">
+        <!-- Sidebar -->
+        <%include file="./vert_nav_t.html" />
+        <div class="page-wrapper">
+            <!-- Page header -->
+            <div class="page-header d-print-none">
+                <div class="container-xl">
+                    <div class="row g-2 align-items-center">
+                        <div class="col">
+                            <!-- Page pre-title -->
+                            <div class="page-pretitle">
+                                Configure
+                            </div>
+                            <h2 class="page-title">
+                                Organisation
+                            </h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Page body -->
+            <div class="page-body">
+                <div class="container-xl">
+                    <div class="row row-cards">
+                        <div class="col-6">
+
+                        </div>
+                    </div>
+                </div>
+                <footer class="footer footer-transparent d-print-none">
+                    <div class="container-xl">
+                        <div class="row text-center align-items-center flex-row-reverse">
+
+                        </div>
+                    </div>
+                </footer>
+            </div>
+            <%include file="error_modal_t.html" />
+        </div>
+        <%include file="js_t.html" />
+        <script src="./static/js/organisation.js"></script>
+</body>
+
+</html>

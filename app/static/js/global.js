@@ -21,6 +21,7 @@ function getTokenFromCookie() {
 
 /*
 	Generated a random password.
+	@returns {string} The value of randomly generated password
 */
 function generatePassword() {
     var length = 32,
