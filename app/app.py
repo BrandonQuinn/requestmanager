@@ -145,13 +145,15 @@ def dashboard() -> str:
         return redirect(url_for('index'), code=302,
                 Response=jsonify({'message': 'Invalid token', 'status': 'failure'}))
 
-    # get the user to send to the html (help use permissions to hide elements that the user doesn't have perms to)
-    # if they can't use it, why offer it? "It's like showing a very tired mason a whole cathedral" - David Mitchell 
-    user_data = database.get_user_by_username(username)
+    # if the user is the breakglass user, show the detailed dashboard
+    if auth.check_permission('breakglass', token):
+        api_logger.info('User %s is a breakglass user, redirecting to detailed dashboard.', username)
+        template = template_lookup.get_template('detailed_dashboard\\detailed_t.html')
+        return template.render(title='Dashboard')
 
     # present the dashboard
     template = template_lookup.get_template('dashboard_templates\\dashboard.html')
-    return template.render(title='Dashboard', user=user_data)
+    return template.render(title='Dashboard')
 
 ''' Users API '''
 

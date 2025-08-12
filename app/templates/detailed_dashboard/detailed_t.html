@@ -17,7 +17,7 @@ THE SOFTWARE.
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Organisation</title>
+    <title>Dashboard</title>
     <!-- CSS files -->
     <%include file="css_t.html" />
     <style>
@@ -33,7 +33,7 @@ THE SOFTWARE.
     </style>
 </head>
 
-<body>
+<body class="layout-fluid">
     <div class="page">
         <!-- Sidebar -->
         <%include file="./vert_nav_t.html" />
@@ -45,10 +45,10 @@ THE SOFTWARE.
                         <div class="col">
                             <!-- Page pre-title -->
                             <div class="page-pretitle">
-                                Configure
+                                Dashboard
                             </div>
                             <h2 class="page-title">
-                                Organisation
+                                Requests
                             </h2>
                         </div>
                     </div>
@@ -58,8 +58,9 @@ THE SOFTWARE.
             <div class="page-body">
                 <div class="container-xl">
                     <div class="row row-cards">
-                        <div class="col-6">
-
+                        <div class="col-5">
+                            <%include file="dashboard_elements\p1_request_table_simple_t.html"/>
+                            <br/>
                         </div>
                     </div>
                 </div>
