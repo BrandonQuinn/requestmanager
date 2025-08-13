@@ -27,7 +27,7 @@ The logon process must be computationally difficult but fast enough (and eventua
 
 They must be long, breakglass must be at least 30 characters.
 
-2FA will be multi-channel, somthing you know, something you have. Standard stuff
+2FA will be multi-channel, and inherently multi-factor (naturally), somthing you know, something you have. Standard stuff
 
 ### Cryptography
 
@@ -43,7 +43,7 @@ I don't want to use a library for this, I wanted to come up with a solution myse
 
 ## Error Management and Logging
 
-- print will be consistently used to write all exceptions to console
-- when exceptions occur, after print, they are raised again futher up until a json object can be return to the client from the api call. That way the end user gets the error, and the server logs it in the console for full visiblity
+- print to console only to be used for debugging, any prints to be removed from prod code
+- when exceptions occur, after logging, they are raised again futher up until a json object can be returned to the client from the api call. That way the end user gets the error, and the server logs it for full visiblity
 - each exception message should by customised to easily located it in code - also should be closely related to the name of the function
-- TODO: Need a log file
+- Log file is generated for each key module e.g. api.log, database.log

@@ -1,34 +1,104 @@
-from flask import jsonify
 import json, auth, db_util, psycopg2, logger
 from datetime import datetime, timedelta
+from psycopg2 import pool
+
+# Create a logger for the database
+db_logger = logger.get_logger('database', log_file='logs/database.log')
 
 # Used for creating the database and new user then cleared from memory
 temp_db_username = None
 temp_db_password = None
 
-#
-# Connect to the database
-#
-def connect():
-    # TODO: Cache the connection. So we don't keep reading the file.
-    # TODO: Remove exception handling internally, raise the exceptions
-    credentials = db_util.read_credentials()
+POOL_MIN_SIZE = 1
+POOL_MAX_SIZE = 10
+
+DB_CONFIGURATION = {
+    'dbname': 'requestmanager',
+    'user': '',
+    'password': '',
+    'host': 'localhost',
+    'port': '5432'
+}
+
+# Create the pool
+connection_pool = None
+
+def establish_pool() -> None:
+    ''' Read credentials and add them to the db connection hashmap configuration.
+    Initialise the connection pool which is global. 
+
+    Returns:
+        None
+    '''
+    
+    # read the credentials from the creds files and add them to the hashmap
+    creds = db_util.read_credentials()
+    
+    DB_CONFIGURATION['user'] = creds['username']
+    DB_CONFIGURATION['password'] = creds['password']
+
+    # Initialise the connection pool
+    connection_pool = pool.SimpleConnectionPool(
+        minconn=POOL_MIN_SIZE, 
+        maxconn=POOL_MAX_SIZE,
+        **DB_CONFIGURATION # ** unmaps the hashmap
+    )
+
+def get_conn() -> object:
+    ''' Return a connection from the pool. If connection pool is not initalise, raise exception
+
+    Returns:
+        Connection: connecion to database
+
+    Raises:
+        Exception: When the connection pool is not initialised
+    '''
+
+    # No pool available yet, establish the pool
+    if not connection_pool:
+        establish_pool()
+    
+    return connection_pool.getconn()
+
+def put_conn(connection) -> None:
+    ''' Put a connection back in to the pool. If connection pool is not initalise, raise exception
+
+    Args:
+        connection: The connectino object to put back in to the pool
+
+    Returns:
+        None
+
+    Raises:
+        Exception: When the connection pool is not initialised
+    '''
+
+    # No pool, wtf?
+    if not connection_pool:
+        db_logger.critical('Unable to put connection back in to pool, connection_pool not initialised.')
+        # TODO: Change to more specific Exception type
+        raise Exception('Unable to put connection back in to pool, connection_pool not initialised.')
+    
+    connection_pool.putconn(connection)
+
+def connect() -> object:
+    ''' Return a connection from the pool. If connection pool is not initalised, initialise it
+
+    Returns:
+        Connection: connecion to database
+
+    Raises:
+        Exception: When the connection fails
+    '''
+    if not connection_pool:
+        establish_pool()
 
     try:
-        # Connect to your postgres DB
-        connection = psycopg2.connect(
-            dbname="requestmanager",
-            user=credentials['username'],
-            password=credentials['password'],
-            host="localhost",
-            port="5432"
-        )
-
-        return connection
-
-    except Exception as error:
-        print(f"Error connecting to the database: {error}")
-        return None
+        conn = get_conn()
+        return conn
+    except Exception as e:
+        db_logger.critical('Unable to retrieve a connection from the connection pool: %s', e)
+        raise Exception(e)
 
 #
 # Close the connection to the database
@@ -41,19 +111,33 @@ def disconnect(connection):
 # Make sure the database credentials are valid
 #
 def test_connection(db_username, db_password):
+    ''' Test the connection to the database with the supplied credentials.
+
+    Args:
+        db_username: username as a string
+        db_password: password as a string
+
+    Returns:
+        bool: True if success, False if failed
+
+    Raises:
+        Exception: When the connection fails
+    '''
+
     try:
         # Connect to the database with the provided credentials
         connection = psycopg2.connect(
-            dbname="requestmanager",
+            dbname='requestmanager',
             user=db_username,
             password=db_password,
-            host="localhost",
-            port="5432"
+            host='localhost',
+            port='5432'
         )
 
         connection.close()
         return True
     except psycopg2.Error as e:
+        db_logger.error('Testing Database connection failed. Unable to connect to database: %s', e)
         return False
 
 ######################################
@@ -72,7 +156,7 @@ def get_all_users():
         cursor = connection.cursor()
 
         # Execute a query
-        cursor.execute("SELECT id, username, email, created_at, permissions, level, end_user, firstname, lastname FROM users")
+        cursor.execute('SELECT id, username, email, created_at, permissions, level, end_user, firstname, lastname FROM users')
 
         # Retrieve query results
         users = cursor.fetchall()
@@ -80,7 +164,7 @@ def get_all_users():
         return users
 
     except Exception as error:
-        print(f"Error fetching users: {error}")
+        print(f'Error fetching users: {error}')
     finally:
         if connection:
             cursor.close()
@@ -96,7 +180,7 @@ def get_user_by_username(username):
         cursor = connection.cursor()
 
         # Execute a query to get the user by username
-        query = "SELECT * FROM users WHERE username = %s"
+        query = 'SELECT * FROM users WHERE username = %s'
         cursor.execute(query, (username,))
 
         # Retrieve query results
@@ -105,10 +189,10 @@ def get_user_by_username(username):
         if user:
             return user
         else:
-            raise Exception("No user found when getting user by username from database")
+            raise Exception('No user found when getting user by username from database')
             
     except Exception as error:
-        raise Exception("Failed to get user by username: {error}")
+        raise Exception(f'Failed to get user by username: {error}')
     finally:
         if connection:
             cursor.close()
@@ -181,12 +265,12 @@ def get_user_by_token(token):
         cursor = connection.cursor()
 
         # Execute a query to get the user by token
-        query = """
+        query = '''
         SELECT u.*
         FROM users u
         INNER JOIN tokens t ON u.id = t.created_by
         WHERE t.token = %s
-        """
+        '''
         cursor.execute(query, (token,))
 
         # Retrieve query results
@@ -195,10 +279,10 @@ def get_user_by_token(token):
         if user:
             return user
         else:
-            raise Exception("No user found when getting user by token from database")
+            raise Exception('No user found when getting user by token from database')
 
     except Exception as error:
-        print(f"Error fetching user by token: {error}")
+        print(f'Error fetching user by token: {error}')
         raise error
     finally:
         if connection:
@@ -211,7 +295,7 @@ def get_user_by_token(token):
 def add_user(username, email, password, permissions, teams, level, end_user, firstname, lastname):
     # input validation
     if len(username) > 50 or len(email) > 100 or len(password) > 128 or len(firstname) > 128 or len(lastname) > 128:
-        raise Exception("Username, email, password, firstname or lastname too long")
+        raise Exception('Username, email, password, firstname or lastname too long')
     
     # map to integers, database columns are integer arrays, json format from client will be lists of strings
     teams = list(map(int, teams))
@@ -223,10 +307,10 @@ def add_user(username, email, password, permissions, teams, level, end_user, fir
         cursor = connection.cursor()
         
         # Execute a query to insert a new user
-        insert_query = """
+        insert_query = '''
         INSERT INTO users (username, email, password, created_at, permissions, level, end_user, firstname, lastname)
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
-        """
+        '''
         cursor.execute(insert_query, (username, email, password, datetime.now(), permissions, level, end_user, firstname, lastname))
         
         # Commit the transaction
