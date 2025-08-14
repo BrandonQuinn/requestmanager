@@ -59,28 +59,23 @@ THE SOFTWARE.
                 <div class="container-xl">
                     <div class="row row-cards">
                         <div class="col-5">
-                            <%include file="dashboard_elements\p1_request_table_simple_t.html"/>
-                            <br/>
-                            <%include file="dashboard_elements\p2_request_table_simple_t.html"/>
-                            <br/>
-                            <%include file="dashboard_elements\p3_request_table_simple_t.html"/>
-                            <br/>
-                            <%include file="dashboard_elements\p4_request_table_simple_t.html"/>
+                            <%include file="dashboard_elements\unassigned_request_table_simple_t.html" />
+                            <br />
                         </div>
                     </div>
-                </div>
-                <footer class="footer footer-transparent d-print-none">
-                    <div class="container-xl">
-                        <div class="row text-center align-items-center flex-row-reverse">
+                    <footer class="footer footer-transparent d-print-none">
+                        <div class="container-xl">
+                            <div class="row text-center align-items-center flex-row-reverse">
 
+                            </div>
                         </div>
-                    </div>
-                </footer>
+                    </footer>
+                </div>
+                <%include file="error_modal_t.html" />
             </div>
-            <%include file="error_modal_t.html" />
-        </div>
-        <%include file="js_t.html" />
-        <script src="./static/js/organisation.js"></script>
+            <%include file="js_t.html" />
+            <script src="./static/js/organisation.js"></script>
+            <script src="./static/js/elements_js/detailed_dashboard_elements.js"></script>
 </body>
 
 </html>
