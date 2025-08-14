@@ -1,6 +1,7 @@
 import json, auth, db_util, psycopg2, logger
 from datetime import datetime, timedelta
 from psycopg2 import pool
+import time
 
 # Create a logger for the database
 db_logger = logger.get_logger('database', log_file='logs/database.log')
@@ -76,12 +77,13 @@ def get_conn() -> object:
     start_time = datetime.now()
     conn = connection_pool.getconn()
     end_time = datetime.now()
+
     elapsed_time = (end_time.timestamp() - start_time.timestamp())
 
     # if the wait time for a connection exceeds the threshold, log it
     if elapsed_time >= CONNECTION_WAIT_LOG_THRESHOLD:
-        db_logger.error('Connection wait time exceeded threshold: '
-            '%s seconds', elapsed_time)
+        db_logger.error('Connection wait time exceeded threshold of %s, '
+            'time taken: %s seconds', CONNECTION_WAIT_LOG_THRESHOLD, elapsed_time)
 
     return conn 
 
