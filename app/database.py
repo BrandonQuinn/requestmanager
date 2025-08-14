@@ -9,6 +9,10 @@ db_logger = logger.get_logger('database', log_file='logs/database.log')
 temp_db_username = None
 temp_db_password = None
 
+# Threshold for logging connection wait times 
+# when the pool has not connections available
+CONNECTION_WAIT_LOG_THRESHOLD = 1  # seconds
+
 POOL_MIN_SIZE = 1
 POOL_MAX_SIZE = 10
 
@@ -24,28 +28,38 @@ DB_CONFIGURATION = {
 connection_pool = None
 
 def establish_pool() -> None:
-    ''' Read credentials and add them to the db connection hashmap configuration.
-    Initialise the connection pool which is global. 
+    ''' Read credentials and add them to the db 
+        connection hashmap configuration.
+        Initialise the connection pool which is global. 
 
     Returns:
         None
     '''
-    
+
     # read the credentials from the creds files and add them to the hashmap
     creds = db_util.read_credentials()
-    
+
     DB_CONFIGURATION['user'] = creds['username']
     DB_CONFIGURATION['password'] = creds['password']
 
-    # Initialise the connection pool
-    connection_pool = pool.SimpleConnectionPool(
-        minconn=POOL_MIN_SIZE, 
-        maxconn=POOL_MAX_SIZE,
-        **DB_CONFIGURATION # ** unmaps the hashmap
-    )
+    try:
+        # Initialise the connection pool
+        global connection_pool
+
+        connection_pool = pool.ThreadedConnectionPool(
+            minconn=POOL_MIN_SIZE, 
+            maxconn=POOL_MAX_SIZE,
+            **DB_CONFIGURATION # ** unmaps the hashmap
+        )
+
+        db_logger.info('Connection pool established successfully.')
+    except psycopg2.Error as e:
+        db_logger.critical('Failed to establish connection pool: %s', e)
+        raise psycopg2.Error(f'Failed to establish connection pool: {e}')
 
 def get_conn() -> object:
-    ''' Return a connection from the pool. If connection pool is not initalise, raise exception
+    ''' Return a connection from the pool. 
+        If connection pool is not initalise, raise exception
 
     Returns:
         Connection: connecion to database
@@ -55,13 +69,25 @@ def get_conn() -> object:
     '''
 
     # No pool available yet, establish the pool
-    if not connection_pool:
+    if connection_pool is None:
         establish_pool()
-    
-    return connection_pool.getconn()
+
+    # start timer and get a connection from the pool
+    start_time = datetime.now()
+    conn = connection_pool.getconn()
+    end_time = datetime.now()
+    elapsed_time = (end_time.timestamp() - start_time.timestamp())
+
+    # if the wait time for a connection exceeds the threshold, log it
+    if elapsed_time >= CONNECTION_WAIT_LOG_THRESHOLD:
+        db_logger.error('Connection wait time exceeded threshold: '
+            '%s seconds', elapsed_time)
+
+    return conn 
 
 def put_conn(connection) -> None:
-    ''' Put a connection back in to the pool. If connection pool is not initalise, raise exception
+    ''' Put a connection back in to the pool. 
+        If connection pool is not initalise, raise exception
 
     Args:
         connection: The connectino object to put back in to the pool
@@ -75,14 +101,17 @@ def put_conn(connection) -> None:
 
     # No pool, wtf?
     if not connection_pool:
-        db_logger.critical('Unable to put connection back in to pool, connection_pool not initialised.')
+        db_logger.critical('Unable to put connection back in to pool,' \
+            ' connection_pool not initialised.')
         # TODO: Change to more specific Exception type
-        raise Exception('Unable to put connection back in to pool, connection_pool not initialised.')
-    
+        raise Exception('Unable to put connection back in to pool, ' \
+            'connection_pool not initialised.')
+ 
     connection_pool.putconn(connection)
 
 def connect() -> object:
-    ''' Return a connection from the pool. If connection pool is not initalised, initialise it
+    ''' Return a connection from the pool. 
+        If connection pool is not initalised, initialise it
 
     Returns:
         Connection: connecion to database
@@ -97,7 +126,8 @@ def connect() -> object:
         conn = get_conn()
         return conn
     except Exception as e:
-        db_logger.critical('Unable to retrieve a connection from the connection pool: %s', e)
+        db_logger.critical('Unable to retrieve a connection from ' \
+            'the connection pool: %s', e)
         raise Exception(e)
 
 def disconnect(connection) -> None:
@@ -111,7 +141,8 @@ def disconnect(connection) -> None:
     if connection:
         put_conn(connection)
     elif not connection or connection.closed:
-        db_logger.warning('Connection is already closed or not valid, nothing to disconnect.')
+        db_logger.warning('Connection is already closed or not ' \
+            'valid, nothing to disconnect.')
 
 
 #
@@ -144,7 +175,8 @@ def test_connection(db_username, db_password):
         connection.close()
         return True
     except psycopg2.Error as e:
-        db_logger.error('Testing Database connection failed. Unable to connect to database: %s', e)
+        db_logger.error('Testing Database connection failed. ' \
+            'Unable to connect to database: %s', e)
         return False
 
 ######################################
