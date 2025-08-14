@@ -100,12 +100,19 @@ def connect() -> object:
         db_logger.critical('Unable to retrieve a connection from the connection pool: %s', e)
         raise Exception(e)
 
-#
-# Close the connection to the database
-#
-def disconnect(connection):
+def disconnect(connection) -> None:
+    ''' Close the connection to the database and put it back in the pool
+    Args:
+        connection: The connection object to close and put back in the pool
+    Returns:
+        None
+    '''
+
     if connection:
-        connection.close()
+        put_conn(connection)
+    elif not connection or connection.closed:
+        db_logger.warning('Connection is already closed or not valid, nothing to disconnect.')
+
 
 #
 # Make sure the database credentials are valid
