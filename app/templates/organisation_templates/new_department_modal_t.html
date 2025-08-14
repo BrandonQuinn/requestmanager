@@ -1,0 +1,69 @@
+<div class="modal modal-blur fade" id="modal-new-department" tabindex="-1" role="dialog" aria-modal="true">
+	<div class="modal-dialog modal-3 modal-dialog-centered" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">New Department</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<div class="row mb-3 align-items-end">
+					<div class="col">
+						<label class="form-label">Name</label>
+						<input type="text" id="new-department-name" class="form-control is-invalid is-valid-lite">
+					</div>
+				</div>
+				<div class="row mb-3">
+					<div class="col">
+						<label class="form-label">Description</label>
+						<input type="text" id="new-department-description" class="form-control is-invalid is-valid-lite">
+					</div>
+				</div>
+
+				<label class="form-label">Add Teams</label>
+
+				<div class="row align-items-end">
+					<div class="col-10">
+						<select type="text" class="form-select tomselected ts-hidden-accessible" id="select-new-department-teams"
+							value="" tabindex="-1">
+							<!-- Options to be added by JavaScript -->
+						</select>
+					</div>
+					<div class="col-2">
+						<a href="#" id="add-team-to-department-btn" class="btn btn-primary btn-2">Add</a>
+					</div>
+				</div>
+				</br>
+				<div class="card">
+					<div class="table-responsive">
+						<table class="table table-vcenter card-table table-striped">
+							<thead>
+								<tr>
+									<th>Team</th>
+									<th class="w-1"></th>
+								</tr>
+							</thead>
+							<tbody id="new-department-team-list">
+								<!-- Rows added by user -->
+							</tbody>
+						</table>
+					</div>
+				</div>
+				</br>
+				<div class="row align-items-end">
+					<div class="col-12">
+						<label class="form-label">Initial Team</label>
+						<small class="form-hint">The team that will recieve all new requests for this department.</small>
+						<br/>
+						<select type="text" class="form-select tomselected ts-hidden-accessible" id="select-initial-team" value="" tabindex="-1">
+							<!-- Options to be added by JavaScript -->
+						</select>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn me-auto" data-bs-dismiss="modal">Cancel</button>
+				<button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="submit-new-department-btn">Done</button>
+			</div>
+		</div>
+	</div>
+</div>

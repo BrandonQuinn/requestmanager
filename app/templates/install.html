@@ -30,9 +30,46 @@
 
 <body>
 	<div class="centered-box">
+
 		<div class="box card step1">
 			<div class="card-header">
-				<h3 class="card-title">Install Step 1: Create Database User</h3>
+				<h3 class="card-title">Install Step 1: Enter Database User</h3>
+			</div>
+			<div class="card-body">
+				<p class="mb-3">Enter the postgres root username and password. Will only be used once then deleted.</p>
+				<div class="input-icon mb-3">
+					<span class="input-icon-addon">
+						<!-- Download SVG icon from http://tabler.io/icons/icon/user -->
+						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+							stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+							class="icon">
+							<path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+							<path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0"></path>
+							<path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"></path>
+						</svg>
+					</span>
+					<input type="text" class="form-control" id="db_username" placeholder="Username">
+				</div>
+				<input type="password" class="form-control" id="db_password" placeholder="Password" autocomplete="off">
+				<div class="mb-3"></div>
+				<a href="#" class="btn btn-primary w-100 step1-btn disabled">
+					Continue
+				</a>
+				<ul class="steps steps-green steps-counter"
+					style="border-left: none; margin-top:20px; padding-left: 0px; margin-left: 0px;">
+					<li class="step-item active">DB User</li>
+					<li class="step-item ">New DB User</li>
+					<li class="step-item">Create DB</li>
+					<li class="step-item">Set Breakglass</li>
+					<li class="step-item">Done</li>
+				</ul>
+			</div>
+		</div>
+
+
+		<div class="box card step2">
+			<div class="card-header">
+				<h3 class="card-title">Install Step 2: Create Database User</h3>
 			</div>
 			<div class="card-body">
 				<p class="mb-3">Create a new database user with password.</p>
@@ -47,7 +84,8 @@
 							<path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2"></path>
 						</svg>
 					</span>
-					<input type="text" value="" class="form-control is-invalid" id="new_db_username" placeholder="Username">
+					<input type="text" value="" class="form-control is-invalid" id="new_db_username"
+						placeholder="Username">
 				</div>
 				<input type="password" class="form-control is-invalid" id="new_db_password" value="Password"
 					autocomplete="off">
@@ -55,42 +93,46 @@
 					Must be at least 10 characters long. Contain numbers, symbols, upper and lowercase.
 				</small>
 				<div class="mb-3"></div>
-				<a href="#" class="btn btn-primary disabled w-100 step1-btn">
+				<a href="#" class="btn btn-primary disabled w-100 step2-btn">
 					Create Database
 				</a>
+				<ul class="steps steps-green steps-counter"
+					style="border-left: none; margin-top:20px; padding-left: 0px; margin-left: 0px;">
+					<li class="step-item">DB User</li>
+					<li class="step-item active">New DB User</li>
+					<li class="step-item">Create DB</li>
+					<li class="step-item">Set Breakglass</li>
+					<li class="step-item">Done</li>
+				</ul>
 			</div>
-			<ul class="steps steps-green steps-counter my-4">
-				<li class="step-item active">Create Database User</li>
-				<li class="step-item">Create Database</li>
-				<li class="step-item">Set Breakglass</li>
-				<li class="step-item">Complete Install</li>
-			</ul>
 		</div>
 
-		<div class="box card step2 active">
+		<div class="box card step3">
 			<div class="card-header">
-				<h3 class="card-title">Install Step 2: Creating Database...</h3>
+				<h3 class="card-title">Install Step 3: Creating Database...</h3>
 			</div>
 			<div class="card-body">
 				<div class="progress">
 					<div class="progress-bar progress-bar-indeterminate bg-green"></div>
 				</div>
 				<div class="mb-3"></div>
-				<a href="#" class="btn btn-primary disabled w-100 step2-btn">
+				<a href="#" class="btn btn-primary disabled w-100 step3-btn">
 					Next Step
 				</a>
+				<ul class="steps steps-green steps-counter"
+					style="border-left: none; margin-top:20px; padding-left: 0px; margin-left: 0px;">
+					<li class="step-item">DB User</li>
+					<li class="step-item">New DB User</li>
+					<li class="step-item active">Create DB</li>
+					<li class="step-item">Set Breakglass</li>
+					<li class="step-item">Done</li>
+				</ul>
 			</div>
-			<ul class="steps steps-green steps-counter my-4">
-				<li class="step-item">Create Database User</li>
-				<li class="step-item active">Create Database</li>
-				<li class="step-item">Set Breakglass</li>
-				<li class="step-item">Complete Install</li>
-			</ul>
 		</div>
 
-		<div class="box card step3">
+		<div class="box card step4">
 			<div class="card-header">
-				<h3 class="card-title">Install Step 3: Set Breakglass Password</h3>
+				<h3 class="card-title">Install Step 4: Set Breakglass Password</h3>
 			</div>
 			<div class="card-body">
 				<p class="mb-3">Set the breakglass account password.
@@ -98,139 +140,260 @@
 					the application to reset it.
 					It can be changed by logging in with the account: <b>breakglass</b>
 				</p>
-				<input type="password" class="form-control is-invalid" id="floating-password" value="Password"
+				<input type="password" class="form-control is-invalid" id="breakglass-password" placeholder="Password"
 					autocomplete="off">
 				<small class="form-hint">
 					Must be at least 30 characters long. Contain numbers, symbols, upper and lowercase.
 				</small>
 				<div class="mb-3"></div>
-				<a href="#" class="btn btn-primary disabled w-100 step3-btn">
+				<a href="#" class="btn btn-primary disabled w-100 step4-btn">
 					Next Step
 				</a>
+				<ul class="steps steps-green steps-counter"
+					style="border-left: none; margin-top:20px; padding-left: 0px; margin-left: 0px;">
+					<li class="step-item">DB User</li>
+					<li class="step-item">New DB User</li>
+					<li class="step-item">Create DB</li>
+					<li class="step-item active">Set Breakglass</li>
+					<li class="step-item">Done</li>
+				</ul>
 			</div>
-			<ul class="steps steps-green steps-counter my-4">
-				<li class="step-item">Create Database User</li>
-				<li class="step-item">Create Database</li>
-				<li class="step-item active">Set Breakglass</li>
-				<li class="step-item">Complete Install</li>
-			</ul>
 		</div>
 
-		<div class="box card step4">
+		<div class="box card step5">
 			<div class="card-header">
-				<h3 class="card-title">Install Step 4: Complete Installation</h3>
+				<h3 class="card-title">Install Step 5: Complete Installation</h3>
 			</div>
 			<div class="card-body">
 				<p class="mb-3">Your installation is complete.</p>
-				<a href="#" class="btn btn-primary w-100 step4-btn">
+				<a href="#" class="btn btn-primary w-100 step5-btn">
 					Done
 				</a>
+				<ul class="steps steps-green steps-counter"
+					style="border-left: none; margin-top:20px; padding-left: 0px; margin-left: 0px;">
+					<li class="step-item">DB User</li>
+					<li class="step-item">New DB User</li>
+					<li class="step-item">Create DB</li>
+					<li class="step-item">Set Breakglass</li>
+					<li class="step-item active">Done</li>
+				</ul>
 			</div>
-			<ul class="steps steps-green steps-counter my-4">
-				<li class="step-item">Create Database User</li>
-				<li class="step-item">Create Database</li>
-				<li class="step-item">Set Breakglass</li>
-				<li class="step-item active">Complete Install</li>
-			</ul>
 		</div>
 	</div>
 	<script src="https://unpkg.com/@tabler/core@latest/dist/js/tabler.min.js"></script>
 
 	<script>
+		const steps = document.querySelectorAll(".card");
+		steps.forEach(step => step.style.display = "none");
+		steps[0].style.display = "block"; // Show the first step by default
+
+		const step1Button = document.querySelector(".step1-btn");
+		const dbUsernameField = document.getElementById("db_username");
+		const dbPasswordField = document.getElementById("db_password");
+
+		// Check if the Postgres fields are filled and enable the step 1 button
+		function checkPostgresFields() {
+			if (dbUsernameField.value.trim() !== "") {
+				step1Button.classList.remove("disabled");
+			} else {
+				step1Button.classList.add("disabled");
+			}
+		}
+
+		// Enable the step 1 button when both inputs are filled
+		dbUsernameField.addEventListener("input", function () {
+			checkPostgresFields();
+		});
+
+		// Enable the step 1 button when both inputs are filled
+		dbPasswordField.addEventListener("input", function () {
+			checkPostgresFields();
+		});
+
+		// Send the creds to the server for the initial creation of the database
+		step1Button.addEventListener("click", function (event) {
+			event.preventDefault();
+			const dbUsername = dbUsernameField.value;
+			const dbPassword = dbPasswordField.value;
+
+			fetch('/api/database/temp_db_user', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					'db_username': dbUsername,
+					'db_password': dbPassword
+				})
+			})
+				.then(response => response.json())
+				.then(data => {
+					console.log(data);
+					if (data.success) {
+						steps[0].style.display = "none";
+						steps[1].style.display = "block";
+					} else {
+						alert("Error: " + data.error);
+					}
+				})
+				.catch(error => {
+					console.error('Error:', error);
+					alert("An error occurred.");
+				});
+		});
+
+		const nextButtons = document.querySelectorAll(".btn-primary");
+		const dbPasswordInput = document.getElementById("new_db_password");
+
+		// validate the new password input
+		dbPasswordInput.addEventListener("input", function () {
+			const value = dbPasswordInput.value;
+			const isValid = value.length >= 10 &&
+				/[A-Z]/.test(value) &&
+				/[a-z]/.test(value) &&
+				/[0-9]/.test(value) &&
+				/[^A-Za-z0-9]/.test(value);
+
+			if (isValid) {
+				dbPasswordInput.classList.remove("is-invalid");
+				dbPasswordInput.classList.add("is-valid");
+				passwordIsValid = true;
+				nextButtons[1].classList.remove("disabled");
+			} else {
+				nextButtons[1].classList.add("disabled");
+				dbPasswordInput.classList.add("is-invalid");
+				dbPasswordInput.classList.remove("is-valid");
+				passwordIsValid = false;
+			}
+		});
+
 		usernameIsValid = false;
 		passwordIsValid = false;
 
-		document.addEventListener("DOMContentLoaded", function () {
-			const steps = document.querySelectorAll(".card");
-			steps.forEach(step => step.style.display = "none");
-			steps[0].style.display = "block"; // Show the first step by default
+		// validate the new username input
+		const usernameInput = document.getElementById("new_db_username");
 
-			const nextButtons = document.querySelectorAll(".btn-primary");
-			const dbPasswordInput = document.getElementById("new_db_password");
+		usernameInput.addEventListener("input", function () {
+			const value = usernameInput.value.trim();
+			if (value) {
+				usernameInput.classList.remove("is-invalid");
+				usernameInput.classList.add("is-valid");
+				usernameIsValid = true;
 
-			// Check if both the username and password are valid and enabled the button
-			// to go to the next step
-			function enableNextButton() {
-				if (usernameIsValid && passwordIsValid) {
-					nextButtons[0].classList.remove("disabled");
-				}
+				enableNextButton();
+			} else {
+				nextButtons[0].classList.add("disabled");
+				usernameInput.classList.add("is-invalid");
+				usernameInput.classList.remove("is-valid");
+				usernameIsValid = false;
 			}
-
-			dbPasswordInput.addEventListener("input", function () {
-				const value = dbPasswordInput.value;
-				const isValid = value.length >= 10 &&
-					/[A-Z]/.test(value) &&
-					/[a-z]/.test(value) &&
-					/[0-9]/.test(value) &&
-					/[^A-Za-z0-9]/.test(value);
-
-				if (isValid) {
-					dbPasswordInput.classList.remove("is-invalid");
-					dbPasswordInput.classList.add("is-valid");
-					passwordIsValid = true;
-					enableNextButton();
-				} else {
-					nextButtons[0].classList.add("disabled");
-					dbPasswordInput.classList.add("is-invalid");
-					dbPasswordInput.classList.remove("is-valid");
-					passwordIsValid = false;
-				}
-			});
-
-			const usernameInput = document.getElementById("new_db_username");
-
-			usernameInput.addEventListener("input", function () {
-				const value = usernameInput.value.trim();
-				if (value) {
-					usernameInput.classList.remove("is-invalid");
-					usernameInput.classList.add("is-valid");
-					usernameIsValid = true;
-
-					enableNextButton();
-				} else {
-					nextButtons[0].classList.add("disabled");
-					usernameInput.classList.add("is-invalid");
-					usernameInput.classList.remove("is-valid");
-					usernameIsValid = false;
-				}
-			});
+		});
 
 
-			nextButtons[0].addEventListener("click", function (event) {
-				event.preventDefault();
-				if (!nextButtons[0].classList.contains("disabled")) {
-					steps[0].style.display = "none";
-					steps[1].style.display = "block";
+		// if the step 1 complete button is clicked, send a request to the server to create the database with user
+		nextButtons[1].addEventListener("click", function (event) {
+			event.preventDefault();
+			if (!nextButtons[1].classList.contains("disabled")) {
+				steps[1].style.display = "none";
+				steps[2].style.display = "block";
 
-					fetch('/api/database/initialise', {
-						method: 'POST',
-						headers: {
-							'Content-Type': 'application/json'
-						},
-						body: JSON.stringify({
-							'new_db_username': usernameInput.value,
-							'new_db_password': dbPasswordInput.value
-						})
+				fetch('/api/database/initialise', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					body: JSON.stringify({
+						'new_db_username': usernameInput.value,
+						'new_db_password': dbPasswordInput.value
 					})
-						.then(response => response.json())
-						.then(data => {
+				})
+					.then(response => response.json())
+					.then(data => {
 
-							console.log(data);
+						console.log(data);
 
-							if (data.success) {
-								steps[1].style.display = "none";
-								steps[2].style.display = "block";
-							} else {
-								alert("Error initializing database: " + data.message);
-							}
-						})
-						.catch(error => {
-							console.error('Error:', error);
-							alert("An error occurred while initializing the database.");
-						});
+						if (data.success) {
+							steps[2].style.display = "none";
+							steps[3].style.display = "block";
+						} else {
+							alert("Error initializing database: " + data.message);
+						}
+					})
+					.catch(error => {
+						console.error('Error:', error);
+						alert("An error occurred while initializing the database.");
+					});
 
-				}
-			});
+			}
+		});
+
+		const breakGlassPassword = document.getElementById("breakglass-password");
+
+		breakglassPasswordIsValid = false;
+
+		// validate the new password input
+		breakGlassPassword.addEventListener("input", function () {
+			const value = breakGlassPassword.value;
+			const isValid = value.length >= 30 &&
+				/[A-Z]/.test(value) &&
+				/[a-z]/.test(value) &&
+				/[0-9]/.test(value) &&
+				/[^A-Za-z0-9]/.test(value);
+
+			if (isValid) {
+				breakGlassPassword.classList.remove("is-invalid");
+				breakGlassPassword.classList.add("is-valid");
+				breakglassPasswordIsValid = true;
+				nextButtons[3].classList.remove("disabled");
+			} else {
+				nextButtons[3].classList.add("disabled");
+				breakGlassPassword.classList.add("is-invalid");
+				breakGlassPassword.classList.remove("is-valid");
+				breakglassPasswordIsValid = false;
+			}
+		});
+
+		// if the step 3 complete button is clicked, send a request to the server to create the breakglass account
+		nextButtons[3].addEventListener("click", function (event) {
+			event.preventDefault();
+			if (!nextButtons[3].classList.contains("disabled") && breakglassPasswordIsValid) {
+				steps[3].style.display = "none";
+				steps[4].style.display = "block";
+
+				fetch('/api/database/breakglass', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					body: JSON.stringify({
+						'breakglass-password': breakGlassPassword.value
+					})
+				})
+					.then(response => response.json())
+					.then(data => {
+
+						console.log(data);
+
+						if (data.success) {
+							steps[3].style.display = "none";
+							steps[4].style.display = "block";
+						} else {
+							alert("Error initializing breakglass account: " + data.message);
+						}
+					})
+					.catch(error => {
+						console.error('Error:', error);
+						alert("An error occurred while initializing the breakglass account.");
+					});
+
+			}
+		});
+
+		const step5Button = document.querySelector(".step5-btn");
+
+		step5Button.addEventListener("click", function (event) {
+			event.preventDefault();
+			window.location.href = "/";
 		});
 
 	</script>
