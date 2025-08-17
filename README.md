@@ -1,3 +1,30 @@
+# Code
+
+Built in HMTL, Javascript and Python
+
+## Libraries/Dependencies
+
+postgresql 
+postgresql-contrib
+python3 
+python3.10-venv 
+python3-pip
+libpq-dev 
+gcc 
+cmake
+Flask
+logging
+cryptography
+mako
+argon2-cffi
+psycopg2
+
+## Build/Install
+
+You can't, at least not yet, I will need a place to store the content which can be pulled with a script.
+
+# Design
+
 ## UI Design Guideline
 
 - Using Tabler UI - looks great

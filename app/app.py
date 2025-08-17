@@ -36,7 +36,7 @@ Note:
 from flask import Flask, render_template, redirect, url_for, jsonify, request
 from mako.template import Template
 from mako.lookup import TemplateLookup
-import os, sys, cryptography
+import os, sys
 import health_checks, init, create_database, auth, database, logger
 
 app = Flask(__name__)
@@ -599,6 +599,30 @@ def new_request() -> str:
         return jsonify({'success': 'Request created.'}), 200
     else:
         return jsonify({'error': 'Permission denied.'}), 405
+    
+@app.route('/api/requests/unassigned', methods=['GET'])
+def get_unassigned_unresolved_requests() -> str:
+    ''' Get all unassigned requests (that are not resolved) that the user has permission to see.
+    Returns:
+        str: json formatted string of all unassigned requests or error message
+    '''
+
+    # get auth data
+    token = request.cookies.get('auth_token')
+    username = request.cookies.get('user')
+
+    # check token and user from cookies
+    if auth.check_token(username, token) is False:
+        return jsonify({'error': 'Authentication required'}), 401
+
+    # get all requests for breakglass
+    if (auth.check_permission('breakglass', token) is True):
+        result = database.get_all_unassigned_requests()
+        return jsonify(result), 200
+    
+    # TODO: Check permissions and return unassigned requets for user
+    
+    return jsonify({'error': 'Permission denied'}), 403
 
 @app.route('/api/requests/user/self', methods=['GET'])
 def get_requests_self() -> str:

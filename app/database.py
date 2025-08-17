@@ -649,11 +649,40 @@ def get_requests_by_requester(username):
 
         # Retrieve query results
         requests = cursor.fetchall()
-
+        
         return requests
 
     except Exception as error:
         print(f"Error fetching requests by username: {error}")
+        raise error
+    finally:
+        if connection:
+            cursor.close()
+            disconnect(connection)
+
+def get_all_unassigned_requests():
+    ''' Return all unassigned and unresolved requests from the database.
+    
+    Returns:
+        list: List of unassigned requests
+    '''
+
+    try:
+        # Connect to your postgres DB
+        connection = connect()
+        cursor = connection.cursor()
+
+        # Execute a query to get all unassigned requests
+        query = "SELECT * FROM requests WHERE (assigned_to_team IS NULL OR assigned_to_user IS NULL) AND resolved = false"
+        cursor.execute(query)
+
+        # Retrieve query results
+        unassigned_requests = cursor.fetchall()
+        
+        return unassigned_requests
+    
+    except Exception as error:
+        print(f"Error fetching unassigned requests: {error}")
         raise error
     finally:
         if connection:
