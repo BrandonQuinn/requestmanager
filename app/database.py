@@ -660,7 +660,7 @@ def get_requests_by_requester(username):
             cursor.close()
             disconnect(connection)
 
-def get_all_unassigned_requests():
+def get_all_unassigned_unresolved_requests():
     ''' Return all unassigned and unresolved requests from the database.
     
     Returns:

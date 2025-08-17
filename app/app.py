@@ -518,10 +518,14 @@ def get_request_by_id(request_id) -> str:
         type_name = database.get_request_type_by_id(request_data[11])[1]
 
     # get department name
-    department_name = ""
-    if request_data[7] is not None:
-        department_name = database.get_department_by_id(request_data[7])[1]
-    
+    department_name = "<No Department>"
+    try: 
+        department_name = ""
+        if request_data[7] is not None:
+            department_name = database.get_department_by_id(request_data[7])[1]
+    except Exception:
+        department_name = "<No Department>"
+
     # get team name
     team_name = ""
     if request_data[8] is not None:
@@ -617,7 +621,7 @@ def get_unassigned_unresolved_requests() -> str:
 
     # get all requests for breakglass
     if (auth.check_permission('breakglass', token) is True):
-        result = database.get_all_unassigned_requests()
+        result = database.get_all_unassigned_unresolved_requests()
         return jsonify(result), 200
     
     # TODO: Check permissions and return unassigned requets for user
