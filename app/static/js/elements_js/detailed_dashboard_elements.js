@@ -100,7 +100,7 @@ document.addEventListener('click', function (event) {
                 document.getElementById('description-view-field').value = data[6];
                 document.getElementById('created-view-date').textContent = new Date(data[2]).toLocaleString();
                 document.getElementById('type-view-field').value = data[11];
-                document.getElementById('department-view-field').value = data[7];
+                // document.getElementById('department-view-field').value = data[7]; // Disabled as department is not editable here
                 document.getElementById('team-view-field').value = data[8];
                 document.getElementById('assignee-view-field').value = data[9];
 
@@ -139,7 +139,7 @@ document.addEventListener('click', function (event) {
 
 
                 // update the requestid for the button to add an update
-                // document.getElementById('add-update-btn').setAttribute('data-request-id', requestId);
+                document.getElementById('add-update-btn').setAttribute('data-request-id', requestId);
             })
             .catch(error => {
                 console.error('Error:', error);
@@ -148,5 +148,57 @@ document.addEventListener('click', function (event) {
     }
 });
 
+// Add new update to request
+document.getElementById('add-update-btn').addEventListener('click', function () {
+    const requestId = this.getAttribute('data-request-id');
+    const updateContent = document.getElementById('update-content-field').value;
+
+    fetch(`/api/requests/${requestId}/updates`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+            content: updateContent
+        })
+    })
+        .then(response => {
+            if (response.ok) {
+                // Clear the update content field
+                document.getElementById('update-content-field').value = '';
+                // Refresh the updates list
+                document.querySelector('.view-request-btn[data-bs-target="#modal-request-view"]').click();
+            } else {
+                throw new Error('Failed to add update');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showErrorModal('Error', 'An error occurred while adding the update.');
+        });
+});
+
+// Smaller Elements 
+
+// Function to update department selects with options
+function updateDepartmentSelects() {
+    document.querySelectorAll('department-select').forEach(function (select) {
+        fetch('/api/departments')
+            .then(response => response.json())
+            .then(data => {
+                console.log('Departments:', data);
+                data.forEach(department => {
+                    const option = document.createElement('option');
+                    option.value = department[0];
+                    option.textContent = department[1];
+                    select.appendChild(option);
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching departments:', error);
+                showErrorModal('Error', 'An error occurred while fetching departments.');
+            });
+    });
+}
+
 // Update the unassigned requests table when the page loads
 document.addEventListener('DOMContentLoaded', updateUnassignedRequestsTable);
+document.addEventListener('DOMContentLoaded', updateDepartmentSelects);

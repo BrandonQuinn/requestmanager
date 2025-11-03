@@ -524,6 +524,7 @@ def get_request_by_id(request_id) -> str:
         if request_data[7] is not None:
             department_name = database.get_department_by_id(request_data[7])[1]
     except Exception:
+        api_logger.warning('Error getting department name for request ID %d: %s', request_id, str(Exception))
         department_name = "<No Department>"
 
     # get team name
@@ -757,9 +758,9 @@ def new_request_update(request_id) -> str:
     # check token and user from cookies
     if auth.check_token(username, token) is False:
         return jsonify({'error': 'Authentication required'}), 401
-    
+
     update_content = None
-    
+
     # get the data sent via POST
     if request.is_json:
         data = request.get_json()
@@ -768,9 +769,7 @@ def new_request_update(request_id) -> str:
         # check if not null or empty
         if not update_content or update_content == "":
             return jsonify({'error': 'Empty update content send for new update.'}), 406
-
-    print(update_content)
-
+        
     # default value for customer visible is true
     database.add_update(request_id, username, update_content, True) 
     return jsonify({'success': 'Update added.'}), 200
