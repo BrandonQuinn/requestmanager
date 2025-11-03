@@ -1,16 +1,22 @@
 # Code
 
-Built in HMTL, Javascript and Python
+Built in HMTL, Javascript and Python.
+
+
+
+Linted with Google .rc file
+
+
 
 ## Libraries/Dependencies
 
-postgresql 
+postgresql
 postgresql-contrib
-python3 
-python3.10-venv 
+python3
+python3.10-venv
 python3-pip
-libpq-dev 
-gcc 
+libpq-dev
+gcc
 cmake
 Flask
 logging
@@ -27,8 +33,8 @@ You can't, at least not yet, I will need a place to store the content which can 
 
 ## UI Design Guideline
 
-- Using Tabler UI - looks great
-- General idea is to reduce the number of clicks required to complete common tasks.
+* Using Tabler UI - looks great
+* General idea is to reduce the number of clicks required to complete common tasks.
 
 ## Security Summary/Design Guideline
 
@@ -70,7 +76,7 @@ I don't want to use a library for this, I wanted to come up with a solution myse
 
 ## Error Management and Logging
 
-- print to console only to be used for debugging, any prints to be removed from prod code
-- when exceptions occur, after logging, they are raised again futher up until a json object can be returned to the client from the api call. That way the end user gets the error, and the server logs it for full visiblity
-- each exception message should by customised to easily located it in code - also should be closely related to the name of the function
-- Log file is generated for each key module e.g. api.log, database.log
+* print to console only to be used for debugging, any prints to be removed from prod code
+* when exceptions occur, after logging, they are raised again futher up until a json object can be returned to the client from the api call. That way the end user gets the error, and the server logs it for full visiblity
+* each exception message should by customised to easily located it in code - also should be closely related to the name of the function
+* Log file is generated for each key module e.g. api.log, database.log

@@ -54,6 +54,45 @@ function updateUnassignedRequestsTable() {
     });
 }
 
+// Refreshes the updates list in the request details modal
+
+function updateUpdatesList(requestId) {
+    const updatesList = document.getElementById('updates-list');
+    fetch(`/api/requests/${requestId}/updates`)
+        .then(response => response.json())
+        .then(updates => {
+
+            // Update the badge on the updates button
+            updatesCountBadge = document.getElementById('update-btn-count-badge');
+            if (updates.length > 0) {
+                updatesCountBadge.textContent = updates.length;
+
+                updatesList.innerHTML = ''; // Clear any existing updates
+                updates.forEach(update => {
+                    const updateItem = document.createElement('div');
+                    updateItem.className = 'list-group-item';
+                    updateItem.innerHTML = `
+									<div class="col">
+										<div class="text-reset d-block">${update[4]}</div>
+										<div class="text-secondary">${update[2]} at ${new Date(update[1]).toLocaleString()}</div>
+									</div>
+								`;
+                    updatesList.appendChild(updateItem);
+                });
+            } else {
+                updatesCountBadge.textContent = 0;
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            updatesList.innerHTML = 'No updates available.';
+        });
+
+
+    // update the requestid for the button to add an update
+    document.getElementById('add-update-btn').setAttribute('data-request-id', requestId);
+}
+
 // Event listener for viewing request details, shows the modal with request data
 
 document.addEventListener('click', function (event) {
@@ -106,40 +145,7 @@ document.addEventListener('click', function (event) {
 
                 // populate the updates modal as well, so when the user clicks on the updates tab, so it's already loaded
 
-                const updatesList = document.getElementById('updates-list');
-                fetch(`/api/requests/${requestId}/updates`)
-                    .then(response => response.json())
-                    .then(updates => {
-
-                        // Update the badge on the updates button
-                        updatesCountBadge = document.getElementById('update-btn-count-badge');
-                        if (updates.length > 0) {
-                            updatesCountBadge.textContent = updates.length;
-
-                            updatesList.innerHTML = ''; // Clear any existing updates
-                            updates.forEach(update => {
-                                const updateItem = document.createElement('div');
-                                updateItem.className = 'list-group-item';
-                                updateItem.innerHTML = `
-									<div class="col">
-										<div class="text-reset d-block">${update[4]}</div>
-										<div class="text-secondary">${update[2]} at ${new Date(update[1]).toLocaleString()}</div>
-									</div>
-								`;
-                                updatesList.appendChild(updateItem);
-                            });
-                        } else {
-                            updatesCountBadge.textContent = 0;
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        updatesList.innerHTML = 'No updates available.';
-                    });
-
-
-                // update the requestid for the button to add an update
-                document.getElementById('add-update-btn').setAttribute('data-request-id', requestId);
+                updateUpdatesList(requestId);
             })
             .catch(error => {
                 console.error('Error:', error);
@@ -151,21 +157,24 @@ document.addEventListener('click', function (event) {
 // Add new update to request
 document.getElementById('add-update-btn').addEventListener('click', function () {
     const requestId = this.getAttribute('data-request-id');
+    console.log('Adding update to request ID:', requestId);
     const updateContent = document.getElementById('update-content-field').value;
 
-    fetch(`/api/requests/${requestId}/updates`, {
+    fetch(`/api/requests/${requestId}/updates/new`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-            content: updateContent
+        body: JSON.stringify({
+            'update-content': updateContent
         })
     })
         .then(response => {
             if (response.ok) {
+
                 // Clear the update content field
                 document.getElementById('update-content-field').value = '';
+
                 // Refresh the updates list
-                document.querySelector('.view-request-btn[data-bs-target="#modal-request-view"]').click();
+                updateUpdatesList(requestId);
             } else {
                 throw new Error('Failed to add update');
             }
