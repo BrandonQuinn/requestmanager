@@ -36,7 +36,7 @@ Note:
 from flask import Flask, render_template, redirect, url_for, jsonify, request
 from mako.template import Template
 from mako.lookup import TemplateLookup
-import os, sys, cryptography
+import os, sys
 import health_checks, init, create_database, auth, database, logger
 
 app = Flask(__name__)
@@ -518,10 +518,15 @@ def get_request_by_id(request_id) -> str:
         type_name = database.get_request_type_by_id(request_data[11])[1]
 
     # get department name
-    department_name = ""
-    if request_data[7] is not None:
-        department_name = database.get_department_by_id(request_data[7])[1]
-    
+    department_name = "<No Department>"
+    try: 
+        department_name = ""
+        if request_data[7] is not None:
+            department_name = database.get_department_by_id(request_data[7])[1]
+    except Exception:
+        api_logger.warning('Error getting department name for request ID %d: %s', request_id, str(Exception))
+        department_name = "<No Department>"
+
     # get team name
     team_name = ""
     if request_data[8] is not None:
@@ -599,6 +604,30 @@ def new_request() -> str:
         return jsonify({'success': 'Request created.'}), 200
     else:
         return jsonify({'error': 'Permission denied.'}), 405
+    
+@app.route('/api/requests/unassigned', methods=['GET'])
+def get_unassigned_unresolved_requests() -> str:
+    ''' Get all unassigned requests (that are not resolved) that the user has permission to see.
+    Returns:
+        str: json formatted string of all unassigned requests or error message
+    '''
+
+    # get auth data
+    token = request.cookies.get('auth_token')
+    username = request.cookies.get('user')
+
+    # check token and user from cookies
+    if auth.check_token(username, token) is False:
+        return jsonify({'error': 'Authentication required'}), 401
+
+    # get all requests for breakglass
+    if (auth.check_permission('breakglass', token) is True):
+        result = database.get_all_unassigned_unresolved_requests()
+        return jsonify(result), 200
+    
+    # TODO: Check permissions and return unassigned requets for user
+    
+    return jsonify({'error': 'Permission denied'}), 403
 
 @app.route('/api/requests/user/self', methods=['GET'])
 def get_requests_self() -> str:
@@ -729,9 +758,9 @@ def new_request_update(request_id) -> str:
     # check token and user from cookies
     if auth.check_token(username, token) is False:
         return jsonify({'error': 'Authentication required'}), 401
-    
+
     update_content = None
-    
+
     # get the data sent via POST
     if request.is_json:
         data = request.get_json()
@@ -740,9 +769,7 @@ def new_request_update(request_id) -> str:
         # check if not null or empty
         if not update_content or update_content == "":
             return jsonify({'error': 'Empty update content send for new update.'}), 406
-
-    print(update_content)
-
+        
     # default value for customer visible is true
     database.add_update(request_id, username, update_content, True) 
     return jsonify({'success': 'Update added.'}), 200

@@ -1,27 +1,29 @@
+<!-- unassigned_request_table_simple_t.html -->
+<!-- This file contains the HTML template for displaying unassigned requests in a simple table format. -->
+
 <div class="card">
 
     <div class="card-header">
-        <span class="badge bg-orange text-orange-fg">P3</span>
+        <h1 class="card-title">Unassigned Requests</h1>
     </div>
 
     <div class="table-responsive">
-        <table class="table table-vcenter card-table">
+        <table class="table table-vcenter card-table simple-unassigned-request-table">
             <thead>
                 <tr>
+                    <th>Priority</th>
                     <th>Title</th>
-                    <th>Updates</th>
                     <th>Created</th>
-                    <th>Assigned To</th>
                     <th class="w-1"></th>
                 </tr>
             </thead>
-            <tbody id="p3-request-table-body">
+            <tbody id="p1-request-table-body">
                 <tr>
-                    <td>Big Issue Number 2</td>
+                    <td><span class="badge bg-purple text-purple-fg">P1</span></td>
+                    <td>Big Issue Number 1</td>
                     <td class="text-secondary">4</td>
                     <td class="text-secondary"><a href="#" class="text-reset">21/04/1995
                             10:00am</a></td>
-                    <td class="text-secondary">Brandon Quinn</td>
                     <td>
                         <a href="#">View</a>
                     </td>
@@ -30,3 +32,5 @@
         </table>
     </div>
 </div>
+
+<%include file="dashboard_elements\department_edit_request_modal_t.html" />

@@ -90,11 +90,9 @@ async function getUsers() {
 const usersTable = document.getElementById('users-table-rows');
 getUsers().then(users => {
 	usersTable.innerHTML = "";
-
 	badges = [];
 
 	users.forEach(user => {
-
 		usersTable.innerHTML += `
 			<tr>
 				<td data-label="name">

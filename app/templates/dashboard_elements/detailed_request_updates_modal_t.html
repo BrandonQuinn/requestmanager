@@ -1,0 +1,38 @@
+<div class="modal modal-blur fade" id="modal-request-view-updates" tabindex="-1" style="display: none;"
+	aria-hidden="true">
+	<div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">Updates</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body m-0">
+				<div class="row">
+					<div class="col-12">
+						<div class="list-group" id="updates-list">
+							<div class="list-group-item">
+								<div class="col">
+									<div class="text-reset d-block">No updates.</div>
+									<div class="text-secondary"></div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row mt-2">
+					<div class="col-12">
+						<fieldset class="form-fieldset">
+							<textarea class="form-control" id="update-content-field" rows="2"
+								placeholder="Add an update..."></textarea>
+						</fieldset>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn me-auto" data-bs-toggle="modal"
+					data-bs-target="#modal-request-view">Back</button>
+				<button type="button" class="btn btn-primary mt-2" id="add-update-btn" data-request-id="">Add Update</button>
+			</div>
+		</div>
+	</div>
+</div>
