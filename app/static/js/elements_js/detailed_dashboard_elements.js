@@ -94,7 +94,6 @@ function updateUpdatesList(requestId) {
 }
 
 // Event listener for viewing request details, shows the modal with request data
-
 document.addEventListener('click', function (event) {
     if (event.target.classList.contains('view-request-btn')) {
         const requestId = event.target.querySelector('.view-id').textContent;
@@ -139,7 +138,11 @@ document.addEventListener('click', function (event) {
                 document.getElementById('description-view-field').value = data[6];
                 document.getElementById('created-view-date').textContent = new Date(data[2]).toLocaleString();
                 document.getElementById('type-view-field').value = data[11];
-                // document.getElementById('department-view-field').value = data[7]; // Disabled as department is not editable here
+
+                if (data[7] !== null) {
+                    updateDepartmentSelect(data[7]);
+                }
+
                 document.getElementById('team-view-field').value = data[8];
                 document.getElementById('assignee-view-field').value = data[9];
 
@@ -154,7 +157,7 @@ document.addEventListener('click', function (event) {
     }
 });
 
-// Add new update to request
+// Add new update to request when the add update button is clicked
 document.getElementById('add-update-btn').addEventListener('click', function () {
     const requestId = this.getAttribute('data-request-id');
     console.log('Adding update to request ID:', requestId);
@@ -185,29 +188,44 @@ document.getElementById('add-update-btn').addEventListener('click', function () 
         });
 });
 
-// Smaller Elements 
-
 // Function to update department selects with options
-function updateDepartmentSelects() {
-    document.querySelectorAll('department-select').forEach(function (select) {
-        fetch('/api/departments')
-            .then(response => response.json())
-            .then(data => {
-                console.log('Departments:', data);
-                data.forEach(department => {
-                    const option = document.createElement('option');
-                    option.value = department[0];
-                    option.textContent = department[1];
-                    select.appendChild(option);
-                });
-            })
-            .catch(error => {
-                console.error('Error fetching departments:', error);
-                showErrorModal('Error', 'An error occurred while fetching departments.');
+function updateDepartmentSelect(selectedDepartment = null) {
+    fetch('/api/departments')
+        .then(response => response.json())
+        .then(departments => {
+            const departmentSelect = document.getElementById('department-select');
+
+            // Clear existing options
+            departmentSelect.innerHTML = '';
+            
+            // Add a default option
+            const defaultOption = document.createElement('option');
+            
+            // Populate with fetched departments
+            departments.forEach(dept => {
+                const option = document.createElement('option');
+                option.value = dept[0];
+                option.textContent = dept[1];
+                departmentSelect.appendChild(option);                    
             });
-    });
+            
+            // set the selected department if provided
+            if (selectedDepartment !== null) {
+                departmentSelect.value = selectedDepartment;
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching departments:', error);
+            showErrorModal('Error', 'An error occurred while fetching departments.');
+        });
+}
+
+// Get the team info for the request
+function updateRequestModalTeamField() {
+    const teamField = document.getElementById('team-view-field');
+    
 }
 
 // Update the unassigned requests table when the page loads
 document.addEventListener('DOMContentLoaded', updateUnassignedRequestsTable);
-document.addEventListener('DOMContentLoaded', updateDepartmentSelects);
+document.addEventListener('DOMContentLoaded', updateDepartmentSelect);

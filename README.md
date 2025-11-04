@@ -1,6 +1,6 @@
 # Code
 
-Built in HMTL, Javascript and Python.
+Built in HTML, Javascript and Python.
 
 
 
@@ -64,9 +64,9 @@ They must be long, breakglass must be at least 30 characters.
 
 ### Cryptography
 
-#### Aggressive suggestion of use of valid certs
+#### Certs
 
-The installation process does not include installing an SSL certificate, the app however, will aggressive suggest this until it's done. I may even disable certain features until it's done. The application security is undermined if this is not configured.
+The installation process does not include installing an SSL certificate (yet). Ill eventually potentially disable features or just make really annoying banners to suggest installing a valid cert.
 
 #### Token Generation
 

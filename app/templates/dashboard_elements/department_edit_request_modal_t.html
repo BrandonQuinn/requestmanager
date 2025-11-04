@@ -41,19 +41,21 @@
                     </div>
                     <div class="col-6">
                         <label class="form-label">Department</label>
-                        <%include file="dashboard_elements\department_select_t.html" />
+                        <select id="department-select" class="form-select">
+                            <option value="1">Default</option>
+                        </select>
                     </div>
                 </div>
                 <div class="row mb-3">
                     <div class="col-6">
                         <label class="form-label">Team</label>
                         <input type="text" class="form-control" name="team-view-field" id="team-view-field"
-                            placeholder="Empty" value="Engineering">
+                            placeholder="Empty">
                     </div>
                     <div class="col-6">
                         <label class="form-label">Assignee</label>
                         <input type="text" class="form-control" name="assignee-view-field" id="assignee-view-field"
-                            placeholder="Empty" value="Brandon Quinn">
+                            placeholder="Empty">
                     </div>
                 </div>
 

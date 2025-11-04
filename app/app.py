@@ -233,7 +233,7 @@ def create_new_user() -> str:
         except Exception as e:
             api_logger.info('User or email already exists when trying to create a new user via \'/api/users/new\': %s', e)
             pass  # an exception in this case is fine, it just means the user or email doesn't exist
-        
+
         try:
             database.add_user(new_username, email, password, [], teams, 0, False, firstname, lastname)
             api_logger.info('New user created %s', new_username)
