@@ -1,4 +1,6 @@
-// Function to update the table with unassigned requests
+/*
+    Function to update the table with unassigned requests
+*/
 function updateUnassignedRequestsTable() {
     var unassignedRequestsTables = document.querySelectorAll('.simple-unassigned-request-table');
 
@@ -12,6 +14,8 @@ function updateUnassignedRequestsTable() {
             .then(response => response.json())
             .then(data => {
                 data.forEach(request => {
+
+                    console.log(request);
 
                     var createdDate = new Date(request[2]);
                     var priorityBadge = '';
@@ -54,8 +58,9 @@ function updateUnassignedRequestsTable() {
     });
 }
 
-// Refreshes the updates list in the request details modal
-
+/*
+    Refreshes the updates list in the request details modal
+*/
 function updateUpdatesList(requestId) {
     const updatesList = document.getElementById('updates-list');
     fetch(`/api/requests/${requestId}/updates`)
@@ -93,7 +98,9 @@ function updateUpdatesList(requestId) {
     document.getElementById('add-update-btn').setAttribute('data-request-id', requestId);
 }
 
-// Event listener for viewing request details, shows the modal with request data
+/* 
+    Event listener for viewing request details, shows the modal with request data
+*/
 document.addEventListener('click', function (event) {
     if (event.target.classList.contains('view-request-btn')) {
         const requestId = event.target.querySelector('.view-id').textContent;
@@ -157,7 +164,9 @@ document.addEventListener('click', function (event) {
     }
 });
 
-// Add new update to request when the add update button is clicked
+/*
+    Add new update to request when the add update button is clicked
+*/
 document.getElementById('add-update-btn').addEventListener('click', function () {
     const requestId = this.getAttribute('data-request-id');
     console.log('Adding update to request ID:', requestId);
@@ -188,7 +197,9 @@ document.getElementById('add-update-btn').addEventListener('click', function () 
         });
 });
 
-// Function to update department selects with options
+/*
+    Function to update department selects with options
+*/
 function updateDepartmentSelect(selectedDepartment = null) {
     fetch('/api/departments')
         .then(response => response.json())

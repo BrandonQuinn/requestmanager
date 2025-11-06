@@ -168,7 +168,7 @@ getDepartments().then(departments => {
 	Populate the teams table.
 */
 const teamsTable = document.getElementById('teams-table-rows');
-teamsTable.innerHTML += getTeams().then(teams => {
+getTeams().then(teams => {
 	const rows = teams.map(team => `
 		<tr>
 			<td>${team[1] != null ? team[1] : ""}</td> 
@@ -231,7 +231,7 @@ function updateFieldValidationDepartmentModal() {
 updateFieldValidationDepartmentModal(); // call once to update
 
 /*
-	NEW DEPARTMENT MODAL FUNCTIONALITY
+	New department modal event listeners
 */
 
 // Add event listener to update validation UI on input change for the new department name field
@@ -283,7 +283,9 @@ addTeamToDepartmentBtn.addEventListener('click', function () {
 	initialTeamSelect.appendChild(newOption);
 });
 
-// Add event listener to remove a team from the list when the "Remove" button is clicked
+/*
+	Add event listener to remove a team from the list when the "Remove" button is clicked
+*/
 const teamListTable = document.getElementById('new-department-team-list');
 teamListTable.addEventListener('click', function (event) {
 	if (event.target.id == 'remove-team-btn') {
@@ -368,7 +370,7 @@ const submitNewDepartmentBtn = document.getElementById('submit-new-department-bt
 submitNewDepartmentBtn.addEventListener('click', submitNewDepartment);
 
 /*
-	NEW TEAM MODAL FUNCTIONALITY
+	New team modal functionality
 */
 
 /*
@@ -658,7 +660,6 @@ userTeamListTable.addEventListener('click', function (event) {
 /*
 	Submit a new user request. Grabbing the data from the form and sending it to the API.
 */
-
 async function submitNewUser() {
 	const userFirstnameInput = document.getElementById('new-user-firstname');
 	const userLastnameInput = document.getElementById('new-user-lastname');
