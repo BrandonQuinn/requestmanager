@@ -1,5 +1,5 @@
 /*
-    Function to update the table with unassigned requests
+    Updates the unassigned requests table with data from the server
 */
 function updateUnassignedRequestsTable() {
     var unassignedRequestsTables = document.querySelectorAll('.simple-unassigned-request-table');
@@ -14,9 +14,6 @@ function updateUnassignedRequestsTable() {
             .then(response => response.json())
             .then(data => {
                 data.forEach(request => {
-
-                    console.log(request);
-
                     var createdDate = new Date(request[2]);
                     var priorityBadge = '';
                     const priority = request[3]; // Assuming request[3] is the priority
@@ -63,6 +60,11 @@ function updateUnassignedRequestsTable() {
 */
 function updateUpdatesList(requestId) {
     const updatesList = document.getElementById('updates-list');
+
+    // Clear data
+    updatesList.innerHTML = '';
+    document.getElementById('update-content-field').value = '';
+
     fetch(`/api/requests/${requestId}/updates`)
         .then(response => response.json())
         .then(updates => {
@@ -200,43 +202,95 @@ document.getElementById('add-update-btn').addEventListener('click', function () 
 /*
     Function to update department selects with options
 */
-function updateDepartmentSelect(selectedDepartment = null) {
-    fetch('/api/departments')
-        .then(response => response.json())
-        .then(departments => {
-            const departmentSelect = document.getElementById('department-select');
+async function updateDepartmentSelect(selectedDepartment = null) {
+    const departments = await getDepartments();
 
-            // Clear existing options
-            departmentSelect.innerHTML = '';
-            
-            // Add a default option
-            const defaultOption = document.createElement('option');
-            
-            // Populate with fetched departments
-            departments.forEach(dept => {
-                const option = document.createElement('option');
-                option.value = dept[0];
-                option.textContent = dept[1];
-                departmentSelect.appendChild(option);                    
-            });
-            
-            // set the selected department if provided
-            if (selectedDepartment !== null) {
-                departmentSelect.value = selectedDepartment;
-            }
-        })
-        .catch(error => {
-            console.error('Error fetching departments:', error);
-            showErrorModal('Error', 'An error occurred while fetching departments.');
-        });
+    departments.forEach(dept => {
+        const departmentSelect = document.getElementById('department-select');
+        const option = document.createElement('option');
+
+        departmentSelect.innerHTML = '';
+
+        option.value = dept[0];
+        option.textContent = dept[1];
+        departmentSelect.appendChild(option);                    
+    });
 }
 
-// Get the team info for the request
+/*
+    Function to update the team field in the view request modal
+*/
 function updateRequestModalTeamField() {
     const teamField = document.getElementById('team-view-field');
     
 }
 
-// Update the unassigned requests table when the page loads
+/*
+    Function to update the new request modal department select
+*/
+async function updateNewRequestModal() {
+    const departments = await getDepartments();
+    const departmentSelect = document.getElementById('new-request-department');
+
+    // Clear existing options
+    departmentSelect.innerHTML = '';
+
+    // Populate with fetched departments
+    departments.forEach(dept => {
+        const option = document.createElement('option');
+        option.value = dept[0];
+        option.textContent = dept[1];
+        departmentSelect.appendChild(option);
+    });
+
+    const requestTypes = await getRequestTypes();
+    const requestTypeSelect = document.getElementById('new-request-type');
+
+    // Clear existing options
+    requestTypeSelect.innerHTML = '';
+
+    // Populate with fetched request types
+    requestTypes.forEach(type => {
+        const option = document.createElement('option');
+        option.value = type[0];
+        option.textContent = type[1];
+        requestTypeSelect.appendChild(option);
+    });
+}  
+
+/* 
+    On click of the new request submit button, submit the new request form
+*/
+document.getElementById('new-request-submit').addEventListener('click', function () {
+    const title = document.getElementById('new-request-title').value;
+    const description = document.getElementById('new-request-description').value;
+    const departmentId = document.getElementById('new-request-department').value;
+    const requestTypeId = document.getElementById('new-request-type').value;
+    
+    try {
+        let response = submitNewRequest(title, description, departmentId, requestTypeId);
+        
+        if (!response.ok) {
+            throw new Error('Failed to submit new request');
+        }
+
+        // Close the modal
+        const newRequestModal = document.getElementById('modal-new-request');
+        const modalInstance = bootstrap.Modal.getInstance(newRequestModal);
+        modalInstance.hide();
+
+        // Optionally, refresh the unassigned requests table
+        updateUnassignedRequestsTable();
+
+    } catch (error) {
+        console.error('Error submitting new request:', error);
+        showErrorModal('Error', 'An error occurred while submitting the new request.');
+    }
+});
+
+/*
+    Update anything that needs to be updated when the DOM is loaded
+*/
 document.addEventListener('DOMContentLoaded', updateUnassignedRequestsTable);
-document.addEventListener('DOMContentLoaded', updateDepartmentSelect);
+document.addEventListener('DOMContentLoaded', updateDepartmentSelect());
+document.addEventListener('DOMContentLoaded', updateNewRequestModal);

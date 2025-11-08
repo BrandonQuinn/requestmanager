@@ -1,0 +1,95 @@
+<!-- /c:/Dev/code/RequestManager/app/templates/dashboard_elements/detailed_dashboard_button_header_t.html -->
+<div class="col-auto">
+    <div class="btn-list">
+
+        <!-- Primary action: New Request -->
+        <a class="btn btn-primary d-inline-flex align-items-center" data-bs-toggle="modal"
+            data-bs-target="#modal-new-request">
+            <!-- simple plus icon (Tabler-style) -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="18" height="18" viewBox="0 0 24 24"
+                stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"
+                aria-hidden="true">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                <path d="M12 5v14" />
+                <path d="M5 12h14" />
+            </svg>
+            New Request
+        </a>
+
+        <!-- Secondary actions -->
+        <button type="button" class="btn btn-outline-secondary">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="16" height="16" viewBox="0 0 24 24"
+                stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"
+                aria-hidden="true">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                <path d="M3 7h18" />
+                <path d="M3 12h18" />
+                <path d="M3 17h18" />
+            </svg>
+            Export
+        </button>
+
+        <!-- Filters dropdown -->
+        <div class="dropdown d-inline">
+            <button class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon me-2" width="16" height="16" viewBox="0 0 24 24"
+                    stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"
+                    aria-hidden="true">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                    <path d="M4 6h16" />
+                    <path d="M6 12h12" />
+                    <path d="M10 18h4" />
+                </svg>
+                Filters
+            </button>
+            <div class="dropdown-menu dropdown-menu-end p-3" style="min-width: 260px;">
+                <!-- Replace with real filter controls -->
+                <div class="mb-2">
+                    <div class="mb-2">
+                        <label class="form-label">Priority</label>
+                        <select class="form-select form-select-sm" name="priority" aria-label="Priority">
+                            <option value="high">1</option>
+                            <option value="medium">2</option>
+                            <option value="low">3</option>
+                            <option value="low">4</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-2">
+                        <label class="form-label">Assignee</label>
+                        <input type="text" class="form-control form-control-sm" name="assignee" placeholder="Assignee name or email">
+                    </div>
+
+                    <div class="mb-2">
+                        <label class="form-label">Team</label>
+                        <select class="form-select form-select-sm" name="team" aria-label="Team">
+                            <option value="">Any</option>
+                            <option value="frontend">Frontend</option>
+                            <option value="backend">Backend</option>
+                            <option value="platform">Platform</option>
+                            <option value="ops">Operations</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-2">
+                        <label class="form-label">Department</label>
+                        <select class="form-select form-select-sm" name="department" aria-label="Department">
+                            <option value="">Any</option>
+                            <option value="engineering">Engineering</option>
+                            <option value="sales">Sales</option>
+                            <option value="hr">Human Resources</option>
+                            <option value="support">Support</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-end">
+                    <button class="btn btn-sm btn-outline-secondary me-2" data-bs-dismiss="dropdown">Cancel</button>
+                    <button class="btn btn-sm btn-primary">Apply</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<%include file="dashboard_elements/detailed_dashboard_new_request_modal_t.html" />
