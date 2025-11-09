@@ -505,7 +505,7 @@ def get_request_by_id(request_id) -> str:
         request_data = database.get_request_by_id(request_id)
     except:
         return jsonify({'error': 'No requests found with that ID.'}), 404
-    
+
     # check if empty
     if not request_data:
         return jsonify({'error': 'Request not found'}), 404
@@ -573,7 +573,8 @@ def new_request() -> str:
     request_title = None
     request_description = None
     request_type = None
-    
+    request_department = None
+
     # get the data sent via POST
     if request.is_json:
         data = request.get_json()
@@ -906,6 +907,30 @@ def get_team_by_id(team_id) -> str:
     # Get the list of teams from the database
     team = database.get_team_by_id(team_id)
     return jsonify(team), 200
+
+@app.route('/api/teams/<int:team_id>/users', methods=['GET'])
+def get_team_users(team_id) -> str:
+    ''' Get all users in a team by the team ID.
+
+    Returns:
+        str: json formatted string of users in the team or error message
+    '''
+   
+    # get auth data
+    token = request.cookies.get('auth_token')
+    username = request.cookies.get('user')
+
+    # check token and user from cookies
+    if auth.check_token(username, token) is False:
+        return jsonify({'error': 'Authentication required'}), 401
+    
+    try:
+        users = database.get_users_in_team(team_id)
+    except Exception as e:
+        api_logger.error('Error getting users in team ID %d: %s', team_id, str(e))
+        return jsonify({'Unable to get users in team': str(e)}), 500
+    
+    return jsonify(users), 200
 
 @app.route('/api/teams/new', methods=['POST'])
 def new_team() -> str:

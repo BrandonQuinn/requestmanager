@@ -839,12 +839,17 @@ def add_request(username, request_title, request_description, request_type, requ
         # get the user, we need the id
         user_data = get_user_by_username(username)
 
+        # get the initial assignment team from the department, all new requests go to the initial assignment team
+        department_data = get_department_by_id(request_department)
+        if not department_data:
+            raise Exception("Failed to get department data when adding new request, department doesn't exist")
+
         # Execute a query to insert a new request
         insert_query = """
         INSERT INTO requests (requester, requested_at, priority, outage, title, description, team_category, assigned_to_team, assigned_to_user, escalation_level, type)
         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """
-        cursor.execute(insert_query, (user_data[0], datetime.now(), 4, False, request_title, request_description, request_department, None, None, 0, request_type))
+        cursor.execute(insert_query, (user_data[0], datetime.now(), 4, False, request_title, request_description, request_department, department_data[4], None, 0, request_type))
         
         # Commit the transaction
         connection.commit()
@@ -995,6 +1000,44 @@ def get_teams():
 
     except Exception as error:
         print(f"Error fetching teams: {error}")
+        raise error
+    finally:
+        if connection:
+            cursor.close()
+            disconnect(connection)
+
+def get_users_in_team(team_id):
+    ''' Return list of user IDs in the team specified by team_id
+    
+    Args:
+        team_id (int): The ID of the team to get users from 
+        Returns:
+            list: List of user IDs in the team
+    '''
+
+    try:
+        # Connect to your postgres DB
+        connection = connect()
+        cursor = connection.cursor()
+
+        # Execute a query to get the team by id
+        query = "SELECT users FROM teams WHERE id = %s"
+        cursor.execute(query, (team_id,))
+
+        # Retrieve query results
+        user_ids = cursor.fetchone()
+
+        users = {}
+        for i in user_ids[0]:
+            users[i] = get_user_by_id(i)
+
+        if users:
+            return users  # return the list of user IDs
+        else:
+            raise Exception("No team found when getting users in team from database")
+
+    except Exception as error:
+        print(f"Error fetching users in team from database: {error}")
         raise error
     finally:
         if connection:

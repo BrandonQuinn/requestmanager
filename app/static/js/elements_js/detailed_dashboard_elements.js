@@ -21,19 +21,19 @@ function updateUnassignedRequestsTable() {
                     switch (priority) { // Assuming request[3] is the priority
                         case 1:
                             // Change color to red for high priority
-                            priorityBadge = `<span class="badge bg-purple text-purple-fg">P${priority}</span>`;
+                            priorityBadge = `<span class="badge bg-purple text-purple-fg">${priority}</span>`;
                             break;
                         case 2:
                             // Change color to orange for medium priority
-                            priorityBadge = `<span class="badge bg-red text-red-fg">P${priority}</span>`;
+                            priorityBadge = `<span class="badge bg-red text-red-fg">${priority}</span>`;
                             break;
                         case 3:
                             // Change color to yellow for low priority
-                            priorityBadge = `<span class="badge bg-orange text-orange-fg">P${priority}</span>`;
+                            priorityBadge = `<span class="badge bg-orange text-orange-fg">${priority}</span>`;
                             break;
                         case 4:
                             // Default color
-                            priorityBadge = `<span class="badge bg-yellow text-yellow-fg">P${priority}</span>`;
+                            priorityBadge = `<span class="badge bg-yellow text-yellow-fg">${priority}</span>`;
                             break;
                     }
 
@@ -146,17 +146,11 @@ document.addEventListener('click', function (event) {
                 // document.getElementById('resolve-secondary-text').innerText = '\'' + data[5] + '\'';
                 document.getElementById('description-view-field').value = data[6];
                 document.getElementById('created-view-date').textContent = new Date(data[2]).toLocaleString();
-                document.getElementById('type-view-field').value = data[11];
-
-                if (data[7] !== null) {
-                    updateDepartmentSelect(data[7]);
-                }
-
-                document.getElementById('team-view-field').value = data[8];
-                document.getElementById('assignee-view-field').value = data[9];
-
-                // populate the updates modal as well, so when the user clicks on the updates tab, so it's already loaded
-
+                updateDepartmentSelect(data[7]);       
+                updateTeamSelect(data[8]).then(() => {
+                    updateAssingeeSelect(data[10]);
+                }); 
+                updateViewRequestTypeField(data[9]);
                 updateUpdatesList(requestId);
             })
             .catch(error => {
@@ -171,7 +165,6 @@ document.addEventListener('click', function (event) {
 */
 document.getElementById('add-update-btn').addEventListener('click', function () {
     const requestId = this.getAttribute('data-request-id');
-    console.log('Adding update to request ID:', requestId);
     const updateContent = document.getElementById('update-content-field').value;
 
     fetch(`/api/requests/${requestId}/updates/new`, {
@@ -204,25 +197,121 @@ document.getElementById('add-update-btn').addEventListener('click', function () 
 */
 async function updateDepartmentSelect(selectedDepartment = null) {
     const departments = await getDepartments();
+    const departmentSelect = document.getElementById('department-select');
+
+    departmentSelect.innerHTML = '';
 
     departments.forEach(dept => {
-        const departmentSelect = document.getElementById('department-select');
         const option = document.createElement('option');
-
-        departmentSelect.innerHTML = '';
-
         option.value = dept[0];
         option.textContent = dept[1];
-        departmentSelect.appendChild(option);                    
+        option.selected = (dept[1] == selectedDepartment);
+        departmentSelect.appendChild(option);
     });
 }
 
 /*
+    When the department select changes, update the team select options (only showing teams in that department)
+*/
+document.getElementById('department-select').addEventListener('change', function () {
+    updateTeamSelect();
+});
+
+/*
+    When the team select changes, update the assignee select options (only showing users in that team)
+*/
+document.getElementById('team-view-field').addEventListener('change', function () {
+    updateAssingeeSelect();
+});
+
+/*
     Function to update the team field in the view request modal
 */
-function updateRequestModalTeamField() {
-    const teamField = document.getElementById('team-view-field');
+async function updateTeamSelect(selectedTeam = null) {
+    const departments = await getDepartments();
+    const teams = await getTeams();
+    const teamSelect = document.getElementById('team-view-field');
+    const selectedDepartment = document.getElementById('department-select').value;
+
+    teamSelect.innerHTML = '';
+
+    departments.forEach(dept => {
+        if (dept[0] == selectedDepartment) {
+            teamsInDepartments = dept[2];
+            teams.forEach(team => {
+                if (teamsInDepartments.includes(team[0])) {
+                    const option = document.createElement('option');
+                    option.value = team[0];
+                    option.textContent = team[1];
+                    
+                    if (selectedTeam != null) {
+                        option.selected = (team[1] == selectedTeam);
+                    }
+                   
+                    teamSelect.appendChild(option);
+                }
+            });
+        }
+    });
+}
+
+/*
+    Function to update the assignee field in the view request modal
+*/
+async function updateAssingeeSelect(selectedAssignee = null) {
+    // Get department selected
+    const selectedTeam = document.getElementById('team-view-field').value;
+    const assignees = await getUsersInTeam(selectedTeam);
+
+    // Clear existing options
+    const assigneeSelect = document.getElementById('assignee-view-field');
+    assigneeSelect.innerHTML = '';
+
+    // Leave empty if no assignees
+    if (assignees == null || assignees.length == 0) {    
+        return;
+    }
     
+    // Populate with fetched assignees
+    Object.values(assignees).forEach(assignee => {
+        const option = document.createElement('option');
+        option.value = assignee[0];
+        option.textContent = assignee[1];
+        
+        if (selectedAssignee != null) {
+            option.selected = (assignee[1] == selectedAssignee);
+        }
+        
+        assigneeSelect.appendChild(option);
+    });
+
+    // there's no assignee selected, deselect all options
+    if (selectedAssignee == null) {
+        option.selected = false;
+        const option = document.createElement('option');
+        option.value = -1;
+        option.textContent = "-- No Assignee --";
+        option.selected = true;
+        assigneeSelect.appendChild(option);
+    }
+}
+
+/*
+    Function to update requests type list in the view request modal
+*/
+async function updateViewRequestTypeField(selectedType = null) {
+    const types = await getTypes();
+    const typesSelect = document.getElementById('type-view-field');
+
+    typesSelect.innerHTML = '';
+
+    types.forEach(type => {
+        const option = document.createElement('option');
+        option.value = type[0];
+        option.textContent = type[1];
+        option.selected = (type[1] == selectedType);
+        typesSelect.appendChild(option);
+    });
 }
 
 /*
@@ -268,11 +357,7 @@ document.getElementById('new-request-submit').addEventListener('click', function
     const requestTypeId = document.getElementById('new-request-type').value;
     
     try {
-        let response = submitNewRequest(title, description, departmentId, requestTypeId);
-        
-        if (!response.ok) {
-            throw new Error('Failed to submit new request');
-        }
+        const response = submitNewRequest(title, description, departmentId, requestTypeId);
 
         // Close the modal
         const newRequestModal = document.getElementById('modal-new-request');
@@ -291,6 +376,6 @@ document.getElementById('new-request-submit').addEventListener('click', function
 /*
     Update anything that needs to be updated when the DOM is loaded
 */
-document.addEventListener('DOMContentLoaded', updateUnassignedRequestsTable);
+document.addEventListener('DOMContentLoaded', updateUnassignedRequestsTable());
 document.addEventListener('DOMContentLoaded', updateDepartmentSelect());
-document.addEventListener('DOMContentLoaded', updateNewRequestModal);
+document.addEventListener('DOMContentLoaded', updateNewRequestModal());

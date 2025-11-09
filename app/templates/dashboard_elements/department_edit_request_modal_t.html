@@ -16,7 +16,7 @@
                         <div class="mb-3">
                             <label class="form-label">Title</label>
                             <input type="text" class="form-control" name="title-view-field" id="title-view-field"
-                                placeholder="Empty" value="Gotta fix that thang" readonly="">
+                                placeholder="Empty" value="Gotta fix that thang">
                         </div>
                     </div>
                 </div>
@@ -24,9 +24,8 @@
                     <div class="col">
                         <div class="mb-3">
                             <label class="form-label">Description</label>
-                            <textarea readonly="" class="form-control" name="description-view-field"
-                                id="description-view-field" rows="6" placeholder="Content.."
-                                style="height: 153px;"></textarea>
+                            <textarea class="form-control" name="description-view-field" id="description-view-field"
+                                rows="6" placeholder="Content.." style="height: 153px;"></textarea>
                         </div>
                     </div>
                 </div>
@@ -36,26 +35,31 @@
                 <div class="row mb-3">
                     <div class="col-6">
                         <label class="form-label">Type</label>
-                        <input type="text" class="form-control" name="type-view-field" id="type-view-field"
-                            placeholder="Empty" value="Change">
+                        <select id="type-view-field" class="form-select" name="type-view-field" id="type-view-field"
+                            placeholder="Empty">
+                            <option>
+                                <div class="progress progress-sm">
+                                    <div class="progress-bar progress-bar-indeterminate"></div>
+                                </div>
+                            </option>
+                        </select>
                     </div>
                     <div class="col-6">
                         <label class="form-label">Department</label>
                         <select id="department-select" class="form-select">
-                            <option value="1">Default</option>
                         </select>
                     </div>
                 </div>
                 <div class="row mb-3">
                     <div class="col-6">
                         <label class="form-label">Team</label>
-                        <input type="text" class="form-control" name="team-view-field" id="team-view-field"
-                            placeholder="Empty">
+                        <select id="team-view-field" class="form-select" name="team-view-field" placeholder="Empty">
+                        </select>
                     </div>
                     <div class="col-6">
                         <label class="form-label">Assignee</label>
-                        <input type="text" class="form-control" name="assignee-view-field" id="assignee-view-field"
-                            placeholder="Empty">
+                        <select class="form-select" name="assignee-view-select" id="assignee-view-field" placeholder="Empty">
+                        </select>
                     </div>
                 </div>
 
