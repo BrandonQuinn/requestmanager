@@ -214,7 +214,9 @@ async function updateDepartmentSelect(selectedDepartment = null) {
     When the department select changes, update the team select options (only showing teams in that department)
 */
 document.getElementById('department-select').addEventListener('change', function () {
-    updateTeamSelect();
+    updateTeamSelect().then(() => {
+        updateAssingeeSelect();
+    });
 });
 
 /*
@@ -268,7 +270,7 @@ async function updateAssingeeSelect(selectedAssignee = null) {
     assigneeSelect.innerHTML = '';
 
     // Leave empty if no assignees
-    if (assignees == null || assignees.length == 0) {    
+    if (assignees == null || assignees.length == 0) {
         return;
     }
     
@@ -276,7 +278,9 @@ async function updateAssingeeSelect(selectedAssignee = null) {
     Object.values(assignees).forEach(assignee => {
         const option = document.createElement('option');
         option.value = assignee[0];
-        option.textContent = assignee[1];
+        option.textContent = assignee[8] + " " + assignee[9];
+
+        console.log(assignee);
         
         if (selectedAssignee != null) {
             option.selected = (assignee[1] == selectedAssignee);
@@ -287,10 +291,9 @@ async function updateAssingeeSelect(selectedAssignee = null) {
 
     // there's no assignee selected, deselect all options
     if (selectedAssignee == null) {
-        option.selected = false;
         const option = document.createElement('option');
         option.value = -1;
-        option.textContent = "-- No Assignee --";
+        option.textContent = "";
         option.selected = true;
         assigneeSelect.appendChild(option);
     }

@@ -926,10 +926,24 @@ def get_team_users(team_id) -> str:
     
     try:
         users = database.get_users_in_team(team_id)
+
+        # return nothing if no users found
+        if users is None:
+            return jsonify([]), 200 
+
     except Exception as e:
         api_logger.error('Error getting users in team ID %d: %s', team_id, str(e))
-        return jsonify({'Unable to get users in team': str(e)}), 500
+        return jsonify({'error': 'Unable to get users in team' + str(e)}), 500
     
+    # remove the password hash from the user data, by converting the tuples to lists
+    userIds = [user for user in users]
+    usersList = []
+    for user in userIds:
+        userAsList = list(users[user])
+        userAsList[3] = "<hidden>"
+        usersList.append(userAsList)
+    users = usersList
+
     return jsonify(users), 200
 
 @app.route('/api/teams/new', methods=['POST'])

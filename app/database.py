@@ -1015,6 +1015,10 @@ def get_users_in_team(team_id):
             list: List of user IDs in the team
     '''
 
+    # input validation, type check and value check
+    if not isinstance(team_id, int) or team_id <= 0:
+        raise ValueError("team_id must be a positive integer")
+
     try:
         # Connect to your postgres DB
         connection = connect()
@@ -1027,6 +1031,9 @@ def get_users_in_team(team_id):
         # Retrieve query results
         user_ids = cursor.fetchone()
 
+        if not user_ids[0]:
+            return None
+
         users = {}
         for i in user_ids[0]:
             users[i] = get_user_by_id(i)
@@ -1034,7 +1041,7 @@ def get_users_in_team(team_id):
         if users:
             return users  # return the list of user IDs
         else:
-            raise Exception("No team found when getting users in team from database")
+            return None
 
     except Exception as error:
         print(f"Error fetching users in team from database: {error}")

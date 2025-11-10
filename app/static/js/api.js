@@ -129,7 +129,7 @@ async function fetchSettingByName(settingName) {
 		return data;
 	} catch (error) {
 		console.error(`Failed to fetch setting ${settingName}:`, error);
-		return null;
+		throw new Error('An error occurred while fetching users in setting.');
 	}
 }
 
@@ -149,7 +149,7 @@ async function getUsersInTeam(teamId) {
         json = await response.json();
     } catch (error) {
         console.error('Error fetching users in team:', error);
-        showErrorModal('Error', 'An error occurred while fetching users in team.');
+        throw new Error('An error occurred while fetching users in team.');
     } 
 
     return json;
