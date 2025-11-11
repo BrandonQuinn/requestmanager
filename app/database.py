@@ -676,6 +676,9 @@ def update_request(data):
 
         # for each element in the list, add a column update
         for i in range(len(columns_to_update)):
+            
+            # The if statement is to check if we're in the middle and need a comma 
+            # to separate to columns
             if i < (len(columns_to_update) - 1):
                 query += columns_to_update[i][0] + " = " + columns_to_update[i][1] + ", "
             elif i == (len(columns_to_update) - 1):
@@ -683,10 +686,8 @@ def update_request(data):
 
         query += " WHERE id = " + request_id
     
-        # run the query
+        # execute and commit
         cursor.execute(query)
-
-        # Commit the transaction
         connection.commit()
 
     except Exception as e:
