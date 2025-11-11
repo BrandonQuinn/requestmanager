@@ -188,7 +188,9 @@ getTeams().then(teams => {
 	Configure and populate the new department modal.
 */
 
-// Set the initial options in the model, will be updated when the teams are fetched
+/*
+	Set the initial options in the model, will be updated when the teams are fetched
+*/
 function updateDepartmentModalSelectables() {
 	const addTeamsSelect = document.getElementById('select-new-department-teams');
 	const addInitialTeamSelect = document.getElementById('select-initial-team');

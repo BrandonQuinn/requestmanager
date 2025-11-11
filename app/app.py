@@ -532,9 +532,9 @@ def get_request_by_id(request_id) -> str:
     if request_data[8] is not None:
         team_name = database.get_team_by_id(request_data[8])[1]
 
-    # get assignee name
+    # get assignee name, providing it's not unassigned
     assignee_name = ""
-    if request_data[9] is not None:
+    if request_data[9] is not None and not -1:
         assignee_name = database.get_user_by_id(request_data[9])[1]
 
     request_data = (

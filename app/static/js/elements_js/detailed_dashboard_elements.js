@@ -153,10 +153,11 @@ document.addEventListener('click', function (event) {
 
                 // update the select for teams then for asignees ensuring the teams are updated first
                 updateTeamSelect(data[8]).then(() => {
-                    updateAssingeeSelect(data[10]);
+                    console.warn(data[9])
+                    updateAssingeeSelect(data[9]);
                 });
 
-                updateViewRequestTypeField(data[9]);
+                updateViewRequestTypeField(data[11]);
                 updateUpdatesList(requestId);
             })
             .catch(error => {
@@ -341,10 +342,12 @@ async function updateAssingeeSelect(selectedAssignee = null) {
         assigneeSelect.appendChild(option);
     });
 
-    // there's no assignee selected, deselect all options
-    if (selectedAssignee == null) {
+    // there's no assignee selected, deselect all options, ugh i screwed myself and didnt' use a consistent
+    // method of determine if it's unassigned, months ago I decided -1 meant that but also NULL means that and "".
+    // wtf have i done
+    if (selectedAssignee == null || selectedAssignee == -1 || selectedAssignee == "") {
         const option = document.createElement('option');
-        option.value = -1;
+        option.value = "-1";
         option.textContent = "";
         option.selected = true;
         assigneeSelect.appendChild(option);

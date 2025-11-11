@@ -654,40 +654,22 @@ def update_request(data):
         request_assignee_id = data['request-assignee']
         request_type_id = data['request-type']
 
-        columns_to_update = []
+        query = """
+        UPDATE requests SET 
+            title = %s, 
+            description = %s, 
+            team_category = %s, 
+            assigned_to_team = %s, 
+            assigned_to_user = %s, 
+            type = %s
+        WHERE id = %s
+        """
 
-        # append each column for each value to update to the query
-        # doing my best to prevent as many DB queries as possible
+        # update it even if it hasn't changed to do it in 1 transation
 
-        if request_title:
-            columns_to_update.append(['title', "'" + request_title + "'"])
-        if request_description:
-            columns_to_update.append(['description', "'" + request_description + "'"])
-        if request_department_id:
-            columns_to_update.append(['team_category', request_department_id])
-        if request_team_id:
-            columns_to_update.append(['assigned_to_team', request_team_id])
-        if request_assignee_id:
-            columns_to_update.append(['assigned_to_user', request_assignee_id])
-        if request_type_id:
-            columns_to_update.append(['type', request_type_id])
-
-        query = "UPDATE requests SET "
-
-        # for each element in the list, add a column update
-        for i in range(len(columns_to_update)):
-            
-            # The if statement is to check if we're in the middle and need a comma 
-            # to separate to columns
-            if i < (len(columns_to_update) - 1):
-                query += columns_to_update[i][0] + " = " + columns_to_update[i][1] + ", "
-            elif i == (len(columns_to_update) - 1):
-                query += columns_to_update[i][0] + " = " + columns_to_update[i][1]
-
-        query += " WHERE id = " + request_id
-    
         # execute and commit
-        cursor.execute(query)
+        cursor.execute(query, (request_title, request_description, request_department_id,
+                               request_team_id, request_assignee_id, request_type_id, request_id))
         connection.commit()
 
     except Exception as e:
@@ -738,7 +720,7 @@ def get_all_unassigned_unresolved_requests():
         cursor = connection.cursor()
 
         # Execute a query to get all unassigned requests
-        query = "SELECT * FROM requests WHERE (assigned_to_team IS NULL OR assigned_to_user IS NULL) AND resolved = false"
+        query = "SELECT * FROM requests WHERE (assigned_to_team IS NULL OR assigned_to_user IS NULL OR assigned_to_user = -1) AND resolved = false"
         cursor.execute(query)
 
         # Retrieve query results
