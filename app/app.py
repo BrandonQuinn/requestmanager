@@ -554,6 +554,42 @@ def get_request_by_id(request_id) -> str:
 
     return jsonify(request_data), 200
 
+@app.route('/api/requests/<int:request_id>/edit', methods=['POST'])
+def edit_request(request_id) -> str:
+    ''' Allows posting updated values for the request.
+
+        Returns:
+            str: json formatted string of success or error message
+    '''
+
+    # get auth data
+    token = request.cookies.get('auth_token')
+    username = request.cookies.get('user')
+
+    # check token and user from cookies
+    if auth.check_token(username, token) is False:
+        return jsonify({'error': 'Authentication required'}), 401
+    
+    # Not valid json
+    if not request.is_json:
+        return jsonify({'error': 'Invalid json format provided'}), 400
+    
+    # TODO: Check permissions
+
+    data = request.get_json()
+
+    # TODO: Input validation
+
+    try:
+        database.update_request(data)
+    except Exception as e:
+        api_logger.error('API failed to update request data')
+        return jsonify({'error', 'Failed to update request'}), 500
+
+
+    return jsonify([]), 200
+
+
 @app.route('/api/requests/new', methods=['POST'])
 def new_request() -> str:
     ''' Create a new request with the data provided in the request body.
@@ -600,7 +636,10 @@ def new_request() -> str:
 
     # the token has the perms, create the new request
     if create_request_permission:
+        
         # TODO: Login to determine team and other fields that are not provided
+        # TODO: No error checking, exception handling?
+        
         database.add_request(username, request_title, request_description, request_type, request_department)
         return jsonify({'success': 'Request created.'}), 200
     else:
@@ -915,7 +954,7 @@ def get_team_users(team_id) -> str:
     Returns:
         str: json formatted string of users in the team or error message
     '''
-   
+
     # get auth data
     token = request.cookies.get('auth_token')
     username = request.cookies.get('user')
@@ -923,7 +962,7 @@ def get_team_users(team_id) -> str:
     # check token and user from cookies
     if auth.check_token(username, token) is False:
         return jsonify({'error': 'Authentication required'}), 401
-    
+
     try:
         users = database.get_users_in_team(team_id)
 
@@ -936,6 +975,7 @@ def get_team_users(team_id) -> str:
         return jsonify({'error': 'Unable to get users in team' + str(e)}), 500
     
     # remove the password hash from the user data, by converting the tuples to lists
+    # TODO: Figure out a better way than this, I don't like it
     userIds = [user for user in users]
     usersList = []
     for user in userIds:

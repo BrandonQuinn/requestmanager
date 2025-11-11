@@ -632,12 +632,76 @@ def get_request_by_id(request_id):
             cursor.close()
             disconnect(connection)
 
+def update_request(data):
+    ''' Takes in a dictionary with the json provided in the request.
+
+    Args:
+        dict: Dictionary which is the json data from the request
+    Raises:
+        Exception: when there's issues adding to the database
+    '''
+
+    try:
+        connection = connect()
+        cursor = connection.cursor()
+
+        # Get each value
+        request_id = data['request-id']
+        request_title = data['request-title']
+        request_description = data['request-description']
+        request_department_id = data['request-department']
+        request_team_id = data['request-team']
+        request_assignee_id = data['request-assignee']
+        request_type_id = data['request-type']
+
+        columns_to_update = []
+
+        # append each column for each value to update to the query
+        # doing my best to prevent as many DB queries as possible
+
+        if request_title:
+            columns_to_update.append(['title', "'" + request_title + "'"])
+        if request_description:
+            columns_to_update.append(['description', "'" + request_description + "'"])
+        if request_department_id:
+            columns_to_update.append(['team_category', request_department_id])
+        if request_team_id:
+            columns_to_update.append(['assigned_to_team', request_team_id])
+        if request_assignee_id:
+            columns_to_update.append(['assigned_to_user', request_assignee_id])
+        if request_type_id:
+            columns_to_update.append(['type', request_type_id])
+
+        query = "UPDATE requests SET "
+
+        # for each element in the list, add a column update
+        for i in range(len(columns_to_update)):
+            if i < (len(columns_to_update) - 1):
+                query += columns_to_update[i][0] + " = " + columns_to_update[i][1] + ", "
+            elif i == (len(columns_to_update) - 1):
+                query += columns_to_update[i][0] + " = " + columns_to_update[i][1]
+
+        query += " WHERE id = " + request_id
+    
+        # run the query
+        cursor.execute(query)
+
+        # Commit the transaction
+        connection.commit()
+
+    except Exception as e:
+        db_logger.error('Failed to update request in database')
+        raise e
+    finally:
+        if connection:
+            cursor.close()
+            disconnect(connection)
+
 #
 # Return all requests for the user. Excluded resolved requests.
 #
 def get_requests_by_requester(username):
     try:
-        # Connect to your postgres DB
         connection = connect()
         cursor = connection.cursor()
 

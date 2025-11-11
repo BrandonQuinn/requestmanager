@@ -106,6 +106,7 @@ function updateUpdatesList(requestId) {
 document.addEventListener('click', function (event) {
     if (event.target.classList.contains('view-request-btn')) {
         const requestId = event.target.querySelector('.view-id').textContent;
+        document.getElementById('view-modal-selected-request-id').textContent = requestId;
 
         fetch(`/api/requests/${requestId}`)
             .then(response => response.json())
@@ -146,10 +147,15 @@ document.addEventListener('click', function (event) {
                 // document.getElementById('resolve-secondary-text').innerText = '\'' + data[5] + '\'';
                 document.getElementById('description-view-field').value = data[6];
                 document.getElementById('created-view-date').textContent = new Date(data[2]).toLocaleString();
-                updateDepartmentSelect(data[7]);       
+
+                // update the select for departments
+                updateDepartmentSelect(data[7]);
+
+                // update the select for teams then for asignees ensuring the teams are updated first
                 updateTeamSelect(data[8]).then(() => {
                     updateAssingeeSelect(data[10]);
-                }); 
+                });
+
                 updateViewRequestTypeField(data[9]);
                 updateUpdatesList(requestId);
             })
@@ -193,14 +199,62 @@ document.getElementById('add-update-btn').addEventListener('click', function () 
 });
 
 /*
+    Save changes to the request when the save button is clicked
+*/
+document.getElementById('save-edit-request-btn').addEventListener('click', function () {
+    const requestId = document.getElementById('view-modal-selected-request-id').textContent;
+    const title = document.getElementById('title-view-field').value;
+    const description = document.getElementById('description-view-field').value;
+    const departmentId = document.getElementById('department-select').value;
+    const teamId = document.getElementById('team-view-field').value;
+    const assigneeId = document.getElementById('assignee-view-field').value;
+    const typeId = document.getElementById('type-view-field').value;
+
+    fetch(`/api/requests/${requestId}/edit`, {
+        method: 'POST',
+        headers: { 
+            'Content-Type': 'application/json' 
+        },
+        body: JSON.stringify({
+            'request-id': requestId,
+            'request-title': title,
+            'request-description': description,
+            'request-department': departmentId,
+            'request-team': teamId,
+            'request-assignee': assigneeId,
+            'request-type': typeId
+        })
+    }).then(response => {
+        if (response.ok) {
+            // Close the modal
+            const viewRequestModal = document.getElementById('modal-request-view');
+            const modalInstance = bootstrap.Modal.getInstance(viewRequestModal);
+            modalInstance.hide();
+            
+            // Optionally, refresh the unassigned requests table
+            updateUnassignedRequestsTable();
+        }
+        else {
+            throw new Error('Failed to save changes');
+        }
+    })
+    .catch( error => {
+        console.error('Error:', error);
+        showErrorModal('Error', 'An error occurred while editing request.');
+    })
+});
+
+/*
     Function to update department selects with options
 */
 async function updateDepartmentSelect(selectedDepartment = null) {
     const departments = await getDepartments();
     const departmentSelect = document.getElementById('department-select');
 
+    // Clear existing options
     departmentSelect.innerHTML = '';
 
+    // Populate with fetched departments as options
     departments.forEach(dept => {
         const option = document.createElement('option');
         option.value = dept[0];
@@ -245,11 +299,11 @@ async function updateTeamSelect(selectedTeam = null) {
                     const option = document.createElement('option');
                     option.value = team[0];
                     option.textContent = team[1];
-                    
+
                     if (selectedTeam != null) {
                         option.selected = (team[1] == selectedTeam);
                     }
-                   
+
                     teamSelect.appendChild(option);
                 }
             });
@@ -273,19 +327,17 @@ async function updateAssingeeSelect(selectedAssignee = null) {
     if (assignees == null || assignees.length == 0) {
         return;
     }
-    
+
     // Populate with fetched assignees
     Object.values(assignees).forEach(assignee => {
         const option = document.createElement('option');
         option.value = assignee[0];
         option.textContent = assignee[8] + " " + assignee[9];
 
-        console.log(assignee);
-        
         if (selectedAssignee != null) {
             option.selected = (assignee[1] == selectedAssignee);
         }
-        
+
         assigneeSelect.appendChild(option);
     });
 
@@ -348,7 +400,7 @@ async function updateNewRequestModal() {
         option.textContent = type[1];
         requestTypeSelect.appendChild(option);
     });
-}  
+}
 
 /* 
     On click of the new request submit button, submit the new request form
@@ -358,7 +410,7 @@ document.getElementById('new-request-submit').addEventListener('click', function
     const description = document.getElementById('new-request-description').value;
     const departmentId = document.getElementById('new-request-department').value;
     const requestTypeId = document.getElementById('new-request-type').value;
-    
+
     try {
         const response = submitNewRequest(title, description, departmentId, requestTypeId);
 
