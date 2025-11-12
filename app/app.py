@@ -842,7 +842,7 @@ def resolve_request(request_id) -> str:
     if user_data[0] == request_data[1]:
         resolve_request_permission = True
 
-    # TODO: More checks around compartmentalisation and team permissions
+    # TODO: Permission checks - to ensure only resolvable if user in team
 
     # If permission to resolve, resolve the request
     if resolve_request_permission:

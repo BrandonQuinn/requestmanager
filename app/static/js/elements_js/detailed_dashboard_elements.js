@@ -153,7 +153,6 @@ document.addEventListener('click', function (event) {
 
                 // update the select for teams then for asignees ensuring the teams are updated first
                 updateTeamSelect(data[8]).then(() => {
-                    console.warn(data[9])
                     updateAssingeeSelect(data[9]);
                 });
 
@@ -232,7 +231,7 @@ document.getElementById('save-edit-request-btn').addEventListener('click', funct
             const modalInstance = bootstrap.Modal.getInstance(viewRequestModal);
             modalInstance.hide();
             
-            // Optionally, refresh the unassigned requests table
+            // refresh the unassigned requests table
             updateUnassignedRequestsTable();
         }
         else {
@@ -422,13 +421,52 @@ document.getElementById('new-request-submit').addEventListener('click', function
         const modalInstance = bootstrap.Modal.getInstance(newRequestModal);
         modalInstance.hide();
 
-        // Optionally, refresh the unassigned requests table
+        // refresh the unassigned requests table
         updateUnassignedRequestsTable();
 
     } catch (error) {
         console.error('Error submitting new request:', error);
         showErrorModal('Error', 'An error occurred while submitting the new request.');
     }
+});
+
+/*
+    Handle when the user clicks the resolve request button.
+*/
+document.getElementById('resolve-request-btn').addEventListener('click', function() {
+    let requestTitle = document.getElementById('title-view-field').value;
+
+    // Add a little message to ensure the user knows what request they're resolving
+    let modalSecondayText = document.getElementById('resolve-secondary-text')
+
+    if (requestTitle != "") {
+        modalSecondayText.innerHTML = "Would you like to resolve request titled: </br><b>" + requestTitle + "</b>";
+    } else {
+        modalSecondayText.innerHTML = "";
+    } 
+});
+
+/*
+    Handle when the user clicks the confirm button on the resolve request modal.
+    This is FOR REAL resolved the request.
+*/
+document.getElementById('resolve-request-btn-real').addEventListener('click', function() {
+    // Get the current request id
+    const selectedRequestId = document.getElementById('view-modal-selected-request-id').innerText;
+
+    // Resolve, there's no body for this
+    jsonResponse = resolveRequest(selectedRequestId);
+
+    if (jsonResponse[0] && jsonResponse[0] == 'error') {
+
+    } else {
+        jsonResponse.then(data => {
+            console.log(data);
+        });
+    }
+
+    // Update the table of unassigned requests
+    updateUnassignedRequestsTable()
 });
 
 /*

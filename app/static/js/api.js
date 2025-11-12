@@ -16,7 +16,6 @@ async function getRequestTypes() {
         json = await response.json();
     } catch (error) {
         console.error('Error fetching request types:', error);
-        showErrorModal('Error', 'An error occurred while fetching request types.');
     }
 
     return json;
@@ -44,11 +43,45 @@ async function submitNewRequest(title, description, departmentId, requestTypeId)
 
         json = await response.json();
 
-        // TODO: check if response is ok
-
     } catch (error) {
         throw new Error('Error submitting new request: ' + error.message);
     }
+
+    return json
+}
+
+/*
+    Resolved the request specified by ID
+*/
+async function resolveRequest(requestID) {
+
+    // convert to number
+    requestID = Number(requestID);
+
+    // Validate requestID is a number >= 0
+    if (!Number.isFinite(requestID) || requestID < 0) {
+        console.error('Invalid requestID: ', requestID);
+        return ['error', 'Invalid request ID when resolving request. Not a valid number.'];
+    }
+
+    // Resolve, there's no body for this
+    await fetch(`/api/requests/${requestID}/resolve`, {
+        method: 'POST',
+        headers: { 
+            'Content-Type': 'application/json' 
+        }
+    }).then(response => {
+        if (!response.ok) {
+            console.error('Error:', error);
+            return ['error', 'Bad response when resolving request: ' + error];
+        }
+
+        return response.json()
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        return ['error', 'Failed to execute fetch request.'];
+    })
 }
 
 /*
@@ -67,7 +100,6 @@ async function getDepartments() {
         json = await response.json();
     } catch (error) {
         console.error('Error fetching departments:', error);
-        showErrorModal('Error', 'An error occurred while fetching departments.');
     }
     
     return json;
