@@ -11,7 +11,7 @@ temp_db_username = None
 temp_db_password = None
 
 # Threshold for logging connection wait times 
-# when the pool has not connections available
+# when the pool has no connections available
 CONNECTION_WAIT_LOG_THRESHOLD = 1  # seconds
 
 POOL_MIN_SIZE = 1
@@ -25,7 +25,7 @@ DB_CONFIGURATION = {
     'port': '5432'
 }
 
-# Create the pool
+# Declare the pool
 connection_pool = None
 
 def establish_pool() -> None:

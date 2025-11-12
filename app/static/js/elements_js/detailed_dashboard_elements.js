@@ -41,10 +41,10 @@ function updateUnassignedRequestsTable() {
                     var row = document.createElement('tr');
                     row.innerHTML = `
                         <td class="text-secondary">${priorityBadge}</td>
-                        <td class="text-secondary">${request[5]}</td>
+                        <td class="text-secondary"><a href="#" class="text-reset">${request[6]}</a></td>
                         <td class="text-secondary"><a href="#" class="text-reset">${createdDate.toLocaleString()}</a></td>
                         <td>
-                            <a class="view-request-btn" data-bs-toggle="modal"
+                            <a href="#" class="view-request-btn" data-bs-toggle="modal"
 									data-bs-target="#modal-request-view">View<span class="view-id" style="display:none">${request[0]}</span></a>
                         </td>
                     `;
@@ -341,7 +341,7 @@ async function updateAssingeeSelect(selectedAssignee = null) {
         assigneeSelect.appendChild(option);
     });
 
-    // there's no assignee selected, deselect all options, ugh i screwed myself and didnt' use a consistent
+    // There's no assignee selected, deselect all options, ugh i screwed myself and didnt' use a consistent
     // method of determine if it's unassigned, months ago I decided -1 meant that but also NULL means that and "".
     // wtf have i done
     if (selectedAssignee == null || selectedAssignee == -1 || selectedAssignee == "") {
@@ -421,8 +421,12 @@ document.getElementById('new-request-submit').addEventListener('click', function
         const modalInstance = bootstrap.Modal.getInstance(newRequestModal);
         modalInstance.hide();
 
-        // refresh the unassigned requests table
-        updateUnassignedRequestsTable();
+        // refresh the unassigned requests table - do it after we're sure it's been done
+        // hence the then() usage. Had a situation where after the table update, the new 
+        // request would not show because it update faster than the data was put in to the DB
+        response.then(data => {
+            updateUnassignedRequestsTable();
+        });
 
     } catch (error) {
         console.error('Error submitting new request:', error);
@@ -431,7 +435,8 @@ document.getElementById('new-request-submit').addEventListener('click', function
 });
 
 /*
-    Handle when the user clicks the resolve request button.
+    Handle when the user clicks the resolve request button. Just adds some text
+    on the modal to confirm that it's the right request being resolved.
 */
 document.getElementById('resolve-request-btn').addEventListener('click', function() {
     let requestTitle = document.getElementById('title-view-field').value;
@@ -448,7 +453,7 @@ document.getElementById('resolve-request-btn').addEventListener('click', functio
 
 /*
     Handle when the user clicks the confirm button on the resolve request modal.
-    This is FOR REAL resolved the request.
+    This resolves the request, FOR REAL.
 */
 document.getElementById('resolve-request-btn-real').addEventListener('click', function() {
     // Get the current request id
@@ -468,6 +473,16 @@ document.getElementById('resolve-request-btn-real').addEventListener('click', fu
     // Update the table of unassigned requests
     updateUnassignedRequestsTable()
 });
+
+/*
+    ASSIGNED REQUESTS TABLE (YOUR REQUESTS)
+*/
+
+/*
+    Populate the assigned requests table.
+*/
+
+// TODO: Go go go
 
 /*
     Update anything that needs to be updated when the DOM is loaded
