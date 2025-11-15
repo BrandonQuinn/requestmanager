@@ -509,24 +509,19 @@ async function updateAssignedRequestsTable() {
         }
 
         assignedRequests.then(data => {
-
-            // remove progress bar and leave the table empty if no data
-            if (data.length == 0) {
-                // remove the progress bar
-                table.querySelector('.progress').remove();
-                return;
-            }
-
             data.forEach(request => {
 
             });
 
-            // remove the progress bar
-            table.querySelector('.progress').remove();
+
 
         }).catch(error => {
             console.error('Error fetching assigned requests:', error);
         });
+
+        // remove the progress bar
+        var prog = table.getElementsByClassName('progress');
+        console.log(prog);
     });
 }
 
