@@ -681,6 +681,32 @@ def update_request(data):
             disconnect(connection)
 
 #
+# Return all requests assigned to a user. Excluded resolved requests.
+#
+def get_requests_by_assignee_username(username):
+    try:
+        connection = connect()
+        cursor = connection.cursor()
+
+        # we're doing this to get the user id from the username
+        username_data = get_user_by_username(username)
+
+        # Execute a query to get requests by assignee username
+        query = "SELECT * FROM requests WHERE assigned_to_user = %s AND resolved = false" 
+        cursor.execute(query, (username_data[0],))
+
+        # Retrieve query results
+        requests = cursor.fetchall()
+        return requests
+    except Exception as error:
+        print(f"Error fetching requests by username: {error}")
+        raise error
+    finally:
+        if connection:
+            cursor.close()
+            disconnect(connection)
+
+#
 # Return all requests for the user. Excluded resolved requests.
 #
 def get_requests_by_requester(username):

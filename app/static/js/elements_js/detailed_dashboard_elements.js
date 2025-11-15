@@ -11,35 +11,47 @@ function updateUnassignedRequestsTable() {
 
         // Fetch unassigned requests from the server
         fetch('/api/requests/unassigned')
-            .then(response => response.json())
-            .then(data => {
-                data.forEach(request => {
-                    var createdDate = new Date(request[2]);
-                    var priorityBadge = '';
-                    const priority = request[3]; // Assuming request[3] is the priority
+            .then(response => {
+                if (response.status == 403) { // Permission denied
+                    unassignedRequestsTables.forEach(function (table) {
+                        table.innerHTML = '<div style="margin:15px">Permission denied to view unassigned requests.</div>';
+                    });
+                    return;
+                }
 
-                    switch (priority) { // Assuming request[3] is the priority
-                        case 1:
-                            // Change color to red for high priority
-                            priorityBadge = `<span class="badge bg-purple text-purple-fg">${priority}</span>`;
-                            break;
-                        case 2:
-                            // Change color to orange for medium priority
-                            priorityBadge = `<span class="badge bg-red text-red-fg">${priority}</span>`;
-                            break;
-                        case 3:
-                            // Change color to yellow for low priority
-                            priorityBadge = `<span class="badge bg-orange text-orange-fg">${priority}</span>`;
-                            break;
-                        case 4:
-                            // Default color
-                            priorityBadge = `<span class="badge bg-yellow text-yellow-fg">${priority}</span>`;
-                            break;
-                    }
+                if (!response.ok && response.status != 403) {
+                    showErrorModal('Error', 'An error occurred while fetching unassigned requests.');
+                    throw new Error('Network response was not ok while fetching unassigned requests');
+                }
 
-                    // Create a new row for each request
-                    var row = document.createElement('tr');
-                    row.innerHTML = `
+                response.json().then(data => {
+                    data.forEach(request => {
+                        var createdDate = new Date(request[2]);
+                        var priorityBadge = '';
+                        const priority = request[3]; // Assuming request[3] is the priority
+
+                        switch (priority) { // Assuming request[3] is the priority
+                            case 1:
+                                // Change color to red for high priority
+                                priorityBadge = `<span class="badge bg-purple text-purple-fg">${priority}</span>`;
+                                break;
+                            case 2:
+                                // Change color to orange for medium priority
+                                priorityBadge = `<span class="badge bg-red text-red-fg">${priority}</span>`;
+                                break;
+                            case 3:
+                                // Change color to yellow for low priority
+                                priorityBadge = `<span class="badge bg-orange text-orange-fg">${priority}</span>`;
+                                break;
+                            case 4:
+                                // Default color
+                                priorityBadge = `<span class="badge bg-yellow text-yellow-fg">${priority}</span>`;
+                                break;
+                        }
+
+                        // Create a new row for each request
+                        var row = document.createElement('tr');
+                        row.innerHTML = `
                         <td class="text-secondary">${priorityBadge}</td>
                         <td class="text-secondary"><a href="#" class="text-reset">${request[6]}</a></td>
                         <td class="text-secondary"><a href="#" class="text-reset">${createdDate.toLocaleString()}</a></td>
@@ -48,10 +60,10 @@ function updateUnassignedRequestsTable() {
 									data-bs-target="#modal-request-view">View<span class="view-id" style="display:none">${request[0]}</span></a>
                         </td>
                     `;
-                    table.querySelector('tbody').appendChild(row);
+                        table.querySelector('tbody').appendChild(row);
+                    });
                 });
-            })
-            .catch(error => console.error('Error fetching unassigned requests:', error));
+            }).catch(error => console.error('Error fetching unassigned requests:', error));
     });
 }
 
@@ -212,8 +224,8 @@ document.getElementById('save-edit-request-btn').addEventListener('click', funct
 
     fetch(`/api/requests/${requestId}/edit`, {
         method: 'POST',
-        headers: { 
-            'Content-Type': 'application/json' 
+        headers: {
+            'Content-Type': 'application/json'
         },
         body: JSON.stringify({
             'request-id': requestId,
@@ -230,7 +242,7 @@ document.getElementById('save-edit-request-btn').addEventListener('click', funct
             const viewRequestModal = document.getElementById('modal-request-view');
             const modalInstance = bootstrap.Modal.getInstance(viewRequestModal);
             modalInstance.hide();
-            
+
             // refresh the unassigned requests table
             updateUnassignedRequestsTable();
         }
@@ -238,10 +250,10 @@ document.getElementById('save-edit-request-btn').addEventListener('click', funct
             throw new Error('Failed to save changes');
         }
     })
-    .catch( error => {
-        console.error('Error:', error);
-        showErrorModal('Error', 'An error occurred while editing request.');
-    })
+        .catch(error => {
+            console.error('Error:', error);
+            showErrorModal('Error', 'An error occurred while editing request.');
+        })
 });
 
 /*
@@ -438,7 +450,7 @@ document.getElementById('new-request-submit').addEventListener('click', function
     Handle when the user clicks the resolve request button. Just adds some text
     on the modal to confirm that it's the right request being resolved.
 */
-document.getElementById('resolve-request-btn').addEventListener('click', function() {
+document.getElementById('resolve-request-btn').addEventListener('click', function () {
     let requestTitle = document.getElementById('title-view-field').value;
 
     // Add a little message to ensure the user knows what request they're resolving
@@ -448,14 +460,14 @@ document.getElementById('resolve-request-btn').addEventListener('click', functio
         modalSecondayText.innerHTML = "Would you like to resolve request titled: </br><b>" + requestTitle + "</b>";
     } else {
         modalSecondayText.innerHTML = "";
-    } 
+    }
 });
 
 /*
     Handle when the user clicks the confirm button on the resolve request modal.
     This resolves the request, FOR REAL.
 */
-document.getElementById('resolve-request-btn-real').addEventListener('click', function() {
+document.getElementById('resolve-request-btn-real').addEventListener('click', function () {
     // Get the current request id
     const selectedRequestId = document.getElementById('view-modal-selected-request-id').innerText;
 
@@ -481,6 +493,42 @@ document.getElementById('resolve-request-btn-real').addEventListener('click', fu
 /*
     Populate the assigned requests table.
 */
+async function updateAssignedRequestsTable() {
+    var assignedRequestsTables = document.querySelectorAll('.assigned-request-table');
+    assignedRequestsTables.forEach(function (table) {
+
+        // Clear existing rows
+        table.querySelector('tbody').innerHTML = '';
+
+        // Fetch assigned requests from the server
+        var assignedRequests = getAssignedRequests();
+
+        if (assignedRequests[0] && assignedRequests[0] == 'error') {
+            console.error('Error fetching assigned requests:', assignedRequests[1]);
+            return;
+        }
+
+        assignedRequests.then(data => {
+
+            // remove progress bar and leave the table empty if no data
+            if (data.length == 0) {
+                // remove the progress bar
+                table.querySelector('.progress').remove();
+                return;
+            }
+
+            data.forEach(request => {
+
+            });
+
+            // remove the progress bar
+            table.querySelector('.progress').remove();
+
+        }).catch(error => {
+            console.error('Error fetching assigned requests:', error);
+        });
+    });
+}
 
 // TODO: Go go go
 
@@ -488,5 +536,6 @@ document.getElementById('resolve-request-btn-real').addEventListener('click', fu
     Update anything that needs to be updated when the DOM is loaded
 */
 document.addEventListener('DOMContentLoaded', updateUnassignedRequestsTable());
+document.addEventListener('DOMContentLoaded', updateAssignedRequestsTable());
 document.addEventListener('DOMContentLoaded', updateDepartmentSelect());
 document.addEventListener('DOMContentLoaded', updateNewRequestModal());

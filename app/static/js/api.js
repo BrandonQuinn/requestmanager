@@ -51,6 +51,34 @@ async function submitNewRequest(title, description, departmentId, requestTypeId)
 }
 
 /*
+    Get all requests assigned to the currently logged in user
+*/
+async function getAssignedRequests() {
+    let json = [];
+
+    // Fetch assigned requests
+     response = await fetch('/api/requests/assigned_to/self', {
+        method: 'GET',
+        headers: { 
+            'Content-Type': 'application/json'
+        }
+    }).then(response => {
+        if (!response.ok) {
+            console.error('Error:', error);
+            return ['error', 'Bad response when fetching assigned requests: ' + error];
+        }
+
+        json = response.json();
+
+     }).catch(error => {
+        console.error('Error:', error);
+        return ['error', 'Failed to execute fetch request.'];
+    })
+
+    return json;
+}
+
+/*
     Resolved the request specified by ID
 */
 async function resolveRequest(requestID) {
@@ -77,8 +105,7 @@ async function resolveRequest(requestID) {
         }
 
         return response.json()
-    })
-    .catch(error => {
+    }).catch(error => {
         console.error('Error:', error);
         return ['error', 'Failed to execute fetch request.'];
     })

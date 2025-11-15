@@ -11,6 +11,19 @@ function showErrorModal(title, msg) {
 }
 
 /*
+	Show a modal with the given title and message
+	@param {string} title The title of the modal
+	@param {string} msg The message to display in the modal
+*/
+function showPermissionDeniedModal(title, msg) {
+	document.getElementById('permission-denied-modal-title').textContent = title;
+	document.getElementById('permission-denied-modal-message').textContent = msg;
+	var permDeniedModal = new bootstrap.Modal(document.getElementById("permission-denied-modal"));
+	permDeniedModal.show();
+}
+
+
+/*
 	Return the value of the auth_token cookie
 	@returns {string} The value of the auth_token cookie
 */

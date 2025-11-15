@@ -150,6 +150,13 @@ def dashboard() -> str:
         api_logger.info('User %s is a breakglass user, redirecting to detailed dashboard.', username)
         template = template_lookup.get_template('detailed_dashboard\\detailed_t.html')
         return template.render(title='Dashboard')
+    
+    # Check if the user is not an "end user" and show the normal dashboard
+    user = database.get_user_by_username(username)
+    if not user[7]:
+        api_logger.info('User %s is not an end user, redirecting to normal dashboard.', username)
+        template = template_lookup.get_template('detailed_dashboard\\detailed_t.html')
+        return template.render(title='Dashboard')
 
     # present the dashboard
     template = template_lookup.get_template('dashboard_templates\\dashboard.html')
@@ -669,7 +676,37 @@ def get_unassigned_unresolved_requests() -> str:
     
     return jsonify({'error': 'Permission denied'}), 403
 
-@app.route('/api/requests/user/self', methods=['GET'])
+@app.route('/api/requests/assigned_to/self', methods=['GET'])
+def get_requests_assigned_self() -> str:
+    ''' Get all requests assigned to the currently logged in user.
+
+    Returns:
+        str: json formatted string of all request data assigned to the user or error message
+    '''
+        
+    # get auth data
+    token = request.cookies.get('auth_token')
+    username = request.cookies.get('user')
+
+    # check token and user from cookies
+    if auth.check_token(username, token) is False:
+        return jsonify({'error': 'Authentication required'}), 401
+
+    # check token
+    if not token or not username:
+        return jsonify({'error': 'Authentication required'}), 401
+
+    if not auth.check_token(username, token):
+        return jsonify({'error': 'Invalid token, required to first login'}), 401
+
+    try:
+        result = database.get_requests_by_assignee_username(username)
+        return jsonify(result), 200
+    except Exception as e:
+        return jsonify({'error': f"No requests found while fetching assigned requests. {e}"}), 404
+    
+
+@app.route('/api/requests/created_by/self', methods=['GET'])
 def get_requests_self() -> str:
     ''' Get all requests made by the currently logged in user.
 
@@ -684,16 +721,7 @@ def get_requests_self() -> str:
     # check token and user from cookies
     if auth.check_token(username, token) is False:
         return jsonify({'error': 'Authentication required'}), 401
-
-    # get what requests are needed based on filters
-    page = request.args.get('page', default=1, type=int)
-    count = request.args.get('count', default=10, type=int)
-    sort = request.args.get('sort', default=None, type=str)
-
-    # limit the count to something reasonable
-    if count > 50:
-        count = 50
-
+    
     # check token
     if not token or not username:
         return jsonify({'error': 'Authentication required'}), 401
