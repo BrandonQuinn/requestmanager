@@ -53,7 +53,7 @@ function updateUnassignedRequestsTable() {
                         var row = document.createElement('tr');
                         row.innerHTML = `
                         <td class="text-secondary">${priorityBadge}</td>
-                        <td class="text-secondary"><a href="#" class="text-reset">${request[6]}</a></td>
+                        <td class="text-secondary"><a href="#" class="text-reset">${request[5]}</a></td>
                         <td class="text-secondary"><a href="#" class="text-reset">${createdDate.toLocaleString()}</a></td>
                         <td>
                             <a href="#" class="view-request-btn" data-bs-toggle="modal"
